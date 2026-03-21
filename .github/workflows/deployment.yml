@@ -20,7 +20,7 @@ jobs:
                username: ${{ secrets.SSH_USER }}
                password: ${{ secrets.SSH_PASSWORD }}
                passphrase: ${{ secrets.SSH_PASSPHRASE }}
-               port: ${{ secrests.SSH_PORT }}
+               port: ${{ secrets.SSH_PORT }}
                script: |
                    cd /var/www/${{ github.event.repository.name }}
                    git fetch
