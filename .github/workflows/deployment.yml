@@ -1,8 +1,7 @@
 name: Deployment
 on:
     push:
-        branches:
-            - [ "main" ]
+        branches: [ "main" ]
 
 permissions:
     contents: read
@@ -14,15 +13,15 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Deploy using ssh
-              uses: appleboy/ssh-actions@master
+            - name: Deploy via SSH
+              uses: appleboy/ssh-action@v1
               with:
-                  host: ${{ secrets.SERVER_URL }}
-                  username: ${{ secrets.SSH_USER }}
-                  password: ${{ secrets.SSH_PASSWORD }}
-                  port: ${{ secrets.SSH_PORT }}
-                  key: ${{ secrets.SSH_KEY }}
-                  script: |
-                      cd /var/www/${{ github.event.repository.name }}
-                      git fetch
-                      git pull
+               host: ${{ secrets.SERVER_URL }}
+               username: ${{ secrets.SSH_USER }}
+               password: ${{ secrets.SSH_PASSWORD }}
+               passphrase: ${{ secrets.SSH_PASSPHRASE }}
+               port: ${{ secrests.SSH_PORT }}
+               script: |
+                   cd /var/www/${{ github.event.repository.name }}
+                   git fetch
+                   git pull
