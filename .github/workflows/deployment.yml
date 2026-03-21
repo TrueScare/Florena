@@ -19,9 +19,8 @@ jobs:
                host: ${{ secrets.SERVER_URL }}
                username: ${{ secrets.SSH_USER }}
                password: ${{ secrets.SSH_PASSWORD }}
-               passphrase: ${{ secrets.SSH_PASSPHRASE }}
                port: ${{ secrets.SSH_PORT }}
                script: |
-                   cd /var/www/${{ github.event.repository.name }}
+                   cd /var/www/ISEF01_FreBoMe
                    git fetch
                    git pull
