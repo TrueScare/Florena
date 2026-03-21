@@ -16,8 +16,14 @@ permissions:
 
 jobs:
     symfony-tests:
+        environment: Test
         runs-on: ubuntu-latest
         steps:
+            - name: Copy Env File from Secrets
+              run: |
+                touch .env
+                echo ${{secrets.ENV_FILE}} > .env
+
             - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
               with:
                   php-version: '8.4'
