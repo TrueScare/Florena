@@ -20,7 +20,7 @@ jobs:
                   host: ${{ secrets.SERVER_URL }}
                   username: ${{ secrets.SSH_USER }}
                   password: ${{ secrets.SSH_PASSWORD }}
-                  port: ${{ secrests.SSH_PORT }}
+                  port: ${{ secrets.SSH_PORT }}
                   key: ${{ secrets.SSH_KEY }}
                   script: |
                       cd /var/www/${{ github.event.repository.name }}
