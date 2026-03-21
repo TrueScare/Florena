@@ -1,0 +1,27 @@
+name: Deployment
+on:
+    push:
+        branches: [ "main" ]
+
+permissions:
+    contents: read
+
+jobs:
+    deploy:
+        environment: Prod
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Deploy via SSH
+              uses: appleboy/ssh-action@v1
+              with:
+               host: ${{ secrets.SERVER_URL }}
+               username: ${{ secrets.SSH_USER }}
+               password: ${{ secrets.SSH_PASSWORD }}
+               passphrase: ${{ secrets.SSH_PASSPHRASE }}
+               port: ${{ secrets.SSH_PORT }}
+               script: |
+                   cd /var/www/${{ github.event.repository.name }}
+                   git fetch
+                   git pull
