@@ -1,7 +1,7 @@
 name: Deployment
 on:
-    push:
-        branches: [ "main" ]
+    release:
+        types: [ "published" ]
 
 permissions:
     contents: read
@@ -11,7 +11,7 @@ jobs:
         environment: Prod
 
         runs-on: ubuntu-latest
-
+        if: github.event.release.target_commitish == 'main'
         steps:
             - name: Deploy via SSH
               uses: appleboy/ssh-action@v1

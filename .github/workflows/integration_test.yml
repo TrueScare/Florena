@@ -7,7 +7,7 @@ name: Symfony
 
 on:
     pull_request:
-        branches: [ "main", "qa" ]
+        branches: [ "main" ]
 
 permissions:
     contents: read
