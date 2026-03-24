@@ -18,7 +18,6 @@ jobs:
     symfony-tests:
         environment:
             name: Test
-            deployment: false
 
         runs-on: ubuntu-latest
         steps:
