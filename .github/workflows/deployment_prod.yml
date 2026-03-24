@@ -23,4 +23,6 @@ jobs:
                script: |
                    cd /var/www/ISEF01_FreBoMe
                    git fetch
+                   git checkout main
                    git pull
+                   composer install
