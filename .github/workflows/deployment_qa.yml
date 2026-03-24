@@ -2,14 +2,14 @@ name: Deployment Test
 
 on:
     push:
-        branches: [ "test" ]
+        branches: [ "qa" ]
 
 permissions:
     contents: read
 
 jobs:
     deploy:
-        environment: Test
+        environment: QA
 
         runs-on: ubuntu-latest
 
@@ -24,7 +24,7 @@ jobs:
                   script: |
                       cd /var/www/ISEF01_FreBoMe_QA
                       git fetch
-                      git checkout test
+                      git checkout qa
                       git pull
                       composer install
 
