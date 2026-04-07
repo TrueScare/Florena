@@ -3,14 +3,6 @@ description: Neue User Story erfassen
 title: "[Story] "
 labels: ["user-story"]
 body:
-    - type: input
-      id: titel
-      attributes:
-          label: Titel
-          placeholder: Kurzer, prägnanter Titel der Story
-      validations:
-          required: true
-
     - type: textarea
       id: user_story
       attributes:
