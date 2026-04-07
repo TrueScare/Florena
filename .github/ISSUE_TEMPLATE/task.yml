@@ -1,0 +1,50 @@
+name: Technischer Task
+description: Technische Aufgabe ohne direkten User-Story-Charakter
+title: "[Task] "
+labels: ["task"]
+body:
+    - type: textarea
+      id: beschreibung
+      attributes:
+          label: Beschreibung
+          description: Was soll gemacht werden und warum?
+          placeholder: "Kurze Beschreibung der Aufgabe und ihrer Motivation."
+      validations:
+          required: true
+
+    - type: textarea
+      id: aufgaben
+      attributes:
+          label: Aufgaben
+          placeholder: |
+              - [ ] Schritt 1
+              - [ ] Schritt 2
+              - [ ] Schritt 3
+      validations:
+          required: true
+
+    - type: textarea
+      id: definition_of_done
+      attributes:
+          label: Definition of Done
+          placeholder: |
+              - [ ] Code reviewed
+              - [ ] Tests angepasst/ergänzt
+              - [ ] Dokumentation aktualisiert
+      validations:
+          required: false
+
+    - type: dropdown
+      id: bereich
+      attributes:
+          label: Bereich
+          options:
+              - Refactoring
+              - Dependencies / Updates
+              - CI/CD
+              - Infrastruktur
+              - Dokumentation
+              - Testing
+              - Sonstiges
+      validations:
+          required: true
