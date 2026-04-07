@@ -1,0 +1,50 @@
+name: Feature Request
+description: Idee oder Wunsch für eine neue Funktion einreichen
+title: "[Feature] "
+labels: ["feature-request"]
+body:
+    - type: textarea
+      id: problem
+      attributes:
+          label: Problem / Motivation
+          description: Welches Problem soll gelöst werden? Was fehlt dir aktuell?
+          placeholder: "Ich stoße regelmäßig auf das Problem, dass ..."
+      validations:
+          required: true
+
+    - type: textarea
+      id: loesung
+      attributes:
+          label: Gewünschte Lösung
+          description: Wie stellst du dir die Lösung vor?
+          placeholder: "Es wäre hilfreich, wenn ..."
+      validations:
+          required: true
+
+    - type: textarea
+      id: alternativen
+      attributes:
+          label: Alternativen / Workarounds
+          description: Gibt es bereits Wege, das Problem zu umgehen?
+          placeholder: "Aktuell behelfe ich mir mit ..."
+      validations:
+          required: false
+
+    - type: dropdown
+      id: prioritaet
+      attributes:
+          label: Priorität aus deiner Sicht
+          options:
+              - "Hoch – blockiert mich regelmäßig"
+              - "Mittel – wäre eine deutliche Verbesserung"
+              - "Niedrig – nice to have"
+      validations:
+          required: true
+
+    - type: textarea
+      id: kontext
+      attributes:
+          label: Weiterer Kontext
+          description: Screenshots, Links, Referenzen – alles was hilft.
+      validations:
+          required: false

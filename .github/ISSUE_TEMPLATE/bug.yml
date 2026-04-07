@@ -1,0 +1,63 @@
+name: Bug Report
+description: Einen Fehler melden
+title: "[Bug] "
+labels: ["bug"]
+body:
+    - type: textarea
+      id: beschreibung
+      attributes:
+          label: Fehlerbeschreibung
+          description: Was ist passiert? Was hast du erwartet?
+          placeholder: "Kurze, klare Beschreibung des Problems."
+      validations:
+          required: true
+
+    - type: textarea
+      id: schritte
+      attributes:
+          label: Schritte zur Reproduktion
+          placeholder: |
+              1. Gehe zu ...
+              2. Klicke auf ...
+              3. Scrolle zu ...
+              4. Fehler tritt auf
+      validations:
+          required: true
+
+    - type: textarea
+      id: erwartetes_verhalten
+      attributes:
+          label: Erwartetes Verhalten
+          placeholder: Was sollte stattdessen passieren?
+      validations:
+          required: true
+
+    - type: textarea
+      id: tatsaechliches_verhalten
+      attributes:
+          label: Tatsächliches Verhalten
+          placeholder: Was passiert stattdessen? Fehlermeldungen, Screenshots, Logs hier einfügen.
+      validations:
+          required: true
+
+    - type: dropdown
+      id: schweregrad
+      attributes:
+          label: Schweregrad
+          options:
+              - "Kritisch – System nicht nutzbar"
+              - "Hoch – Wichtige Funktion betroffen"
+              - "Mittel – Workaround vorhanden"
+              - "Niedrig – Kosmetisches Problem"
+      validations:
+          required: true
+
+    - type: textarea
+      id: umgebung
+      attributes:
+          label: Umgebung
+          placeholder: |
+              - OS: z.B. Windows 11, macOS 14, Ubuntu 24
+              - Betroffene Umgebung: Produktion / Staging / Lokal
+      validations:
+          required: false
