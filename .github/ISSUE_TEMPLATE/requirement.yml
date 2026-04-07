@@ -3,14 +3,6 @@ description: Neue User Story erfassen
 title: "[Story] "
 labels: ["user-story"]
 body:
-    - type: input
-      id: titel
-      attributes:
-          label: Titel
-          placeholder: Kurzer, prägnanter Titel der Story
-      validations:
-          required: true
-
     - type: textarea
       id: user_story
       attributes:
@@ -31,3 +23,53 @@ body:
               - [ ] Kriterium 3
       validations:
           required: true
+
+    -   type: dropdown
+        id: nutzen
+        attributes:
+            label: Nutzen (1–10)
+            description: Wie hoch ist der Nutzen dieses Tasks? (1 = sehr gering, 10 = sehr hoch)
+            options:
+                - "1"
+                - "2"
+                - "3"
+                - "4"
+                - "5"
+                - "6"
+                - "7"
+                - "8"
+                - "9"
+                - "10"
+        validations:
+            required: true
+
+    -   type: dropdown
+        id: aufwand
+        attributes:
+            label: Aufwand (1–10)
+            description: Wie hoch ist der geschätzte Aufwand? (1 = sehr gering, 10 = sehr hoch)
+            options:
+                - "1"
+                - "2"
+                - "3"
+                - "4"
+                - "5"
+                - "6"
+                - "7"
+                - "8"
+                - "9"
+                - "10"
+        validations:
+            required: true
+
+    -   type: dropdown
+        id: prioritaet
+        attributes:
+            label: Priorität (MoSCoW)
+            options:
+                - "Must have – zwingend erforderlich"
+                - "Should have – wichtig, aber nicht kritisch"
+                - "Could have – nice to have"
+                - "Won't have – aktuell nicht geplant"
+        validations:
+            required: true
