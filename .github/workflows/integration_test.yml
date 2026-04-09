@@ -52,7 +52,7 @@ jobs:
             -   name: Copy Env File from Secrets
                 run: |
                     touch .env
-                    echo ${{secrets.ENV_FILE}} > .env
+                    echo "${{secrets.ENV_FILE}}" > .env
                     cat .env
 
             -   name: Validate composer.json and composer.lock
