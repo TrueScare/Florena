@@ -63,6 +63,9 @@ jobs:
                 with:
                     composer-options: "-q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist"
 
+            -   name: Install Importmap
+                run: php bin/console importmap:install
+
             -   name: Database Schema Setup
                 run: |
                     php bin/console doctrine:database:create --env=test
