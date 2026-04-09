@@ -67,14 +67,9 @@ jobs:
                 run: |
                     php bin/console doctrine:schema:create --env=test
                     php bin/console doctrine:migrations:migrate --env=test --no-interaction
-                env:
-                    DATABASE_URL: mysql://root:password@127.0.0.1:3306/florena_test?serverVersion=mariadb-10.11.0
-                    DEFAULT_URI: http://localhost
 
             -   name: Check if migrations are up to date
                 run: php bin/console doctrine:schema:validate --env=test --skip-sync
-                env:
-                    DATABASE_URL: mysql://root:password@127.0.0.1:3306/florena_test?serverVersion=mariadb-10.11.0
 
             -   name: Execute tests (Unit and Feature tests) via PHPUnit
                 run: vendor/bin/phpunit
