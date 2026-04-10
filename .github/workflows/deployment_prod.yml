@@ -26,3 +26,7 @@ jobs:
                    git checkout main
                    git pull
                    composer install
+                   php bin/console importmap:install
+                   php bin/console doctrine:database:create --if-not-exists
+                   php bin/console doctrine:migrations:migrate --no-interaction
+
