@@ -43,6 +43,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $created_at;
+
+    #[ORM\Column]
+    private ?bool $is_minimal_mode = false;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -150,6 +162,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function isMinimalMode(): ?bool
+    {
+        return $this->is_minimal_mode;
+    }
+
+    public function setIsMinimalMode(bool $is_minimal_mode): static
+    {
+        $this->is_minimal_mode = $is_minimal_mode;
 
         return $this;
     }
