@@ -25,6 +25,16 @@ class Notifications
     #[ORM\Column]
     private ?bool $is_active = true;
 
+    #[ORM\ManyToOne(inversedBy: 'notifications')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'notifications')]
+    private ?PropagationActions $propagation_action = null;
+
+    #[ORM\ManyToOne(inversedBy: 'notifications')]
+    private ?CareTask $care_task = null;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
@@ -79,6 +89,42 @@ class Notifications
     public function setIsActive(bool $is_active): static
     {
         $this->is_active = $is_active;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPropagationAction(): ?PropagationActions
+    {
+        return $this->propagation_action;
+    }
+
+    public function setPropagationAction(?PropagationActions $propagation_action): static
+    {
+        $this->propagation_action = $propagation_action;
+
+        return $this;
+    }
+
+    public function getCareTask(): ?CareTask
+    {
+        return $this->care_task;
+    }
+
+    public function setCareTask(?CareTask $care_task): static
+    {
+        $this->care_task = $care_task;
 
         return $this;
     }

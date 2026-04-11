@@ -30,6 +30,14 @@ class CareHistory
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $notes = null;
 
+    #[ORM\ManyToOne(inversedBy: 'care_history')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Plants $plant = null;
+
+    #[ORM\ManyToOne(inversedBy: 'careHistories')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->performed_at = new \DateTimeImmutable();
@@ -96,6 +104,30 @@ class CareHistory
     public function setNotes(?string $notes): static
     {
         $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getPlant(): ?Plants
+    {
+        return $this->plant;
+    }
+
+    public function setPlant(?Plants $plant): static
+    {
+        $this->plant = $plant;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

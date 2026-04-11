@@ -6,6 +6,8 @@ use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
 use App\Repository\LocationsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LocationsRepository::class)]
@@ -35,8 +37,26 @@ class Locations
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
+    /**
+     * @var Collection<int, Plants>
+     */
+    #[ORM\OneToMany(targetEntity: Plants::class, mappedBy: 'location')]
+    private Collection $plants;
+
+    /**
+     * @var Collection<int, WishlistPlants>
+     */
+    #[ORM\OneToMany(targetEntity: WishlistPlants::class, mappedBy: 'location')]
+    private Collection $wishlist_plants;
+
+    #[ORM\ManyToOne(inversedBy: 'locations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct(){
         $this->created_at = new \DateTimeImmutable();
+        $this->plants = new ArrayCollection();
+        $this->wishlist_plants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -112,6 +132,78 @@ class Locations
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Plants>
+     */
+    public function getPlants(): Collection
+    {
+        return $this->plants;
+    }
+
+    public function addPlant(Plants $plant): static
+    {
+        if (!$this->plants->contains($plant)) {
+            $this->plants->add($plant);
+            $plant->setLocation($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlant(Plants $plant): static
+    {
+        if ($this->plants->removeElement($plant)) {
+            // set the owning side to null (unless already changed)
+            if ($plant->getLocation() === $this) {
+                $plant->setLocation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, WishlistPlants>
+     */
+    public function getWishlistPlants(): Collection
+    {
+        return $this->wishlist_plants;
+    }
+
+    public function addWishlistPlant(WishlistPlants $wishlistPlant): static
+    {
+        if (!$this->wishlist_plants->contains($wishlistPlant)) {
+            $this->wishlist_plants->add($wishlistPlant);
+            $wishlistPlant->setLocation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWishlistPlant(WishlistPlants $wishlistPlant): static
+    {
+        if ($this->wishlist_plants->removeElement($wishlistPlant)) {
+            // set the owning side to null (unless already changed)
+            if ($wishlistPlant->getLocation() === $this) {
+                $wishlistPlant->setLocation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

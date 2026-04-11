@@ -25,6 +25,18 @@ class TaskAssignments
     #[ORM\Column]
     private ?\DateTimeImmutable $responded_at = null;
 
+    #[ORM\ManyToOne(inversedBy: 'send_task_assignemnts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $from_user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'received_task_assignments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $to_user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'taskAssignments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?CareTask $care_task = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +86,42 @@ class TaskAssignments
     public function setRespondedAt(\DateTimeImmutable $responded_at): static
     {
         $this->responded_at = $responded_at;
+
+        return $this;
+    }
+
+    public function getFromUser(): ?User
+    {
+        return $this->from_user;
+    }
+
+    public function setFromUser(?User $from_user): static
+    {
+        $this->from_user = $from_user;
+
+        return $this;
+    }
+
+    public function getToUser(): ?User
+    {
+        return $this->to_user;
+    }
+
+    public function setToUser(?User $to_user): static
+    {
+        $this->to_user = $to_user;
+
+        return $this;
+    }
+
+    public function getCareTask(): ?CareTask
+    {
+        return $this->care_task;
+    }
+
+    public function setCareTask(?CareTask $care_task): static
+    {
+        $this->care_task = $care_task;
 
         return $this;
     }

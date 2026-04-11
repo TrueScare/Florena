@@ -23,6 +23,10 @@ class PlantNotes
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at;
 
+    #[ORM\ManyToOne(inversedBy: 'plantNotes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Plants $plant = null;
+
     public function __construct()
     {
         // update the timestamps from the same object to have the exact same times
@@ -69,6 +73,18 @@ class PlantNotes
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getPlant(): ?Plants
+    {
+        return $this->plant;
+    }
+
+    public function setPlant(?Plants $plant): static
+    {
+        $this->plant = $plant;
 
         return $this;
     }

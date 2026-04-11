@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Enum\PropagationMethod;
 use App\Enum\Status;
 use App\Repository\PropagationActionsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,9 +33,20 @@ class PropagationActions
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
+    #[ORM\ManyToOne(inversedBy: 'propagation_actions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Plants $plant = null;
+
+    /**
+     * @var Collection<int, Notifications>
+     */
+    #[ORM\OneToMany(targetEntity: Notifications::class, mappedBy: 'propagation_action')]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -97,6 +110,48 @@ class PropagationActions
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getPlant(): ?Plants
+    {
+        return $this->plant;
+    }
+
+    public function setPlant(?Plants $plant): static
+    {
+        $this->plant = $plant;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notifications>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notifications $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setPropagationAction($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notifications $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getPropagationAction() === $this) {
+                $notification->setPropagationAction(null);
+            }
+        }
 
         return $this;
     }

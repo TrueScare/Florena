@@ -6,6 +6,8 @@ use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
 use App\Repository\PlantsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -81,9 +83,44 @@ class Plants
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $died_at = null;
 
+    /**
+     * @var Collection<int, PlantNotes>
+     */
+    #[ORM\OneToMany(targetEntity: PlantNotes::class, mappedBy: 'plant', orphanRemoval: true)]
+    private Collection $plantNotes;
+
+    #[ORM\ManyToOne(inversedBy: 'plants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    /**
+     * @var Collection<int, PropagationActions>
+     */
+    #[ORM\OneToMany(targetEntity: PropagationActions::class, mappedBy: 'plant', orphanRemoval: true)]
+    private Collection $propagation_actions;
+
+    /**
+     * @var Collection<int, CareTask>
+     */
+    #[ORM\OneToMany(targetEntity: CareTask::class, mappedBy: 'plant', orphanRemoval: true)]
+    private Collection $care_tasks;
+
+    /**
+     * @var Collection<int, CareHistory>
+     */
+    #[ORM\OneToMany(targetEntity: CareHistory::class, mappedBy: 'plant', orphanRemoval: true)]
+    private Collection $care_history;
+
+    #[ORM\ManyToOne(inversedBy: 'plants')]
+    private ?Locations $location = null;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->plantNotes = new ArrayCollection();
+        $this->propagation_actions = new ArrayCollection();
+        $this->care_tasks = new ArrayCollection();
+        $this->care_history = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -339,6 +376,150 @@ class Plants
     public function setDiedAt(?\DateTimeImmutable $died_at): static
     {
         $this->died_at = $died_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PlantNotes>
+     */
+    public function getPlantNotes(): Collection
+    {
+        return $this->plantNotes;
+    }
+
+    public function addPlantNote(PlantNotes $plantNote): static
+    {
+        if (!$this->plantNotes->contains($plantNote)) {
+            $this->plantNotes->add($plantNote);
+            $plantNote->setPlant($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlantNote(PlantNotes $plantNote): static
+    {
+        if ($this->plantNotes->removeElement($plantNote)) {
+            // set the owning side to null (unless already changed)
+            if ($plantNote->getPlant() === $this) {
+                $plantNote->setPlant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PropagationActions>
+     */
+    public function getPropagationActions(): Collection
+    {
+        return $this->propagation_actions;
+    }
+
+    public function addPropagationAction(PropagationActions $propagationAction): static
+    {
+        if (!$this->propagation_actions->contains($propagationAction)) {
+            $this->propagation_actions->add($propagationAction);
+            $propagationAction->setPlant($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropagationAction(PropagationActions $propagationAction): static
+    {
+        if ($this->propagation_actions->removeElement($propagationAction)) {
+            // set the owning side to null (unless already changed)
+            if ($propagationAction->getPlant() === $this) {
+                $propagationAction->setPlant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CareTask>
+     */
+    public function getCareTasks(): Collection
+    {
+        return $this->care_tasks;
+    }
+
+    public function addCareTask(CareTask $careTask): static
+    {
+        if (!$this->care_tasks->contains($careTask)) {
+            $this->care_tasks->add($careTask);
+            $careTask->setPlant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCareTask(CareTask $careTask): static
+    {
+        if ($this->care_tasks->removeElement($careTask)) {
+            // set the owning side to null (unless already changed)
+            if ($careTask->getPlant() === $this) {
+                $careTask->setPlant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CareHistory>
+     */
+    public function getCareHistory(): Collection
+    {
+        return $this->care_history;
+    }
+
+    public function addCareHistory(CareHistory $careHistory): static
+    {
+        if (!$this->care_history->contains($careHistory)) {
+            $this->care_history->add($careHistory);
+            $careHistory->setPlant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCareHistory(CareHistory $careHistory): static
+    {
+        if ($this->care_history->removeElement($careHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($careHistory->getPlant() === $this) {
+                $careHistory->setPlant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLocation(): ?Locations
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?Locations $location): static
+    {
+        $this->location = $location;
 
         return $this;
     }
