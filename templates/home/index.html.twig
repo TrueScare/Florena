@@ -1,14 +1,51 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Landing Page{% endblock %}
+
+{% block header %}
+<header class="fixed top-0 w-full z-50 bg-[#f9f9f8]/80 backdrop-blur-md">
+    <div class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto flex-1">
+        <div class="text-2xl font-bold tracking-tight text-[#3d6b00]">Florena</div>
+        <div class="flex items-center gap-2">
+            <a href="{{ path('app_login') }}"
+                class="px-6 py-2.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors duration-200">
+            Login
+                </a>
+            <a href="{{ path('app_register') }}"
+                class="px-6 py-2.5 bg-primary text-on-primary text-sm font-bold rounded-full shadow-md shadow-primary/20 hover:bg-primary-dim transition-all active:scale-95">
+                Registrieren
+            </a>
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>This is the beginning of something new...</h1>
-</div>
+<main class="relative min-h-screen pt-28 pb-12 px-6">
+    <!-- Hero Container -->
+    <div class="max-w-7xl mx-auto bg-surface-container-lowest rounded-[3rem] editorial-shadow overflow-hidden p-8 md:p-16 lg:p-24">
+        <!-- Content Wrapper -->
+        <div class="max-w-4xl">
+            <div class="space-y-8">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full text-sm font-medium">
+                    <span>🌱 Pflege deine Lieblinge</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold font-headline text-on-surface tracking-tight leading-[1.1]">
+                    Halte deine Pflanzen <br/>
+                    <span class="text-primary italic">lebendig und gedeihend</span>
+                </h1>
+                <p class="text-lg md:text-xl text-on-surface-variant leading-relaxed max-w-2xl">
+                Der einfachste Weg, die Pflege zu verfolgen und sicherzustellen, dass deine botanischen Freunde gedeihen. Unsere smarte App hilft dir dabei, nie wieder einen Gießtermin zu vergessen.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <a href="{{ path('app_register') }}"
+                        class="px-10 py-5 bg-primary text-on-primary font-semibold text-lg rounded-full editorial-shadow hover:bg-primary-dim transition-all active:scale-95 flex items-center justify-center gap-2">
+                        Jetzt starten
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}
