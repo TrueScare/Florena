@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlantsRepository::class)]
+#[ORM\UniqueConstraint(name: 'user_plant_name', columns: ['user_id', 'name'])]
 class Plants
 {
     #[ORM\Id]
@@ -17,7 +18,7 @@ class Plants
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50, unique: true)]
+    #[ORM\Column(length: 50)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]

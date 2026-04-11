@@ -9,6 +9,7 @@ use App\Repository\LocationsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LocationsRepository::class)]
+#[ORM\UniqueConstraint(name: 'user_location_name', columns: ['user_id', 'name'])]
 class Locations
 {
     #[ORM\Id]
