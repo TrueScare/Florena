@@ -2,37 +2,148 @@
 
 {% block title %}Log in!{% endblock %}
 
+{% block header %}
+<header class="fixed top-0 w-full z-50 bg-[#f9f9f8]/80 backdrop-blur-md">
+    <div class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto flex-1">
+        <a href="{{ path('app_home') }}" class="text-2xl font-bold tracking-tight text-[#3d6b00]">Florena</a>
+        <div class="flex items-center gap-2">
+            <a href="{{ path('app_login') }}"
+                class="px-6 py-2.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors duration-200">
+            Login
+                </a>
+            <a href="{{ path('app_register') }}"
+                class="px-6 py-2.5 bg-primary text-on-primary text-sm font-bold rounded-full shadow-md shadow-primary/20 hover:bg-primary-dim transition-all active:scale-95">
+                Registrieren
+            </a>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
 {% block body %}
-    <form method="post">
-        {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+<main class="flex-grow flex items-center justify-center pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-surface-bright relative overflow-hidden min-h-screen">
+    <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary-container/20 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-[-5%] left-[-5%] w-64 h-64 bg-tertiary-container/10 rounded-full blur-3xl"></div>
 
-        {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+    <div class="w-full max-w-md z-10">
+        <div class="bg-surface-container-lowest rounded-xl p-8 sm:p-10 shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-outline-variant/10">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-extrabold text-on-surface tracking-tight leading-tight mb-3">
+                    Willkommen zurück
+                </h1>
+                <p class="text-on-surface-variant text-sm font-medium leading-relaxed">
+                    Melde dich an, um dich weiter um deine Pflanzen zu kümmern.
+                </p>
             </div>
-        {% endif %}
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="username">Username</label>
-        <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+            {% if error %}
+                <div class="login-error mb-6 flex items-center gap-3 px-4 py-3 rounded-lg bg-error-container/10 border border-error/10">
+                    <span class="material-symbols-outlined text-error text-xl">error</span>
+                    <p class="text-error text-xs font-semibold">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </p>
+                </div>
+            {% endif %}
 
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
+            {% if app.user %}
+                <div class="mb-6 flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container/20 border border-primary/10">
+                    <p class="text-sm text-on-surface">
+                        Du bist bereits eingeloggt als {{ app.user.userIdentifier }}.
+                        <a href="{{ logout_path() }}" class="font-semibold text-primary hover:underline">Logout</a>
+                    </p>
+                </div>
+            {% endif %}
 
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
+            <form method="post" class="space-y-6">
+                <div>
+                    <label  for="username"
+                            class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-1"
+                    >Benutzername
+                    </label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">
+                            person
+                        </span>
+                        <input
+                            type="text"
+                            id="username"
+                            name="_username"
+                            value="{{ last_username }}"
+                            class="w-full pl-12 pr-4 py-4 rounded-lg bg-surface-container-high border-transparent focus:border-primary focus:ring-0 text-on-surface placeholder:text-outline transition-all duration-200"
+                            placeholder="Dein Name"
+                            autocomplete="username"
+                            required
+                            autofocus
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label  for="password"
+                            class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-1"
+                    >Passwort
+                    </label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">
+                            lock
+                        </span>
+                        <input
+                            type="password"
+                            id="password"
+                            name="_password"
+                            class="w-full pl-12 pr-12 py-4 rounded-lg bg-surface-container-high border-transparent focus:border-primary focus:ring-0 text-on-surface placeholder:text-outline transition-all duration-200"
+                            placeholder="••••••••"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <input
+                    type="hidden"
+                    name="_csrf_token"
+                    value="{{ csrf_token('authenticate') }}"
+                >
+
+                {#
+                <div class="flex items-center justify-between pt-2">
+                    <div class="flex items-center">
+                        <input
+                            class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
+                            id="_remember_me"
+                            name="_remember_me"
+                            type="checkbox"
+                        >
+                        <label  class="ml-2 block text-xs font-medium text-on-surface-variant"
+                                for="_remember_me"
+                        >Angemeldet bleiben
+                        </label>
+                    </div>
+
+                    <div class="text-xs">
+                        <a  href="#"
+                            class="font-semibold text-primary hover:text-primary-dim transition-colors"
+                        >Passwort vergessen?</a>
+                    </div>
+                </div>
+                #}
+
+                <div>
+                    <button type="submit"
+                            class="w-full py-4 px-6 bg-gradient-to-r from-primary to-primary-dim text-on-primary font-bold rounded-full shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all duration-200"
+                    >Einloggen
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-10 text-center">
+                <a  href="{{ path('app_register') }}"
+                    class="inline-flex items-center gap-2 text-sm font-semibold text-secondary hover:text-primary transition-colors duration-200"
+                >Noch kein Konto? Jetzt registrieren
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
             </div>
-        #}
-
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
-        </button>
-    </form>
+        </div>
+    </div>
+</main>
 {% endblock %}

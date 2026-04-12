@@ -2,23 +2,129 @@
 
 {% block title %}Register{% endblock %}
 
+{% block header %}
+<header class="fixed top-0 w-full z-50 bg-[#f9f9f8]/80 backdrop-blur-md">
+    <div class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto flex-1">
+        <a href="{{ path('app_home') }}" class="text-2xl font-bold tracking-tight text-[#3d6b00]">Florena</>
+        <div class="flex items-center gap-2">
+            <a href="{{ path('app_login') }}"
+                class="px-6 py-2.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors duration-200">
+            Login
+                </a>
+            <a href="{{ path('app_register') }}"
+                class="px-6 py-2.5 bg-primary text-on-primary text-sm font-bold rounded-full shadow-md shadow-primary/20 hover:bg-primary-dim transition-all active:scale-95">
+                Registrieren
+            </a>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
 {% block body %}
     {% for flash_error in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
     {% endfor %}
 
-    <h1>Register</h1>
+    <main class="min-h-screen pt-32 pb-24 flex items-center justify-center relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-secondary-container/30 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute bottom-0 -left-24 w-[30rem] h-[30rem] bg-primary-container/20 rounded-full blur-[100px] opacity-40"></div>
 
-    {{ form_errors(registrationForm) }}
+        <div class="relative z-10 w-full max-w-xl px-6">
+            <div class="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_20px_40px_rgba(46,52,51,0.06)] border border-surface-variant/10">
+                <div class="text-center mb-10">
+                    <h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-3 font-headline">
+                        Konto erstellen
+                    </h1>
+                    <p class="text-on-surface-variant leading-relaxed font-body">
+                        Registriere dich, um deine Pflanzen und Pflegedaten dauerhaft zu speichern.
+                    </p>
+                </div>
 
-    {{ form_start(registrationForm) }}
-    {{ form_row(registrationForm.username) }}
-    {{ form_row(registrationForm.displayname) }}
-    {{ form_row(registrationForm.email) }}
-    {{ form_row(registrationForm.plainPassword, {
-        label: 'Password'
-    }) }}
+                {{ form_start(registrationForm, {
+                    attr: {
+                        class: 'space-y-6'
+                    }
+                }) }}
 
-    <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                    {{ form_errors(registrationForm) }}
+
+                    <div class="space-y-2">
+                        {{ form_label(registrationForm.username, 'Benutzername', {
+                            label_attr: {
+                                class: 'block text-sm font-semibold tracking-wide text-on-surface-variant uppercase font-label'
+                            }
+                        }) }}
+                        {{ form_widget(registrationForm.username, {
+                            attr: {
+                                class: 'w-full px-5 py-4 bg-surface-container-low border-0 rounded-lg focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-outline-variant font-body',
+                                placeholder: 'z.B. Pflanzenfreund'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.username) }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ form_label(registrationForm.displayname, 'Anzeigename (optional)', {
+                            label_attr: {
+                                class: 'block text-sm font-semibold tracking-wide text-on-surface-variant uppercase font-label'
+                            }
+                        }) }}
+                        {{ form_widget(registrationForm.displayname, {
+                            attr: {
+                                class: 'w-full px-5 py-4 bg-surface-container-low border-0 rounded-lg focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-outline-variant font-body',
+                                placeholder: 'Dein Name in der App'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.displayname) }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ form_label(registrationForm.email, 'E-Mail-Adresse', {
+                            label_attr: {
+                                class: 'block text-sm font-semibold tracking-wide text-on-surface-variant uppercase font-label'
+                            }
+                        }) }}
+                        {{ form_widget(registrationForm.email, {
+                            attr: {
+                                class: 'w-full px-5 py-4 bg-surface-container-low border-0 rounded-lg focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-outline-variant font-body text-on-surface',
+                                placeholder: 'beispiel@mail.de'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.email) }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ form_label(registrationForm.plainPassword, 'Passwort', {
+                            label_attr: {
+                                class: 'block text-sm font-semibold tracking-wide text-on-surface-variant uppercase font-label'
+                            }
+                        }) }}
+                        {{ form_widget(registrationForm.plainPassword, {
+                            attr: {
+                                class: 'w-full px-5 py-4 bg-surface-container-low border-0 rounded-lg focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-outline-variant font-body',
+                                placeholder: '••••••••'
+                            }
+                        }) }}
+                        <p class="text-[11px] text-outline font-medium tracking-wide font-label px-1 uppercase">
+                            Mindestens 8 Zeichen, inkl. Sonderzeichen
+                        </p>
+                        {{ form_errors(registrationForm.plainPassword) }}
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit"
+                                class="w-full bg-primary text-on-primary py-4 rounded-full font-bold text-lg shadow-sm hover:shadow-md hover:bg-primary-dim active:scale-[0.98] transition-all font-headline"
+                        >Registrieren</button>
+                    </div>
+
+                    <div class="text-center pt-2">
+                        <a  href="{{ path('app_login') }}"
+                            class="text-primary hover:text-primary-dim font-semibold transition-colors text-sm font-body"
+                        > Bereits ein Konto? Jetzt einloggen </a>
+                    </div>
+
+                {{ form_end(registrationForm) }}
+            </div>
+        </div>
+    </main>
 {% endblock %}
