@@ -46,7 +46,7 @@ class RegistrationControllerTest extends WebTestCase
         ]);
 
         // Ensure the response redirects after submitting the form, the user exists, and is not verified
-        self::assertResponseRedirects('/');
+        self::assertResponseRedirects('/dashboard');
         self::assertCount(1, $this->userRepository->findAll());
         self::assertFalse(($user = $this->userRepository->findAll()[0])->isVerified());
 
