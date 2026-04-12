@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Standort{% endblock %}
+
+{% block body %}
+    <h1>Standort</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Name</th>
+            <td>{{ location.name }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ location.description }}</td>
+        </tr>
+        <tr>
+            <th>Light_condition</th>
+            <td>{{ location.lightCondition.value }}</td>
+        </tr>
+        <tr>
+            <th>Temperature_level</th>
+            <td>{{ location.temperatureLevel.value }}</td>
+        </tr>
+        <tr>
+            <th>Humidity_level</th>
+            <td>{{ location.humidityLevel.value }}</td>
+        </tr>
+        <tr>
+            <th>Created_at</th>
+            <td>{{ location.createdAt ? location.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    {# using the html details for an easy collapse panel, but idk what we are using here #}
+    <details>
+        <summary>Pflanzen</summary>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for plant in location.plants %}
+                <tr>
+                    <td>{{ plant.name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </details>
+
+    <a href="{{ path('app_locations_index') }}">Zurück zur Liste</a>
+
+    <a href="{{ path('app_locations_edit', {'id': location.id}) }}">Bearbeiten</a>
+
+    {{ include('locations/_delete_form.html.twig') }}
+{% endblock %}

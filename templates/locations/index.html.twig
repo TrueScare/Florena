@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Standorte{% endblock %}
+
+{% block body %}
+    <h1>Standorte</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Beschreibung</th>
+                <th>Lichtbedingungen</th>
+                <th>Temperaturbedingugnen</th>
+                <th>Fuechtigkeit</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for location in locations %}
+            <tr>
+                <td>{{ location.name }}</td>
+                <td>{{ location.description }}</td>
+                <td>{{ location.lightCondition.value }}</td>
+                <td>{{ location.temperatureLevel.value }}</td>
+                <td>{{ location.humidityLevel.value }}</td>
+                <td>
+                    <a href="{{ path('app_locations_show', {'id': location.id}) }}">Details</a>
+                    <a href="{{ path('app_locations_edit', {'id': location.id}) }}">Bearbeiten</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">Keine Standorte gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_locations_new') }}">Neuen Standort anlegen</a>
+{% endblock %}
