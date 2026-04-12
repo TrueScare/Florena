@@ -17,3 +17,5 @@ passthru('php bin/console doctrine:database:drop -f --if-exists --env=test');
 passthru('php bin/console doctrine:database:create --if-not-exists --env=test');
 // get done with the migration processes
 passthru('echo yes | php bin/console doctrine:migrations:migrate --env=test --no-interaction');
+
+passthru('php bin/console doctrine:fixtures:load --env=test --no-interaction');
