@@ -12,8 +12,9 @@
 # ignore all .env files
 .env*
 
-#Jetbrains IDE
+#IDE
 .idea
+.phpactor.json
 
 ###> phpunit/phpunit ###
 /phpunit.xml
