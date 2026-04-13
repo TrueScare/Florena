@@ -4,7 +4,7 @@ namespace App\Enum;
 
 enum TemperatureRequirement: string
 {
-    case cool = 'kühl';
-    case normal = 'normal';
-    case warm = 'warm';
+    case cool = 'kühl (< 18° C)';
+    case normal = 'normal (18–24°C)';
+    case warm = 'warm (> 24°C)';
 }
