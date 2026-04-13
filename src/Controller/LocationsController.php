@@ -51,7 +51,7 @@ final class LocationsController extends AbstractController
     {
         // make sure the user that is trying to perform the action is also the owner of the resource
         if($this->getUser() !== $location->getUser()){
-            return $this->redirectToRoute('app_locations_index', [], Response::HTTP_FORBIDDEN);
+            return $this->redirectToRoute('app_locations_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('locations/show.html.twig', [
@@ -64,7 +64,7 @@ final class LocationsController extends AbstractController
     {
         // make sure the user that is trying to perform the action is also the owner of the resource
         if($this->getUser() !== $location->getUser()){
-            return $this->redirectToRoute('app_locations_index', [], Response::HTTP_FORBIDDEN);
+            return $this->redirectToRoute('app_locations_index', [], Response::HTTP_SEE_OTHER);
         }
 
         $form = $this->createForm(LocationsType::class, $location);
@@ -87,7 +87,7 @@ final class LocationsController extends AbstractController
     {
         // make sure the user that is trying to perform the action is also the owner of the resource
         if($this->getUser() !== $location->getUser()){
-            return $this->redirectToRoute('app_locations_index', [], Response::HTTP_FORBIDDEN);
+            return $this->redirectToRoute('app_locations_index', [], Response::HTTP_SEE_OTHER);
         }
 
         // the location still has connection to plants
