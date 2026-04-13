@@ -32,6 +32,8 @@ class Plants
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo_path = null;
 
+    private ?string $full_photo_path = null;
+
     #[ORM\Column(enumType: LightRequirement::class)]
     private ?LightRequirement $light_requirement = null;
 
@@ -48,16 +50,16 @@ class Plants
     private ?string $pot_size = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $watering_interval_days = null;
+    private ?int $watering_interval_days = 0;
 
     #[ORM\Column(nullable: true)]
-    private ?int $fertilizing_interval_days = null;
+    private ?int $fertilizing_interval_days = 0;
 
     #[ORM\Column(nullable: true)]
-    private ?int $repotting_interval_days = null;
+    private ?int $repotting_interval_days = 0;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $last_watered_at = null;
+    private ?\DateTimeImmutable $last_watered_at;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $last_fertilized_at = null;
@@ -78,7 +80,7 @@ class Plants
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\Column]
-    private ?int $stress_score = null;
+    private ?int $stress_score = 100;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $died_at = null;
@@ -121,6 +123,8 @@ class Plants
         $this->propagation_actions = new ArrayCollection();
         $this->care_tasks = new ArrayCollection();
         $this->care_history = new ArrayCollection();
+
+        $this->last_watered_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -174,6 +178,11 @@ class Plants
         $this->photo_path = $photo_path;
 
         return $this;
+    }
+
+    public function getFullPhotoPath(): ?string
+    {
+        return '/uploads/plant_images/' . $this->getPhotoPath();
     }
 
     public function getLightRequirement(): ?LightRequirement

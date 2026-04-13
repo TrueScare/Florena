@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pflanzen{% endblock %}
+
+{% block body %}
+    <h1>Pflanzen</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Beschreibung</th>
+            <th>Botanischer Name</th>
+            <th>Lichtbedürfnis</th>
+            <th>Temperaturbedürfnis</th>
+            <th>Feuchtigkeitsbedürfnis</th>
+            <th>Bodenart</th>
+            <th>Topfgröße</th>
+            <th>Gießintervall in Tagen</th>
+            <th>Düngerintervall in Tagen</th>
+            <th>Umtopfintervall in Tagen</th>
+            <th>Zuletzt gegossen</th>
+            <th>Zuletzt gedüngt</th>
+            <th>Zuletzt umgetopft</th>
+            <th>Giftig für Menschen</th>
+            <th>Giftig für Tiere</th>
+            <th>Gekauft am</th>
+            <th>Zufriedenheits-Score</th>
+            <th>Gestorben am</th>
+            <th>Aktionen</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for plant in plants %}
+            <tr>
+                <td>{{ plant.name }}</td>
+                <td>{{ plant.description }}</td>
+                <td>{{ plant.botanicalName }}</td>
+                <td><img src="{{ plant.photoPath }}" alt="{{ plant.name }}" height="50px" width="50px"/></td>
+                <td>{{ plant.lightRequirement.value }}</td>
+                <td>{{ plant.temperatureRequirement.value }}</td>
+                <td>{{ plant.humidityRequirement.value }}</td>
+                <td>{{ plant.soilType }}</td>
+                <td>{{ plant.potSize }}</td>
+                <td>{{ plant.wateringIntervalDays }}</td>
+                <td>{{ plant.fertilizingIntervalDays }}</td>
+                <td>{{ plant.repottingIntervalDays }}</td>
+                <td>{{ plant.lastWateredAt ? plant.lastWateredAt|date('Y-m-d') : '' }}</td>
+                <td>{{ plant.lastFertilizedAt ? plant.lastFertilizedAt|date('Y-m-d') : '' }}</td>
+                <td>{{ plant.lastRepottedAt ? plant.lastRepottedAt|date('Y-m-d') : '' }}</td>
+                <td>{{ plant.toxicForHumans ? 'Ja' : 'Nein' }}</td>
+                <td>{{ plant.toxicForAnimals ? 'Ja' : 'Nein' }}</td>
+                <td>{{ plant.purchaseDate ? plant.purchaseDate|date('Y-m-d') : '' }}</td>
+                <td>{{ plant.stressScore }}</td>
+                <td>{{ plant.diedAt ? plant.diedAt|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_plants_show', {'id': plant.id}) }}">Details</a>
+                    <a href="{{ path('app_plants_edit', {'id': plant.id}) }}">Bearbeiten</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="23">Keine Pflanzen gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_plants_new') }}">Neue Pflanze</a>
+{% endblock %}

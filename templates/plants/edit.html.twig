@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pflanze bearbeiten{% endblock %}
+
+{% block body %}
+    <h1>Pflanze bearbeiten</h1>
+
+    {{ include('plants/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+
+    <a href="{{ path('app_plants_index') }}">Zurück zur Liste</a>
+
+    {{ include('plants/_delete_form.html.twig') }}
+{% endblock %}
