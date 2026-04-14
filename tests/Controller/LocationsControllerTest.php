@@ -23,7 +23,6 @@ final class LocationsControllerTest extends WebTestCase
     private EntityRepository $locationRepository;
     private EntityRepository $userRepository;
     private string $path = '/locations/';
-
     private ?Locations $locations = null;
     private ?User $user = null;
 

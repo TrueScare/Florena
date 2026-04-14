@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plants - {{ plant.name }}{% endblock %}
+
+{% block body %}
+    <h1>{{ plant.name }}</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Beschreibung</th>
+                <td>{{ plant.description }}</td>
+            </tr>
+            <tr>
+                <th>Botanscher Name</th>
+                <td>{{ plant.botanicalName }}</td>
+            </tr>
+            <tr>
+                <th>Bild</th>
+                <td>{% if plant.photoPath %}<img src="{{ asset(plant.fullPhotoPath) }}" alt="{{ plant.name }}" height="200px" width="200px"/> {% else %}Kein Bild vorhanden...{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Lichtbedürfnis</th>
+                <td>{{ plant.lightRequirement.value }}</td>
+            </tr>
+            <tr>
+                <th>Temperaturbedürfnis</th>
+                <td>{{ plant.temperatureRequirement.value }}</td>
+            </tr>
+            <tr>
+                <th>Feuchtigkeitsbedürfnis</th>
+                <td>{{ plant.humidityRequirement.value }}</td>
+            </tr>
+            <tr>
+                <th>Bodenart</th>
+                <td>{{ plant.soilType }}</td>
+            </tr>
+            <tr>
+                <th>Topfgröße</th>
+                <td>{{ plant.potSize }}</td>
+            </tr>
+            <tr>
+                <th>Gießintervall in Tagen</th>
+                <td>{{ plant.wateringIntervalDays }}</td>
+            </tr>
+            <tr>
+                <th>Düngintervall in Tagen</th>
+                <td>{{ plant.fertilizingIntervalDays }}</td>
+            </tr>
+            <tr>
+                <th>Umtopfintervall in Tagen</th>
+                <td>{{ plant.repottingIntervalDays }}</td>
+            </tr>
+            <tr>
+                <th>Zuletzt gewässert am</th>
+                <td>{{ plant.lastWateredAt ? plant.lastWateredAt|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Zuletzt dedüngt am</th>
+                <td>{{ plant.lastFertilizedAt ? plant.lastFertilizedAt|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Zuletzt umgetopft am</th>
+                <td>{{ plant.lastRepottedAt ? plant.lastRepottedAt|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Giftig für Menschen</th>
+                <td>{{ plant.toxicForHumans ? 'Ja' : 'Nein' }}</td>
+            </tr>
+            <tr>
+                <th>Giftig für Tiere</th>
+                <td>{{ plant.toxicForAnimals ? 'Ja' : 'Nein' }}</td>
+            </tr>
+            <tr>
+                <th>Gekauft am</th>
+                <td>{{ plant.purchaseDate ? plant.purchaseDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Zufriedenheitsscore</th>
+                <td>{{ plant.stressScore }}</td>
+            </tr>
+            <tr>
+                <th>Gestorben am</th>
+                <td>{{ plant.diedAt ? plant.diedAt|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_plants_index') }}">Zurück zur Liste</a>
+
+    <a href="{{ path('app_plants_edit', {'id': plant.id}) }}">Bearbeiten</a>
+
+    {{ include('plants/_delete_form.html.twig') }}
+{% endblock %}

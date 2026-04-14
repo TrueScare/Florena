@@ -20,7 +20,9 @@ class LoginControllerTest extends WebTestCase
 
         // Remove any existing users from the test database
         foreach ($userRepository->findAll() as $user) {
-            $em->remove($user);
+            if($user->getUsername() !== 'Testuser'){
+                $em->remove($user);
+            }
         }
 
         $em->flush();

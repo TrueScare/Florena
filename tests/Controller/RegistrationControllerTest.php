@@ -25,7 +25,10 @@ class RegistrationControllerTest extends WebTestCase
         $this->userRepository = $container->get(UserRepository::class);
 
         foreach ($this->userRepository->findAll() as $user) {
-            $em->remove($user);
+            if($user->getUsername !== 'Testuser'){
+                // prevent the fixture test user to be deleted...
+                $em->remove($user);
+            }
         }
 
         $em->flush();
