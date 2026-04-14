@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -21,13 +22,13 @@ final class PlantsControllerTest extends WebTestCase
     private EntityRepository $plantRepository;
     private string $path = '/plants/';
     private EntityRepository $userRepository;
-    private Plants $plant;
-    private User $user;
+    private ?Plants $plant = null;
+    private ?User $user = null;
 
     protected function setUp(): void
     {
-        $this->client = static::createClient();
-        $this->manager = static::getContainer()->get('doctrine')->getManager();
+        $this->client = PlantsControllerTest::createClient();
+        $this->manager = PlantsControllerTest::getContainer()->get('doctrine')->getManager();
         $this->plantRepository = $this->manager->getRepository(Plants::class);
 
         foreach ($this->plantRepository->findAll() as $object) {
