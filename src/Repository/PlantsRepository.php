@@ -6,6 +6,7 @@ use App\Entity\Plants;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Plants>
@@ -17,7 +18,7 @@ class PlantsRepository extends ServiceEntityRepository
         parent::__construct($registry, Plants::class);
     }
 
-    public function findAllPlantsByUser(User $user)
+    public function findAllByUser(UserInterface $user)
     {
         return $this->createQueryBuilder('p')
             ->where('p.user = :user')

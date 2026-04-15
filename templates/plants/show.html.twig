@@ -80,6 +80,10 @@
                 <td>{{ plant.stressScore }}</td>
             </tr>
             <tr>
+                <th>Standort</th>
+                <td>{% if plant.location %}{{ plant.location.name }}{% else %}Kein Standort zugeordnet{% endif %}</td>
+            </tr>
+            <tr>
                 <th>Gestorben am</th>
                 <td>{{ plant.diedAt ? plant.diedAt|date('Y-m-d') : '' }}</td>
             </tr>

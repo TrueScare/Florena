@@ -26,6 +26,7 @@
             <th>Giftig für Tiere</th>
             <th>Gekauft am</th>
             <th>Zufriedenheits-Score</th>
+            <th>Standort</th>
             <th>Gestorben am</th>
             <th>Aktionen</th>
         </tr>
@@ -52,6 +53,7 @@
                 <td>{{ plant.toxicForAnimals ? 'Ja' : 'Nein' }}</td>
                 <td>{{ plant.purchaseDate ? plant.purchaseDate|date('Y-m-d') : '' }}</td>
                 <td>{{ plant.stressScore }}</td>
+                <td>{% if plant.location %}{{ plant.location.name }}{% else %}Kein Standort zugeordnet{% endif %}</td>
                 <td>{{ plant.diedAt ? plant.diedAt|date('Y-m-d') : '' }}</td>
                 <td>
                     <a href="{{ path('app_plants_show', {'id': plant.id}) }}">Details</a>
