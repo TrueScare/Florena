@@ -21,7 +21,7 @@ final class PlantsController extends AbstractController
     public function index(PlantsRepository $plantsRepository): Response
     {
         return $this->render('plants/index.html.twig', [
-            'plants' => $plantsRepository->findAll(),
+            'plants' => $plantsRepository->findAllByUser($this->getUser()),
         ]);
     }
 
