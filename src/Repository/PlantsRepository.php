@@ -8,7 +8,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
-use function Symfony\Component\String\b;
 
 /**
  * @extends ServiceEntityRepository<Plants>
@@ -27,15 +26,20 @@ class PlantsRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getQueryBuilderFindAllByUser(UserInterface $user, PaginationOrder $order = PaginationOrder::NAME_ASC)
+    public function getQueryBuilderFindAllByUser(UserInterface $user, PaginationOrder $order = PaginationOrder::NAME_ASC, ?string $searchTerm = null): QueryBuilder
     {
         $queryBuilder = $this->createQueryBuilder('p')
+            ->addSelect('l')
             ->where('p.user = :user')
             ->leftJoin('p.location', 'l')
             ->setParameter('user', $user);
 
         if ($order) {
             $queryBuilder = $this->handleOrder($queryBuilder, $order);
+        }
+
+        if ($searchTerm) {
+            $this->handleSearchTerm($queryBuilder, $searchTerm);
         }
 
         return $queryBuilder;
@@ -60,6 +64,13 @@ class PlantsRepository extends ServiceEntityRepository
                 break;
         }
 
+        return $queryBuilder;
+    }
+
+    private function handleSearchTerm(QueryBuilder $queryBuilder, ?string $searchTerm): QueryBuilder
+    {
+        $queryBuilder->andWhere('p.name like :searchTerm or l.name like :searchTerm')
+            ->setParameter('searchTerm', '%' . $searchTerm . '%');
         return $queryBuilder;
     }
 }

@@ -6,10 +6,9 @@
         #}
         <div class="pagination">
             {% block pagination_header %}
-                {# @var paginationResult App\Service\Pagination\PaginationResult #}
-                {% if paginationResult.pages > 1 %}
-                    {# we only need the pagination when there are multiple pages to paginate throuh #}
-                    <form id="pagination" class="pagination_header">
+                <form id="pagination" class="pagination_header">
+                    {% if paginationResult.pages > 1 %}
+                        {# we only need the pagination when there are multiple pages to paginate throuh #}
                         {% for i in 1..paginationResult.pages %}
                             <label style="cursor: pointer"
                                    class="{% if paginationResult.page == i %}active{% endif %}">
@@ -22,10 +21,24 @@
                                 {{ i }}
                             </label>
                         {% endfor %}
-                        {% block pagination_header_order %}
-                        {% endblock %}
-                    </form>
-                {% endif %}
+                    {% endif %}
+                    {% block pagination_header_searchTerm %}
+                        {% if hasSearchTerm|default(false) %}
+                            <input id="searchTerm"
+                                   name="searchTerm"
+                                   type="text"
+                                   placeholder="Suche..."
+                                   value="{{ paginationResult.searchTerm }}">
+                            <label onclick="this.form.submit()" for="searchTerm" class="button" style="cursor: pointer">
+                                Suchen
+                            </label>
+                        {% endif %}
+                    {% endblock %}
+
+                    {% block pagination_header_order %}
+                    {% endblock %}
+                </form>
+
             {% endblock %}
             {% block pagination_body %}
                 <div class="pagination_body"></div>

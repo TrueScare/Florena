@@ -9,6 +9,7 @@ class PaginationResult
     private int $page;
     private int $limit;
     private string $order;
+    private ?string $searchTerm;
 
     /**
      * @param array $items
@@ -16,14 +17,16 @@ class PaginationResult
      * @param int $page
      * @param int $limit
      * @param string $order
+     * @param string|null $searchTerm
      */
-    public function __construct(array $items, int $totalResults, int $page, int $limit, string $order)
+    public function __construct(array $items, int $totalResults, int $page, int $limit, string $order, ?string $searchTerm)
     {
         $this->items = $items;
         $this->total = $totalResults;
         $this->page = $page;
         $this->limit = $limit;
         $this->order = $order;
+        $this->searchTerm = $searchTerm;
     }
 
     public function getItems(): array
@@ -81,4 +84,13 @@ class PaginationResult
         $this->order = $order;
     }
 
+    public function getSearchTerm(): ?string
+    {
+        return $this->searchTerm;
+    }
+
+    public function setSearchTerm(?string $searchTerm): void
+    {
+        $this->searchTerm = $searchTerm;
+    }
 }

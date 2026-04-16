@@ -13,7 +13,7 @@ class PaginationService
 {
     protected int $maxLimit = 100;
 
-    public function paginate(QueryBuilder $queryBuilder, int $page = 1, PaginationLimit $limit = PaginationLimit::ten, PaginationOrder $order = PaginationOrder::NAME_ASC): PaginationResult
+    public function paginate(QueryBuilder $queryBuilder, int $page = 1, PaginationLimit $limit = PaginationLimit::ten, PaginationOrder $order = PaginationOrder::NAME_ASC, string $searchTerm = ''): PaginationResult
     {
         $offset = ($page - 1) * $limit->value;
 
@@ -23,7 +23,7 @@ class PaginationService
         $paginator = new Paginator($queryBuilder);
         $totalResults = $paginator->count();
 
-        return new PaginationResult(iterator_to_array($paginator), $totalResults, $page, $limit->value, $order->value);
+        return new PaginationResult(iterator_to_array($paginator), $totalResults, $page, $limit->value, $order->value, $searchTerm);
     }
 
     public function getPageInfoFromRequest(Request $request): PageInfo
@@ -31,7 +31,8 @@ class PaginationService
         return new PageInfo(
             PaginationOrder::tryFrom($request->query->get('order', PaginationOrder::NAME_ASC->value)),
             PaginationLimit::tryFrom($request->query->get('limit', PaginationLimit::ten->value)),
-            $request->query->get('page', 1)
+            $request->query->get('page', 1),
+            $request->query->get('searchTerm')
         );
     }
 }

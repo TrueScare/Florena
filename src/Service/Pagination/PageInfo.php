@@ -10,17 +10,20 @@ class PageInfo
     private PaginationLimit $limit;
     private int $page;
     private PaginationOrder $order;
+    private ?string $searchTerm;
 
     /**
      * @param PaginationOrder $order
      * @param PaginationLimit $limit
      * @param int $page
+     * @param string|null $searchTerm
      */
-    public function __construct(PaginationOrder $order = PaginationOrder::NAME_ASC, PaginationLimit $limit = PaginationLimit::ten, int $page = 1)
+    public function __construct(PaginationOrder $order = PaginationOrder::NAME_ASC, PaginationLimit $limit = PaginationLimit::ten, int $page = 1, ?string $searchTerm = null)
     {
         $this->limit = $limit;
         $this->page = $page;
         $this->order = $order;
+        $this->searchTerm = $searchTerm;
     }
 
     public function getLimit(): PaginationLimit
@@ -53,4 +56,13 @@ class PageInfo
         $this->order = $order;
     }
 
+    public function getSearchTerm(): string|null
+    {
+        return $this->searchTerm;
+    }
+
+    public function setSearchTerm(string $searchTerm): void
+    {
+        $this->searchTerm = $searchTerm;
+    }
 }

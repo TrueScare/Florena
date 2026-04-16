@@ -4,8 +4,7 @@
 
 {% block body %}
     <h1>Pflanzen</h1>
-
-    {% embed 'utils/_pagination.html.twig' %}
+    {% embed 'utils/_pagination.html.twig' with {hasSearchTerm: true} %}
         {% block pagination_header_order %}
             <label>
                 <select name="order" onchange="this.form.submit()">

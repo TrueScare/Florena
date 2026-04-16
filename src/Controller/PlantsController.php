@@ -23,8 +23,8 @@ final class PlantsController extends AbstractController
     public function index(Request $request, PlantsRepository $plantsRepository, PaginationService $paginationService): Response
     {
         $pageInfo = $paginationService->getPageInfoFromRequest($request);
-        $queryBuilder = $plantsRepository->getQueryBuilderFindAllByUser($this->getUser(), $pageInfo->getOrder());
-        $paginationResult = $paginationService->paginate($queryBuilder, $pageInfo->getPage(), $pageInfo->getLimit(), $pageInfo->getOrder());
+        $queryBuilder = $plantsRepository->getQueryBuilderFindAllByUser($this->getUser(), $pageInfo->getOrder(), $pageInfo->getSearchTerm());
+        $paginationResult = $paginationService->paginate($queryBuilder, $pageInfo->getPage(), $pageInfo->getLimit(), $pageInfo->getOrder(), $pageInfo->getSearchTerm());
 
         return $this->render('plants/index.html.twig', [
             'paginationResult' => $paginationResult
