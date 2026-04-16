@@ -3,10 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Plants;
-use App\Entity\User;
+use App\Enum\PaginationOrder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
+use function Symfony\Component\String\b;
 
 /**
  * @extends ServiceEntityRepository<Plants>
@@ -20,35 +22,44 @@ class PlantsRepository extends ServiceEntityRepository
 
     public function findAllByUser(UserInterface $user)
     {
-        return $this->createQueryBuilder('p')
-            ->where('p.user = :user')
-            ->setParameter('user', $user)
+        return $this->getQueryBuilderFindAllByUser($user)
             ->getQuery()
             ->getResult();
     }
 
-//    /**
-//     * @return Plants[] Returns an array of Plants objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getQueryBuilderFindAllByUser(UserInterface $user, PaginationOrder $order = PaginationOrder::NAME_ASC)
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->where('p.user = :user')
+            ->leftJoin('p.location', 'l')
+            ->setParameter('user', $user);
 
-//    public function findOneBySomeField($value): ?Plants
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($order) {
+            $queryBuilder = $this->handleOrder($queryBuilder, $order);
+        }
+
+        return $queryBuilder;
+    }
+
+    private function handleOrder(QueryBuilder $queryBuilder, PaginationOrder $order)
+    {
+        switch ($order) {
+            case PaginationOrder::NAME_ASC:
+                $queryBuilder->orderBy('p.name', 'ASC');
+                break;
+            case PaginationOrder::NAME_DESC:
+                $queryBuilder->orderBy('p.name', 'DESC');
+                break;
+            case PaginationOrder::LOCATION_ASC:
+                $queryBuilder->orderBy('l.name', 'ASC');
+                break;
+            case PaginationOrder::LOCATION_DESC:
+                $queryBuilder->orderBy('l.name', 'DESC');
+                break;
+            default:
+                break;
+        }
+
+        return $queryBuilder;
+    }
 }
