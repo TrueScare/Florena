@@ -13,7 +13,7 @@ class PaginationService
 {
     protected int $maxLimit = 100;
 
-    public function paginate(QueryBuilder $queryBuilder, int $page = 1, PaginationLimit $limit = PaginationLimit::ten, PaginationOrder $order = PaginationOrder::NAME_ASC, string $searchTerm = ''): PaginationResult
+    public function paginate(QueryBuilder $queryBuilder, int $page = 1, PaginationLimit $limit = PaginationLimit::ten, PaginationOrder $order = PaginationOrder::NAME_ASC, ?string $searchTerm = null): PaginationResult
     {
         $offset = ($page - 1) * $limit->value;
 
