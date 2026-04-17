@@ -2,12 +2,13 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\CareTask;
 use App\Entity\Plants;
 use App\Entity\User;
+use App\Enum\CareType;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -25,11 +26,14 @@ final class PlantsControllerTest extends WebTestCase
     private ?Plants $plant = null;
     private ?User $user = null;
 
+    private EntityRepository $careTaskRepository;
+
     protected function setUp(): void
     {
         $this->client = PlantsControllerTest::createClient();
         $this->manager = PlantsControllerTest::getContainer()->get('doctrine')->getManager();
         $this->plantRepository = $this->manager->getRepository(Plants::class);
+        $this->careTaskRepository = $this->manager->getRepository(CareTask::class);
 
         foreach ($this->plantRepository->findAll() as $object) {
             $this->manager->remove($object);
@@ -94,17 +98,25 @@ final class PlantsControllerTest extends WebTestCase
             'plants[watering_interval_days]' => 4,
             'plants[fertilizing_interval_days]' => 35,
             'plants[repotting_interval_days]' => 564,
-            'plants[last_watered_at]' => "2026-04-12T21:17",
-            'plants[last_fertilized_at]' => "2026-04-12T21:17",
-            'plants[last_repotted_at]' => "2026-04-12T21:17",
+            /* These will be the same as created_at
+            'plants[last_watered_at]' => "",
+            'plants[last_fertilized_at]' => "",
+            'plants[last_repotted_at]' => "",
+            */
             'plants[toxic_for_humans]' => true,
             'plants[toxic_for_animals]' => false,
             'plants[purchase_date]' => "2026-04-12T21:17",
         ]);
 
         self::assertResponseRedirects('/plants');
+        $fixture = $this->plantRepository->findBy(['name' => 'Testname']);
+        self::assertSame(1, count($fixture));
 
-        self::assertSame(1, $this->plantRepository->count([]));
+        $tasks = $this->careTaskRepository->findBy(['plant' => $fixture[0]]);
+        $taskTypes = array_map(fn(CareTask $t) => $t->getTaskType(), $tasks);
+        self::assertContains(CareType::water, $taskTypes);
+        self::assertContains(CareType::repot, $taskTypes);
+        self::assertContains(CareType::fertilice, $taskTypes);
     }
 
     public function testShow(): void
@@ -143,7 +155,7 @@ final class PlantsControllerTest extends WebTestCase
             'plants[soil_type]' => 'Whatever Soil new',
             'plants[pot_size]' => '35 cm new',
             'plants[watering_interval_days]' => 2,
-            'plants[fertilizing_interval_days]' => 15,
+            'plants[fertilizing_interval_days]' => 0,
             'plants[repotting_interval_days]' => 580,
             'plants[last_watered_at]' => $newCreatedAt,
             'plants[last_fertilized_at]' => $newCreatedAt,
@@ -155,27 +167,39 @@ final class PlantsControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/plants');
 
-        $fixture = $this->plantRepository->findAll();
+        $fixture = $this->plantRepository->findOneBy(['id' => $fixture->getId()]);
 
-        self::assertSame('Testname neu', $fixture[0]->getName());
-        self::assertSame('New Description neu', $fixture[0]->getDescription());
-        self::assertSame('Botanical NAAAME neu', $fixture[0]->getBotanicalName());
-        self::assertSame(null, $fixture[0]->getPhotoPath());
-        self::assertSame(LightRequirement::halfshady->value, $fixture[0]->getLightRequirement()->value);
-        self::assertSame( TemperatureRequirement::normal->value, $fixture[0]->getTemperatureRequirement()->value);
-        self::assertSame(HumidityRequirement::low->value, $fixture[0]->getHumidityRequirement()->value);
-        self::assertSame('Whatever Soil new', $fixture[0]->getSoilType());
-        self::assertSame('35 cm new', $fixture[0]->getPotSize());
-        self::assertSame(2, $fixture[0]->getWateringIntervalDays());
-        self::assertSame(15, $fixture[0]->getFertilizingIntervalDays());
-        self::assertSame(580, $fixture[0]->getRepottingIntervalDays());
-        self::assertSame($newCreatedAt, $fixture[0]->getLastWateredAt()->format("Y-m-d H:i"));
-        self::assertSame($newCreatedAt, $fixture[0]->getLastFertilizedAt()->format("Y-m-d H:i"));
-        self::assertSame($newCreatedAt, $fixture[0]->getLastRepottedAt()->format("Y-m-d H:i"));
-        self::assertSame(false, $fixture[0]->isToxicForHumans());
-        self::assertSame(true, $fixture[0]->isToxicForAnimals());
-        self::assertSame($newCreatedAt, $fixture[0]->getPurchaseDate()->format("Y-m-d H:i"));
-        self::assertSame($fixtureCreatedAt->format("Y-m-d H:i:s"), $fixture[0]->getCreatedAt()->format("Y-m-d H:i:s"));
+        self::assertSame('Testname neu', $fixture->getName());
+        self::assertSame('New Description neu', $fixture->getDescription());
+        self::assertSame('Botanical NAAAME neu', $fixture->getBotanicalName());
+        self::assertSame(null, $fixture->getPhotoPath());
+        self::assertSame(LightRequirement::halfshady->value, $fixture->getLightRequirement()->value);
+        self::assertSame(TemperatureRequirement::normal->value, $fixture->getTemperatureRequirement()->value);
+        self::assertSame(HumidityRequirement::low->value, $fixture->getHumidityRequirement()->value);
+        self::assertSame('Whatever Soil new', $fixture->getSoilType());
+        self::assertSame('35 cm new', $fixture->getPotSize());
+        self::assertSame(2, $fixture->getWateringIntervalDays());
+        self::assertSame(0, $fixture->getFertilizingIntervalDays());
+        self::assertSame(580, $fixture->getRepottingIntervalDays());
+        self::assertSame($newCreatedAt, $fixture->getLastWateredAt()->format("Y-m-d H:i"));
+        self::assertSame($newCreatedAt, $fixture->getLastFertilizedAt()->format("Y-m-d H:i"));
+        self::assertSame($newCreatedAt, $fixture->getLastRepottedAt()->format("Y-m-d H:i"));
+        self::assertSame(false, $fixture->isToxicForHumans());
+        self::assertSame(true, $fixture->isToxicForAnimals());
+        self::assertSame($newCreatedAt, $fixture->getPurchaseDate()->format("Y-m-d H:i"));
+        self::assertSame($fixtureCreatedAt->format("Y-m-d H:i:s"), $fixture->getCreatedAt()->format("Y-m-d H:i:s"));
+
+        $tasks = $this->careTaskRepository->findBy(['plant' => $fixture]);
+        self::assertCount(2, $tasks);
+
+        $taskTypes = array_map(fn(CareTask $t) => $t->getTaskType(), $tasks);
+        self::assertContains(CareType::water, $taskTypes);
+        self::assertContains(CareType::repot, $taskTypes);
+        self::assertNotContains(CareType::fertilice, $taskTypes);
+
+        $waterTask = array_values(array_filter($tasks, fn(CareTask $t) => $t->getTaskType() === CareType::water))[0];
+        $expectedDueDate = (new \DateTimeImmutable($newCreatedAt))->modify('+2 days');
+        self::assertSame($expectedDueDate->format('Y-m-d'), $waterTask->getDueDate()->format('Y-m-d'));
     }
 
     public function testRemove(): void
@@ -190,5 +214,6 @@ final class PlantsControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/plants');
         self::assertSame(0, $this->plantRepository->count([]));
+        self::assertSame(0, $this->careTaskRepository->count([]));
     }
 }
