@@ -41,11 +41,13 @@ class CareTask
     #[ORM\OneToMany(targetEntity: TaskAssignments::class, mappedBy: 'care_task', orphanRemoval: true)]
     private Collection $taskAssignments;
 
-    public function __construct()
+    public function __construct(CareType $type, Plants $plant)
     {
         $this->created_at = new \DateTimeImmutable();
         $this->notifications = new ArrayCollection();
         $this->taskAssignments = new ArrayCollection();
+        $this->task_type = $type;
+        $this->plant = $plant;
     }
 
     public function getId(): ?int

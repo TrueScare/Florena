@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Aufgaben{% endblock %}
+
+{% block body %}
+    <h1>Aufgaben</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pflanze</th>
+                <th>Aufgabentyp</th>
+                <th>Fällig am</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for care_task in care_tasks %}
+            <tr>
+                <td>{{ care_task.plant.name }}</td>
+                <td>{{ care_task.taskType.value }}</td>
+                <td>{{ care_task.dueDate ? care_task.dueDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_care_task_show', {'id': care_task.id}) }}">Anzeigen</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">keine Aufgaben gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
