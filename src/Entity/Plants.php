@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\CareType;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
@@ -9,10 +10,12 @@ use App\Repository\PlantsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlantsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_plant_name', columns: ['user_id', 'name'])]
+#[ORM\HasLifecycleCallbacks]
 class Plants
 {
     #[ORM\Id]
@@ -124,7 +127,9 @@ class Plants
         $this->care_tasks = new ArrayCollection();
         $this->care_history = new ArrayCollection();
 
-        $this->last_watered_at = new \DateTimeImmutable();
+        $this->last_watered_at = $this->created_at;
+        $this->last_fertilized_at = $this->created_at;
+        $this->last_repotted_at = $this->created_at;
     }
 
     public function getId(): ?int
