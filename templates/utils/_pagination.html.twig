@@ -1,0 +1,50 @@
+{% block pagination %}
+    {% if paginationResult %}
+        {#
+        there has to be a paginationResult object somewhere in order for this to work!
+        make sure this works even when included wrongfully
+        #}
+        <div class="pagination">
+            {% block pagination_header %}
+                <form id="pagination" class="pagination_header">
+                    {% if paginationResult.pages > 1 %}
+                        {# we only need the pagination when there are multiple pages to paginate throuh #}
+                        {% for i in 1..paginationResult.pages %}
+                            <label style="cursor: pointer"
+                                   class="{% if paginationResult.page == i %}active{% endif %}">
+                                <input name="page"
+                                       type="radio"
+                                       onchange="this.form.submit()"
+                                       value="{{ i }}"
+                                       style="display: none"
+                                       {% if paginationResult.page == i %}checked{% endif %}>
+                                {{ i }}
+                            </label>
+                        {% endfor %}
+                    {% endif %}
+                    {% block pagination_header_searchTerm %}
+                        {% if hasSearchTerm|default(false) %}
+                            <input id="searchTerm"
+                                   name="searchTerm"
+                                   type="text"
+                                   placeholder="Suche..."
+                                   value="{{ paginationResult.searchTerm }}">
+                            <label onclick="this.form.submit()" for="searchTerm" class="button" style="cursor: pointer">
+                                Suchen
+                            </label>
+                        {% endif %}
+                    {% endblock %}
+
+                    {% block pagination_header_order %}
+                    {% endblock %}
+                </form>
+
+            {% endblock %}
+            {% block pagination_body %}
+                <div class="pagination_body"></div>
+            {% endblock %}
+            {% block pagination_footer %}
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}

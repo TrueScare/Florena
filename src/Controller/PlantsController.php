@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Plants;
 use App\Form\PlantsType;
 use App\Repository\PlantsRepository;
+use App\Service\Pagination\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,10 +20,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class PlantsController extends AbstractController
 {
     #[Route(name: 'app_plants_index', methods: ['GET'])]
-    public function index(PlantsRepository $plantsRepository): Response
+    public function index(Request $request, PlantsRepository $plantsRepository, PaginationService $paginationService): Response
     {
+        $pageInfo = $paginationService->getPageInfoFromRequest($request);
+        $queryBuilder = $plantsRepository->getQueryBuilderFindAllByUser($this->getUser(), $pageInfo->getOrder(), $pageInfo->getSearchTerm());
+        $paginationResult = $paginationService->paginate($queryBuilder, $pageInfo->getPage(), $pageInfo->getLimit(), $pageInfo->getOrder(), $pageInfo->getSearchTerm());
+
         return $this->render('plants/index.html.twig', [
-            'plants' => $plantsRepository->findAllByUser($this->getUser()),
+            'paginationResult' => $paginationResult
         ]);
     }
 
