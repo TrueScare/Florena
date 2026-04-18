@@ -77,6 +77,7 @@ final class DashboardService
         $stressScore = $plant->getStressScore() ?? 100;
 
         return [
+            'id' => $plant->getId(),
             'name' => $plant->getName() ?? 'Unbenannte Pflanze',
             'location' => $plant->getLocation()?->getName() ?? 'Kein Standort',
             'stressLevel' => $stressScore,
