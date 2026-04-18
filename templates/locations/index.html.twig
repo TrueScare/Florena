@@ -2,6 +2,10 @@
 
 {% block title %}Standorte{% endblock %}
 
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
+
 {% block body %}
     <h1>Standorte</h1>
 

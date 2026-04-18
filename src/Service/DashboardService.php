@@ -11,6 +11,7 @@ final class DashboardService
 {
     private const int MAX_UPCOMING_TASKS = 3;
     private const int MAX_PLANTS = 4;
+    private const int MAX_LOCATIONS = 3;
     private const string FALLBACK_PLANT_IMAGE =
     'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=400&q=80';
 
@@ -52,6 +53,10 @@ final class DashboardService
                 fn($plant) => $this->mapPlant($plant),
                 array_slice($activePlants, 0, self::MAX_PLANTS)
             ),
+            'locations' => array_map(
+                fn($location) => $this->mapLocation($location),
+                array_slice($locations, 0, self::MAX_LOCATIONS)
+            ),
             'locationCount' => count($locations),
         ];
     }
@@ -77,6 +82,14 @@ final class DashboardService
             'stressLevel' => $stressScore,
             'imageUrl' => $plant->getPhotoPath() ? $plant->getFullPhotoPath() : self::FALLBACK_PLANT_IMAGE,
             'imageAlt' => $plant->getName() ?? 'Pflanzenbild',
+        ];
+    }
+
+    private function mapLocation(object $location): array
+    {
+        return [
+            'name' => $location->getName() ?? 'Unbenannter Standort',
+            'description' => $location->getDescription() ?? ''
         ];
     }
 }
