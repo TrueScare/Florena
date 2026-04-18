@@ -2,97 +2,239 @@
 
 {% block title %}Plants - {{ plant.name }}{% endblock %}
 
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
+
 {% block body %}
-    <h1>{{ plant.name }}</h1>
+    <main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
+        <div class="mb-8">
+            <a href="{{ path('app_plants_index') }}"
+               class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline underline-offset-4">
+                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                Zurück zur Liste
+            </a>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Beschreibung</th>
-                <td>{{ plant.description }}</td>
-            </tr>
-            <tr>
-                <th>Botanscher Name</th>
-                <td>{{ plant.botanicalName }}</td>
-            </tr>
-            <tr>
-                <th>Bild</th>
-                <td>{% if plant.photoPath %}<img src="{{ asset(plant.fullPhotoPath) }}" alt="{{ plant.name }}" height="200px" width="200px"/> {% else %}Kein Bild vorhanden...{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Lichtbedürfnis</th>
-                <td>{{ plant.lightRequirement.value }}</td>
-            </tr>
-            <tr>
-                <th>Temperaturbedürfnis</th>
-                <td>{{ plant.temperatureRequirement.value }}</td>
-            </tr>
-            <tr>
-                <th>Feuchtigkeitsbedürfnis</th>
-                <td>{{ plant.humidityRequirement.value }}</td>
-            </tr>
-            <tr>
-                <th>Bodenart</th>
-                <td>{{ plant.soilType }}</td>
-            </tr>
-            <tr>
-                <th>Topfgröße</th>
-                <td>{{ plant.potSize }}</td>
-            </tr>
-            <tr>
-                <th>Gießintervall in Tagen</th>
-                <td>{{ plant.wateringIntervalDays }}</td>
-            </tr>
-            <tr>
-                <th>Düngintervall in Tagen</th>
-                <td>{{ plant.fertilizingIntervalDays }}</td>
-            </tr>
-            <tr>
-                <th>Umtopfintervall in Tagen</th>
-                <td>{{ plant.repottingIntervalDays }}</td>
-            </tr>
-            <tr>
-                <th>Zuletzt gewässert am</th>
-                <td>{{ plant.lastWateredAt ? plant.lastWateredAt|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Zuletzt dedüngt am</th>
-                <td>{{ plant.lastFertilizedAt ? plant.lastFertilizedAt|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Zuletzt umgetopft am</th>
-                <td>{{ plant.lastRepottedAt ? plant.lastRepottedAt|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Giftig für Menschen</th>
-                <td>{{ plant.toxicForHumans ? 'Ja' : 'Nein' }}</td>
-            </tr>
-            <tr>
-                <th>Giftig für Tiere</th>
-                <td>{{ plant.toxicForAnimals ? 'Ja' : 'Nein' }}</td>
-            </tr>
-            <tr>
-                <th>Gekauft am</th>
-                <td>{{ plant.purchaseDate ? plant.purchaseDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Zufriedenheitsscore</th>
-                <td>{{ plant.stressScore }}</td>
-            </tr>
-            <tr>
-                <th>Standort</th>
-                <td>{% if plant.location %}{{ plant.location.name }}{% else %}kein Standort zugeordnet{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Gestorben am</th>
-                <td>{{ plant.diedAt ? plant.diedAt|date('Y-m-d') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        {# Pflanzenkarte #}
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0px_20px_40px_rgba(46,52,51,0.06)] overflow-hidden relative border border-transparent">
+            <div class="p-8 md:p-16 flex flex-col gap-12">
+                <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+                    <div>
+                        <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+                            {{ plant.name }}
+                        </h1>
+                        <p class="font-label text-xs font-bold tracking-[0.2em] text-outline uppercase">
+                            {% if plant.location %}
+                                {{ plant.location.name }}
+                            {% else %}
+                                Kein Standort
+                            {% endif %}
+                        </p>
+                    </div>
 
-    <a href="{{ path('app_plants_index') }}">Zurück zur Liste</a>
+                    <div class="flex items-center gap-3">
+                        <a href="{{ path('app_plants_edit', {'id': plant.id}) }}"
+                           class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">edit</span>
+                            Bearbeiten
+                        </a>
 
-    <a href="{{ path('app_plants_edit', {'id': plant.id}) }}">Bearbeiten</a>
+                        {{ include('plants/_delete_form.html.twig') }}
+                    </div>
+                </div>
 
-    {{ include('plants/_delete_form.html.twig') }}
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-7 relative group">
+                        <div class="absolute -inset-4 bg-primary/5 rounded-xl -rotate-2 -z-10 transition-transform group-hover:rotate-1"></div>
+
+                        {% if plant.photoPath %}
+                            <img
+                                src="{{ asset(plant.fullPhotoPath) }}"
+                                alt="{{ plant.name }}"
+                                class="w-full h-auto rounded-lg object-cover shadow-sm"
+                            >
+                        {% else %}
+                            <div class="w-full min-h-[420px] rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant shadow-sm">
+                                Kein Bild vorhanden.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="lg:col-span-5 flex flex-col gap-10">
+                        <div class="bg-surface-container-low rounded-lg p-8 flex items-center justify-between">
+                            <div>
+                                <p class="text-on-surface-variant font-medium text-sm mb-1">Stress Score</p>
+                                <p class="text-3xl font-bold text-on-surface">{{ plant.stressScore }}%</p>
+
+                                {% if plant.stressScore < 40 %}
+                                    <p class="text-primary text-xs font-semibold mt-2 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                                        Optimaler Zustand
+                                    </p>
+                                {% elseif plant.stressScore < 80 %}
+                                    <p class="text-[#FFB300] text-xs font-semibold mt-2 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">warning</span>
+                                        Leichter Stress
+                                    </p>
+                                {% else %}
+                                    <p class="text-[#E53935] text-xs font-semibold mt-2 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">error</span>
+                                        Hoher Stress
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            {% set circumference = 213.6 %}
+                            {% set dashOffset = circumference - (circumference * (plant.stressScore / 100)) %}
+
+                            <div class="relative w-20 h-20">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle class="text-surface-container-highest" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+                                    <circle class="text-primary" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="{{ circumference }}" stroke-dashoffset="{{ dashOffset }}" stroke-width="6"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary">eco</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shrink-0">
+                                    <span class="material-symbols-outlined text-xl">schedule</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Bewässerung</p>
+                                    <p class="text-on-surface font-semibold text-lg">Alle {{ plant.wateringIntervalDays }} Tage</p>
+                                    <p class="text-on-surface-variant text-sm mt-1 italic">
+                                        Zuletzt gegossen:
+                                        {{ plant.lastWateredAt ? plant.lastWateredAt|date('d.m.Y') : '–' }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shrink-0">
+                                    <span class="material-symbols-outlined text-xl">compost</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Düngung</p>
+                                    <p class="text-on-surface font-semibold text-lg">Alle {{ plant.fertilizingIntervalDays }} Tage</p>
+                                    <p class="text-on-surface-variant text-sm mt-1 italic">
+                                        Zuletzt gedüngt:
+                                        {{ plant.lastFertilizedAt ? plant.lastFertilizedAt|date('d.m.Y') : '–' }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shrink-0">
+                                    <span class="material-symbols-outlined text-xl">potted_plant</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Umtopfen</p>
+                                    <p class="text-on-surface font-semibold text-lg">Alle {{ plant.repottingIntervalDays }} Tage</p>
+                                    <p class="text-on-surface-variant text-sm mt-1 italic">
+                                        Zuletzt umgetopft:
+                                        {{ plant.lastRepottedAt ? plant.lastRepottedAt|date('d.m.Y') : '–' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Eigenschaften #}
+
+                {% set toxicityText =
+                    plant.toxicForHumans and plant.toxicForAnimals ? 'giftig für Mensch & Tier' :
+                    plant.toxicForHumans ? 'giftig für Menschen' :
+                    plant.toxicForAnimals ? 'giftig für Tiere' :
+                    'ungiftig'
+                %}
+
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 pt-12 border-t border-surface-container-high">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-on-secondary-fixed-variant">
+                            <span class="material-symbols-outlined text-xl">wb_sunny</span>
+                            <span class="font-bold text-sm tracking-wide">LICHT</span>
+                        </div>
+                        <p class="text-on-surface font-medium">{{ plant.lightRequirement.value }}</p>
+                        <p class="text-xs text-on-surface-variant">
+                            Standortbedingung für diese Pflanze.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-on-secondary-fixed-variant">
+                            <span class="material-symbols-outlined text-xl">thermostat</span>
+                            <span class="font-bold text-sm tracking-wide">TEMPERATUR</span>
+                        </div>
+                        <p class="text-on-surface font-medium">{{ plant.temperatureRequirement.value }}</p>
+                        <p class="text-xs text-on-surface-variant">
+                            Empfohlener Temperaturbereich.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-on-secondary-fixed-variant">
+                            <span class="material-symbols-outlined text-xl">water_drop</span>
+                            <span class="font-bold text-sm tracking-wide">LUFTFEUCHTIGKEIT</span>
+                        </div>
+                        <p class="text-on-surface font-medium">{{ plant.humidityRequirement.value }}</p>
+                        <p class="text-xs text-on-surface-variant">
+                            Passende Umgebungsfeuchtigkeit für gesundes Wachstum.
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 {{ plant.toxicForHumans or plant.toxicForAnimals ? 'text-error' : 'text-primary' }}">
+                            <span class="material-symbols-outlined text-xl">
+                                {{ plant.toxicForHumans or plant.toxicForAnimals ? 'warning' : 'check_circle' }}
+                            </span>
+                            <span class="font-bold text-sm tracking-wide">GIFTIGKEIT</span>
+                        </div>
+
+                        <p class="text-on-surface font-medium">{{ toxicityText }}</p>
+
+                        <p class="text-xs text-on-surface-variant">
+                            {% if plant.toxicForHumans or plant.toxicForAnimals %}
+                                Vorsicht bei Kontakt oder Verzehr.
+                            {% else %}
+                                Keine bekannte Giftigkeit.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Notizen #}
+
+        <div class="mt-12 grid grid-cols-1 gap-8">
+            <div class="p-8 bg-surface-container rounded-lg">
+                <div class="flex justify-between items-center gap-4 mb-4">
+                    <h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined">description</span>
+                        Pflanzen-Notiz
+                    </h3>
+
+                    <a href="{{ path('app_plants_edit', {'id': plant.id}) }}"
+                       class="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">edit</span>
+                        Bearbeiten
+                    </a>
+                </div>
+
+                <p class="text-on-surface-variant text-sm leading-relaxed">
+                    {% if plant.description %}
+                        {{ plant.description }}
+                    {% else %}
+                        Noch keine Notiz vorhanden.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </main>
 {% endblock %}

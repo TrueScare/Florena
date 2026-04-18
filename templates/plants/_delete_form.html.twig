@@ -1,4 +1,12 @@
-<form method="post" action="{{ path('app_plants_delete', {'id': plant.id}) }}" onsubmit="return confirm('Bist du dir sicher, dass du die Pflanze löschen möchtest?');">
+<form method="post"
+      action="{{ path('app_plants_delete', {'id': plant.id}) }}"
+      onsubmit="return confirm('Bist du sicher, dass du diese Pflanze löschen möchtest?');">
+
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plant.id) }}">
-    <button class="btn">Löschen</button>
+
+    <button
+        class="flex items-center gap-2 rounded-full border border-error/30 bg-error/10 px-6 py-3 text-sm font-bold text-error transition hover:bg-error/20 active:scale-95">
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+        Löschen
+    </button>
 </form>
