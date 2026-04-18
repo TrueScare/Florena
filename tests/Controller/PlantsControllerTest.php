@@ -85,7 +85,7 @@ final class PlantsControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(200);
 
-        $this->client->submitForm('Speichern', [
+        $this->client->submitForm('Pflanze speichern', [
             'plants[name]' => 'Testname',
             'plants[description]' => 'New Description',
             'plants[botanical_name]' => 'Botanical NAAAME',

@@ -2,10 +2,30 @@
 
 {% block title %}New Plants{% endblock %}
 
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
+
 {% block body %}
-    <h1>Create new Plants</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ path('app_plants_index') }}" class="mb-8 inline-flex items-center font-medium text-primary">
+                <span class="material-symbols-outlined mr-2 text-lg">arrow_back</span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Übersicht</span>
+            </a>
 
-    {{ include('plants/_form.html.twig') }}
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        Neue Pflanze <span class="font-bold italic text-primary">anlegen</span>
+                    </h1>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Erfasse die wichtigsten Informationen zu deiner Pflanze, um Pflege und Übersicht zu verwalten.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    <a href="{{ path('app_plants_index') }}">back to list</a>
+        {{ include('plants/_form.html.twig') }}
+    </main>
 {% endblock %}
