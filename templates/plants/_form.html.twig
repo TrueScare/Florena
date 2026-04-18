@@ -381,11 +381,6 @@
 </div>
 
 <div class="mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-    <div>
-        {% if plant is defined and plant.id %}
-            {{ include('plants/_delete_form.html.twig', { plant: plant }) }}
-        {% endif %}
-    </div>
 
     <div class="flex flex-col items-center justify-end gap-4 md:flex-row">
         <a href="{{ path('app_plants_index') }}"

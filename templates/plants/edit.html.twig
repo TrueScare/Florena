@@ -28,9 +28,19 @@
         </header>
 
         {{ include('plants/_form.html.twig', {
-            'button_label': 'Bearbeiten',
-            'plant': plant
+            'button_label': 'Bearbeiten'
         }) }}
-        
+
+        <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                {{ include('plants/_delete_form.html.twig', { plant: plant }) }}
+            </div>
+
+            <a href="{{ path('app_plants_index') }}"
+            class="text-sm font-semibold text-on-surface-variant underline-offset-4 hover:underline">
+                Zurück zur Liste
+            </a>
+        </div>
+
     </main>
 {% endblock %}
