@@ -1,0 +1,45 @@
+{% set activePage = active_page|default('') %}
+{% set navItems = [
+    { key: 'dashboard', label: 'Dashboard', route: 'app_dashboard' },
+    { key: 'calendar', label: 'Kalender', route: null },
+    { key: 'care-for-me', label: 'Care for Me', route: null },
+    { key: 'leaderboard', label: 'Leaderboard', route: null },
+] %}
+
+<header class="fixed top-0 z-50 w-full bg-[#f9f9f8]/95 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-8">
+        <a href="{{ path('app_dashboard') }}" class="text-2xl font-bold tracking-tight text-[#3d6b00]">
+            Florena
+        </a>
+
+        <nav class="hidden items-center gap-1 rounded-full border border-outline-variant/10 bg-surface-container-low px-2 py-1.5 shadow-sm md:flex">
+            {% for item in navItems %}
+                {% set isActive = item.key == activePage %}
+                {% set sharedClasses = 'rounded-full px-6 py-2 text-sm transition-all duration-200' %}
+                {% if item.route %}
+                    <a href="{{ path(item.route) }}"
+                       class="{{ sharedClasses }} {{ isActive ? 'bg-primary font-bold text-on-primary shadow-md shadow-primary/20' : 'font-medium text-on-surface-variant hover:text-primary' }}">
+                        {{ item.label }}
+                    </a>
+                {% else %}
+                    <span class="{{ sharedClasses }} {{ isActive ? 'bg-primary font-bold text-on-primary shadow-md shadow-primary/20' : 'cursor-default font-medium text-on-surface-variant/70' }}">
+                        {{ item.label }}
+                    </span>
+                {% endif %}
+            {% endfor %}
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <button type="button"
+                    class="rounded-full p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
+                    aria-label="Suche öffnen">
+                <span class="material-symbols-outlined">search</span>
+            </button>
+            <button type="button"
+                    class="rounded-full border border-outline-variant/20 p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
+                    aria-label="Benutzerkonto">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+        </div>
+    </div>
+</header>
