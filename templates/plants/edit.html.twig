@@ -31,16 +31,19 @@
             'button_label': 'Bearbeiten'
         }) }}
 
-        <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
+        <section class="mt-12 border-t border-outline/20 pt-8">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-3">
+                Gefahrenbereich
+            </h2>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <p class="text-sm text-on-surface-variant max-w-md">
+                    Diese Aktion löscht die Pflanze dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden.
+                </p>
+
                 {{ include('plants/_delete_form.html.twig', { plant: plant }) }}
             </div>
-
-            <a href="{{ path('app_plants_index') }}"
-            class="text-sm font-semibold text-on-surface-variant underline-offset-4 hover:underline">
-                Zurück zur Liste
-            </a>
-        </div>
+        </section>
 
     </main>
 {% endblock %}
