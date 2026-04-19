@@ -34,6 +34,7 @@ class UserFixture extends Fixture implements FixtureGroupInterface
         $user2->setPassword($this->passwordHasher->hashPassword($user1, '!1234567'));
 
         $manager->persist($user1);
+        $manager->persist($user2);
         $manager->flush();
 
         $this->addReference(self::TEST_USER, $user1);
