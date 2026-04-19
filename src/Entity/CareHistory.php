@@ -6,6 +6,7 @@ use App\Enum\CareType;
 use App\Repository\CareHistoryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: CareHistoryRepository::class)]
 class CareHistory
@@ -32,10 +33,12 @@ class CareHistory
 
     #[ORM\ManyToOne(inversedBy: 'care_history')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Ignore]
     private ?Plants $plant = null;
 
     #[ORM\ManyToOne(inversedBy: 'careHistories')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Ignore]
     private ?User $user = null;
 
     public function __construct()
