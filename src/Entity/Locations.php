@@ -100,6 +100,17 @@ class Locations
         return $this;
     }
 
+    public function getLightColor(): string
+    {
+        return match ($this->light_condition?->value) {
+            'sonnig' => 'bg-yellow-100 text-yellow-700',
+            'hell' => 'bg-yellow-50 text-yellow-600',
+            'halbschattig' => 'bg-green-100 text-green-700',
+            'schattig' => 'bg-gray-100 text-gray-600',
+            default => 'bg-gray-100 text-gray-600',
+        };
+    }
+
     public function getTemperatureLevel(): ?TemperatureRequirement
     {
         return $this->temperature_level;
@@ -112,6 +123,23 @@ class Locations
         return $this;
     }
 
+    public function getTemperatureColor(): string
+    {
+        $value = $this->temperature_level?->value;
+
+        if (!$value) return 'bg-gray-100 text-gray-600';
+
+        if (str_contains($value, 'kühl')) {
+            return 'bg-blue-100 text-blue-700';
+        }
+
+        if (str_contains($value, 'warm')) {
+            return 'bg-orange-100 text-orange-700';
+        }
+
+        return 'bg-gray-100 text-gray-600';
+    }
+
     public function getHumidityLevel(): ?HumidityRequirement
     {
         return $this->humidity_level;
@@ -122,6 +150,16 @@ class Locations
         $this->humidity_level = $humidity_level;
 
         return $this;
+    }
+
+    public function getHumidityColor(): string
+    {
+        return match ($this->humidity_level?->value) {
+            'hoch' => 'bg-blue-200 text-blue-800',
+            'mittel' => 'bg-blue-100 text-blue-700',
+            'niedrig' => 'bg-gray-100 text-gray-600',
+            default => 'bg-gray-100 text-gray-600',
+        };
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
