@@ -1,61 +1,201 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Standort{% endblock %}
+{% block title %}Standorte - {{ location.name }}{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Standort</h1>
+<main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
 
-    <table class="table">
-        <tbody>
-        <tr>
-            <th>Name</th>
-            <td>{{ location.name }}</td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>{{ location.description }}</td>
-        </tr>
-        <tr>
-            <th>Light_condition</th>
-            <td>{{ location.lightCondition.value }}</td>
-        </tr>
-        <tr>
-            <th>Temperature_level</th>
-            <td>{{ location.temperatureLevel.value }}</td>
-        </tr>
-        <tr>
-            <th>Humidity_level</th>
-            <td>{{ location.humidityLevel.value }}</td>
-        </tr>
-        <tr>
-            <th>Created_at</th>
-            <td>{{ location.createdAt ? location.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-        </tr>
-        </tbody>
-    </table>
+    {# Back Button #}
+    <div class="mb-8">
+        <a href="{{ path('app_locations_index') }}"
+           class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline underline-offset-4">
+            <span class="material-symbols-outlined text-lg">arrow_back</span>
+            Zurück zur Liste
+        </a>
+    </div>
 
-    {# using the html details for an easy collapse panel, but idk what we are using here #}
-    <details>
-        <summary>Pflanzen</summary>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for plant in location.plants %}
-                <tr>
-                    <td>{{ plant.name }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </details>
+    {# Card #}
+    <div class="bg-surface-container-lowest rounded-xl shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-transparent overflow-hidden">
 
-    <a href="{{ path('app_locations_index') }}">Zurück zur Liste</a>
+        <div class="p-8 md:p-16 flex flex-col gap-12">
 
-    <a href="{{ path('app_locations_edit', {'id': location.id}) }}">Bearbeiten</a>
+            {# Header #}
+            <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+                <div>
+                    <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+                        {{ location.name }}
+                    </h1>
+                    <p class="text-xs font-bold tracking-[0.2em] text-outline uppercase">
+                        Standort
+                    </p>
+                </div>
 
-    {{ include('locations/_delete_form.html.twig') }}
+                <div class="flex items-center gap-3">
+                    <a href="{{ path('app_locations_edit', {'id': location.id}) }}"
+                       class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                        Bearbeiten
+                    </a>
+
+                    {{ include('locations/_delete_form.html.twig') }}
+                </div>
+            </div>
+
+            {# Content Grid #}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+                {# Left: Visual Card #}
+                <div class="lg:col-span-7 relative group">
+                    <div class="absolute -inset-4 bg-primary/5 rounded-xl -rotate-2 -z-10 transition-transform group-hover:rotate-1"></div>
+
+                    <div class="w-full min-h-[420px] rounded-lg bg-surface-container flex flex-col items-center justify-center text-center p-8 shadow-sm">
+
+                        <div class="w-20 h-20 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-4xl">location_on</span>
+                        </div>
+
+                        <p class="text-lg font-semibold text-on-surface mb-2">
+                            {{ location.name }}
+                        </p>
+
+                        <p class="text-sm text-on-surface-variant max-w-md">
+                            {{ location.description ?: 'Keine Beschreibung vorhanden.' }}
+                        </p>
+                    </div>
+                </div>
+
+                {# Right: Eigenschaften #}
+                <div class="lg:col-span-5 flex flex-col gap-10">
+
+                    <div class="space-y-6">
+
+                        {# Licht #}
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full {{ location.lightColor }} flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-xl">wb_sunny</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Licht</p>
+                                <p class="text-on-surface font-semibold text-lg">{{ location.lightCondition.value }}</p>
+                                <p class="text-on-surface-variant text-sm mt-1 italic">
+                                    Lichtverhältnisse dieses Standorts
+                                </p>
+                            </div>
+                        </div>
+
+                        {# Temperatur #}
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full {{ location.temperatureColor }} flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-xl">thermostat</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Temperatur</p>
+                                <p class="text-on-surface font-semibold text-lg">{{ location.temperatureLevel.value }}</p>
+                                <p class="text-on-surface-variant text-sm mt-1 italic">
+                                    Typischer Temperaturbereich
+                                </p>
+                            </div>
+                        </div>
+
+                        {# Luftfeuchtigkeit #}
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full {{ location.humidityColor }} flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-xl">water_drop</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Luftfeuchtigkeit</p>
+                                <p class="text-on-surface font-semibold text-lg">{{ location.humidityLevel.value }}</p>
+                                <p class="text-on-surface-variant text-sm mt-1 italic">
+                                    Typische Luftfeuchtigkeit
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {# Divider #}
+            <div class="pt-12 border-t border-surface-container-high"></div>
+
+            {# Pflanzenliste #}
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Pflanzen an diesem Standort</h2>
+                    <span class="text-sm text-on-surface-variant">
+                        {{ location.plants|length }} Pflanze{{ location.plants|length == 1 ? '' : 'n' }}
+                    </span>
+                </div>
+
+                <div class="space-y-6">
+                    {% for plant in location.plants %}
+                        <a href="{{ path('app_plants_show', { id: plant.id }) }}"
+                           class="block rounded-xl p-6 bg-surface-container-lowest
+                                  shadow-[0px_20px_40px_rgba(46,52,51,0.03)]
+                                  border border-transparent
+                                  transition-all
+                                  hover:border-primary-fixed
+                                  hover:shadow-[0px_20px_40px_rgba(46,52,51,0.06)]">
+
+                            <div class="flex justify-between items-center gap-6">
+
+                                <div class="min-w-0">
+                                    <h3 class="text-xl font-bold truncate">{{ plant.name }}</h3>
+
+                                    {% if plant.description %}
+                                        <p class="text-on-surface-variant text-sm mt-1 line-clamp-2">
+                                            {{ plant.description }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="text-right shrink-0">
+                                    <span class="material-symbols-outlined text-on-surface-variant">
+                                        chevron_right
+                                    </span>
+                                </div>
+
+                            </div>
+                        </a>
+                    {% else %}
+                        <div class="rounded-xl bg-surface-container p-6 text-sm text-on-surface-variant">
+                            Diesem Standort sind noch keine Pflanzen zugeordnet.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {# Notiz #}
+    <div class="mt-12 grid grid-cols-1 gap-8">
+        <div class="p-8 bg-surface-container rounded-lg">
+            <div class="flex justify-between items-center gap-4 mb-4">
+                <h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined">description</span>
+                    Standort-Notiz
+                </h3>
+
+                <a href="{{ path('app_locations_edit', {'id': location.id}) }}"
+                class="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">edit</span>
+                    Bearbeiten
+                </a>
+            </div>
+
+            <p class="text-on-surface-variant text-sm leading-relaxed">
+                {% if location.description %}
+                    {{ location.description }}
+                {% else %}
+                    Noch keine Notiz vorhanden.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</main>
 {% endblock %}
