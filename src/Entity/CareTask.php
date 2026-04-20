@@ -7,7 +7,7 @@ use App\Repository\CareTaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CareTaskRepository::class)]
 class CareTask
@@ -15,34 +15,36 @@ class CareTask
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?int $id = null;
 
     #[ORM\Column(enumType: CareType::class)]
+    #[Groups(['care_task:read'])]
     private ?CareType $task_type = null;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $due_date = null;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\ManyToOne(inversedBy: 'care_tasks')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Ignore]
+    #[Groups(['care_task:read'])]
     private ?Plants $plant = null;
 
     /**
      * @var Collection<int, Notifications>
      */
     #[ORM\OneToMany(targetEntity: Notifications::class, mappedBy: 'care_task')]
-    #[Ignore]
     private Collection $notifications;
 
     /**
      * @var Collection<int, TaskAssignments>
      */
     #[ORM\OneToMany(targetEntity: TaskAssignments::class, mappedBy: 'care_task', orphanRemoval: true)]
-    #[Ignore]
     private Collection $taskAssignments;
 
     public function __construct(CareType $type, Plants $plant)

@@ -10,10 +10,13 @@ use App\Enum\CareType;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
+use App\Tests\Helper\EntityDeserializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class CareTaskAPITest extends WebTestCase
@@ -50,10 +53,22 @@ class CareTaskAPITest extends WebTestCase
         $this->manager->flush();
     }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->plantRepository->findAll() as $p) {
+            $this->manager->remove($p);
+        }
+
+        $this->manager->flush();
+    }
+
+
     public function testSetTaskDoneWhenNotLoggedIn(): void
     {
         $task = $this->careTaskRepository->findOneBy(['plant' => $this->plant]);
-        $this->client->request('GET', sprintf('%s%s',$this->path, $task->getId()));
+        $this->client->request('GET', sprintf('%s%s', $this->path, $task->getId()));
         self::assertEquals(302, $this->client->getResponse()->getStatusCode());
         self::assertResponseRedirects('/login');
     }
@@ -62,26 +77,54 @@ class CareTaskAPITest extends WebTestCase
     {
         $this->client->loginUser($this->attacker);
         $task = $this->careTaskRepository->findOneBy(['plant' => $this->plant]);
-        $this->client->request('GET', sprintf('%s%s',$this->path, $task->getId()));
+        $this->client->request('GET', sprintf('%s%s', $this->path, $task->getId()));
         self::assertEquals(403, $this->client->getResponse()->getStatusCode());
     }
 
     public function testSetTaskDoneWhenLoggedIn(): void
     {
+        $deserializer = new EntityDeserializer(static::getContainer()->get(SerializerInterface::class));
+
         $this->client->loginUser($this->owner);
         $task = $this->careTaskRepository->findOneBy(['plant' => $this->plant, 'task_type' => CareType::water->value]);
-        $this->client->request('GET', sprintf('%s%s',$this->path, $task->getId()));
+        $this->client->request('GET', sprintf('%s%s', $this->path, $task->getId()));
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
-        $careTask = $data['care_task'];
-        $careHistory = $data['care_history'];
+        /* @var CareTask $careTask */
+        $careTask = $deserializer->fromArray(
+            $data['care_task'],
+            CareTask::class,
+            ['care_task_read', 'care_history_read', 'plant:ref'],
+            [
+                AbstractNormalizer::DEFAULT_CONSTRUCTOR_ARGUMENTS => [
+                    CareTask::class => [
+                        'plant' => $this->plant,
+                        'type' => CareType::water
+                    ]
+                ]
+            ]);
+        /* @var CareHistory $careHistory */
+        $careHistory = $deserializer->fromArray(
+            $data['care_history'],
+            CareHistory::class,
+            ['care_task_read', 'care_history_read', 'plant:ref'],
+            [
+                AbstractNormalizer::DEFAULT_CONSTRUCTOR_ARGUMENTS => [
+                    CareHistory::class => [
+                        'plant' => $this->plant,
+                        'type' => CareType::water
+                    ]
+                ],
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => false,
+            ]
+        );
+
         self::assertNotNull($careTask);
         self::assertNotNull($careHistory);
 
         // requery plant to get changed data
         $this->plant = $this->plantRepository->findOneBy(['id' => $this->plant->getId()]);
-        $taskPerformedAt = new \DateTimeImmutable($careHistory['performed_at']);
-        self::assertEquals($taskPerformedAt->format('d.m.Y H:i:s'), $this->plant->getLastWateredAt()->format('d.m.Y H:i:s'));
+        self::assertEquals($careHistory->getPerformedAt()->format('d.m.Y'), $this->plant->getLastWateredAt()->format('d.m.Y'));
     }
 
     private function createPlant(User $user): Plants

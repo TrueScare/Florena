@@ -37,7 +37,6 @@ class CareTaskAPIController extends AbstractController
             CareType::fertilice => $careTask->getPlant()->setLastFertilizedAt($careHistory->getPerformedAt()),
             CareType::repot => $careTask->getPlant()->setLastRepottedAt($careHistory->getPerformedAt())
         };
-        dump($careHistory->getPerformedAt(), $careTask->getPlant()->getLastWateredAt());
 
         $this->entityManager->persist($careHistory);
         $this->entityManager->flush();
@@ -45,6 +44,6 @@ class CareTaskAPIController extends AbstractController
         return $this->json([
             'care_history' => $careHistory,
             'care_task' => $careTask,
-        ]);
+        ], context: ['groups' => ['care_task:read', 'care_history:read', 'plant:ref']]);
     }
 }
