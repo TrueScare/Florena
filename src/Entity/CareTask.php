@@ -7,6 +7,7 @@ use App\Repository\CareTaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CareTaskRepository::class)]
 class CareTask
@@ -14,19 +15,24 @@ class CareTask
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?int $id = null;
 
     #[ORM\Column(enumType: CareType::class)]
+    #[Groups(['care_task:read'])]
     private ?CareType $task_type = null;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $due_date = null;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\ManyToOne(inversedBy: 'care_tasks')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['care_task:read'])]
     private ?Plants $plant = null;
 
     /**

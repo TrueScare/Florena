@@ -2,16 +2,14 @@
 
 namespace App\Entity;
 
-use App\Enum\CareType;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
 use App\Repository\PlantsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PlantsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_plant_name', columns: ['user_id', 'name'])]
@@ -21,18 +19,23 @@ class Plants
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['care_task:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['care_task:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['care_task:read'])]
     private ?string $botanical_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['care_task:read'])]
     private ?string $photo_path = null;
 
     private ?string $full_photo_path = null;
@@ -53,21 +56,27 @@ class Plants
     private ?string $pot_size = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['care_task:read'])]
     private ?int $watering_interval_days = 0;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['care_task:read'])]
     private ?int $fertilizing_interval_days = 0;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['care_task:read'])]
     private ?int $repotting_interval_days = 0;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $last_watered_at;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $last_fertilized_at = null;
 
     #[ORM\Column]
+    #[Groups(['care_task:read'])]
     private ?\DateTimeImmutable $last_repotted_at = null;
 
     #[ORM\Column]
@@ -80,6 +89,7 @@ class Plants
     private ?\DateTimeImmutable $purchase_date = null;
 
     #[ORM\Column]
+    #[Groups(['plant:ref'])]
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\Column]
@@ -117,6 +127,7 @@ class Plants
     private Collection $care_history;
 
     #[ORM\ManyToOne(inversedBy: 'plants')]
+    #[Groups(['plant:ref'])]
     private ?Locations $location = null;
 
     public function __construct()

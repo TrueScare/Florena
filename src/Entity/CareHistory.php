@@ -6,6 +6,7 @@ use App\Enum\CareType;
 use App\Repository\CareHistoryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CareHistoryRepository::class)]
 class CareHistory
@@ -13,12 +14,15 @@ class CareHistory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['care_history:read'])]
     private ?int $id = null;
 
     #[ORM\Column(enumType: CareType::class)]
+    #[Groups(['care_history:read'])]
     private ?CareType $care_type = null;
 
     #[ORM\Column]
+    #[Groups(['care_history:read'])]
     private ?\DateTimeImmutable $performed_at;
 
     #[ORM\Column(nullable: true)]
@@ -32,10 +36,12 @@ class CareHistory
 
     #[ORM\ManyToOne(inversedBy: 'care_history')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['care_history:read'])]
     private ?Plants $plant = null;
 
     #[ORM\ManyToOne(inversedBy: 'careHistories')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['care_history:read'])]
     private ?User $user = null;
 
     public function __construct()
