@@ -2,12 +2,50 @@
 
 {% block title %}Standort Bearbeiten{% endblock %}
 
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
+
 {% block body %}
-    <h1>Standort Bearbeiten</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
 
-    {{ include('locations/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+            {# Back Button #}
+            <a href="{{ path('app_locations_show', {'id': location.id}) }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zum Standort</span>
+            </a>
 
-    <a href="{{ path('app_locations_index') }}">Zurück zur Liste</a>
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        Standort <span class="font-bold italic text-primary">bearbeiten</span>
+                    </h1>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Aktualisiere die Standortinformationen.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    {{ include('locations/_delete_form.html.twig') }}
+        {{ include('locations/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+
+                <section class="mt-12 border-t border-outline/20 pt-8">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-3">
+                Gefahrenbereich
+            </h2>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <p class="text-sm text-on-surface-variant max-w-md">
+                    Diese Aktion löscht den Standort dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden.
+                </p>
+
+                {{ include('locations/_delete_form.html.twig', { location: location }) }}
+            </div>
+        </section>
+    </main>
+
 {% endblock %}

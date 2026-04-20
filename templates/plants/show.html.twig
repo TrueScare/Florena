@@ -9,14 +9,16 @@
 {% block body %}
     <main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
         <div class="mb-8">
-            <a href="{{ path('app_plants_index') }}"
-               class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline underline-offset-4">
-                <span class="material-symbols-outlined text-lg">arrow_back</span>
-                Zurück zur Liste
+            <a href="{{ path('app_plants_index')}}"
+                class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Liste</span>
             </a>
         </div>
 
-        {# Pflanzenkarte #}
+        {# Card #}
         <div class="bg-surface-container-lowest rounded-xl shadow-[0px_20px_40px_rgba(46,52,51,0.06)] overflow-hidden relative border border-transparent">
             <div class="p-8 md:p-16 flex flex-col gap-12">
                 <div class="flex flex-col md:flex-row justify-between items-start gap-6">
@@ -26,7 +28,11 @@
                         </h1>
                         <p class="font-label text-xs font-bold tracking-[0.2em] text-outline uppercase">
                             {% if plant.location %}
+                            <a href="{{ path('app_locations_show', { id: plant.location.id }) }}"
+                            class="inline-flex items-center gap-1 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-xs">location_on</span>
                                 {{ plant.location.name }}
+                            </a>
                             {% else %}
                                 Kein Standort
                             {% endif %}
