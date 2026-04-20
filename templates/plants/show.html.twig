@@ -28,7 +28,11 @@
                         </h1>
                         <p class="font-label text-xs font-bold tracking-[0.2em] text-outline uppercase">
                             {% if plant.location %}
+                            <a href="{{ path('app_locations_show', { id: plant.location.id }) }}"
+                            class="inline-flex items-center gap-1 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-xs">location_on</span>
                                 {{ plant.location.name }}
+                            </a>
                             {% else %}
                                 Kein Standort
                             {% endif %}
