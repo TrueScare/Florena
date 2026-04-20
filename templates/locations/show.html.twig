@@ -8,15 +8,19 @@
 
 {% block body %}
 <main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
+    <header class="mb-12"
 
-    {# Back Button #}
-    <div class="mb-8">
-        <a href="{{ path('app_locations_index') }}"
-           class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline underline-offset-4">
-            <span class="material-symbols-outlined text-lg">arrow_back</span>
-            Zurück zur Liste
-        </a>
-    </div>
+        {# Back Button #}
+        <div class="mb-8">
+            <a href="{{ path('app_locations_index')}}"
+                class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Liste</span>
+            </a>
+        </div>
+    </header>
 
     {# Card #}
     <div class="bg-surface-container-lowest rounded-xl shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-transparent overflow-hidden">
