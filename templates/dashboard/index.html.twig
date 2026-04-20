@@ -169,27 +169,37 @@
 
                         <div class="space-y-4">
                             {% for location in locations %}
-                                <article class="rounded-xl bg-surface-container-lowest p-5 shadow-[0px_20px_40px_rgba(46,52,51,0.03)]">
+                                <a href="{{ path('app_locations_show', { id: location.id }) }}"
+                                class="block cursor-pointer transition-transform hover:scale-[1.01]">
 
-                                    <div class="mb-3 flex items-center gap-3">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
-                                            <span class="material-symbols-outlined">location_on</span>
-                                        </div>
+                                    <article class="
+                                        flex items-center justify-between
+                                        rounded-xl
+                                        border border-transparent
+                                        bg-surface-container-lowest
+                                        p-5
+                                        shadow-[0px_20px_40px_rgba(46,52,51,0.03)]
+                                        transition-all
+                                        hover:border-primary-fixed
+                                        ">
                                         
+                                        <div class="flex min-w-0 flex-1 items-center gap-3">
+                                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
+                                                <span class="material-symbols-outlined">location_on</span>
+                                            </div>
 
-                                        <div>
-                                            <h3 class="font-bold">{{ location.name }}</h3>
-                                            <p class="text-xs text-on-surface-variant">Standort</p>
+                                            <h3 class="truncate font-bold leading-tight">
+                                                {{ location.name }}
+                                            </h3>
                                         </div>
-                                    </div>
 
-                                    {% if location.description %}
-                                        <p class="mb-3 text-sm text-on-surface-variant line-clamp-2">
-                                            {{ location.description }}
-                                        </p>
-                                    {% endif %}
-
-                                </article>
+                                        <div class="ml-3 flex w-6 shrink-0 items-center justify-end">
+                                            <span class="material-symbols-outlined text-[20px] leading-none text-on-surface-variant">
+                                                chevron_right
+                                            </span>
+                                        </div>
+                                    </article>
+                                </a>
                             {% else %}
                                 <div class="rounded-xl bg-surface-container-lowest p-5 text-sm text-on-surface-variant">
                                     Noch keine Standorte vorhanden.

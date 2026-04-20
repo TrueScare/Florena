@@ -89,6 +89,7 @@ final class DashboardService
     private function mapLocation(object $location): array
     {
         return [
+            'id' => $location->getId(),
             'name' => $location->getName() ?? 'Unbenannter Standort',
             'description' => $location->getDescription() ?? ''
         ];
