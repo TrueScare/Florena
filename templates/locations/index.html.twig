@@ -7,38 +7,79 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Standorte</h1>
+    <main class="pt-24 pb-16 px-4 sm:px-8 max-w-5xl mx-auto w-full">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4">
+                Meine <span class="font-bold italic text-primary">Standorte</span>
+            </h1>
+            <p class="text-gray-500 mb-6">
+                All deine Standorte auf einen Blick.
+            </p>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Beschreibung</th>
-                <th>Lichtbedingungen</th>
-                <th>Temperaturbedingugnen</th>
-                <th>Fuechtigkeit</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for location in locations %}
-            <tr>
-                <td>{{ location.name }}</td>
-                <td>{{ location.description }}</td>
-                <td>{{ location.lightCondition.value }}</td>
-                <td>{{ location.temperatureLevel.value }}</td>
-                <td>{{ location.humidityLevel.value }}</td>
-                <td>
-                    <a href="{{ path('app_locations_show', {'id': location.id}) }}">Details</a>
-                    <a href="{{ path('app_locations_edit', {'id': location.id}) }}">Bearbeiten</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8">Keine Standorte gefunden</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            <a href="{{ path('app_locations_new') }}"
+               class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold">
+                Neuen Standort anlegen
+            </a>
+        </div>
 
-    <a href="{{ path('app_locations_new') }}">Neuen Standort anlegen</a>
+        <div class="space-y-6">
+            {% if locations is empty %}
+                <div class="bg-white rounded-xl p-6 shadow text-center">
+                    <p class="text-gray-500">Du hast noch keine Standorte angelegt.</p>
+                </div>
+            {% else %}
+                {% for location in locations %}
+                    <a href="{{ path('app_locations_show', { id: location.id }) }}"
+                       class="block rounded-xl p-6 bg-surface-container-lowest
+                        shadow-[0px_20px_40px_rgba(46,52,51,0.03)]
+                        border border-transparent
+                        transition-all
+                        hover:border-primary-fixed
+                        hover:shadow-[0px_20px_40px_rgba(46,52,51,0.06)]">
+                        
+                        <div class="flex justify-between items-center gap-6">
+                            <div>
+                                <h2 class="text-xl font-bold">{{ location.name }}</h2>
+
+                                {% if location.description %}
+                                    <p class="text-gray-500 text-sm mt-1">
+                                        {{ location.description }}
+                                    </p>
+                                {% endif %}
+
+                                <div class="flex gap-2 mt-3 text-xs flex-wrap">
+
+                                    {% if location.lightCondition %}
+                                        <span class="px-3 py-1 rounded-full {{ location.lightColor }}">
+                                            {{ location.lightCondition.value }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if location.temperatureLevel %}
+                                        <span class="px-3 py-1 rounded-full {{ location.temperatureColor }}">
+                                            {{ location.temperatureLevel.value }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if location.humidityLevel %}
+                                        <span class="px-3 py-1 rounded-full {{ location.humidityColor }}">
+                                            {{ location.humidityLevel.value }}
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <div class="text-right shrink-0">
+                                <div class="text-green-600 font-bold text-lg">
+                                    {{ location.plants|length }}
+                                </div>
+                                <div class="text-xs text-gray-400">Pflanzen</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </main>
 {% endblock %}
