@@ -135,35 +135,62 @@
                     </span>
                 </div>
 
-                <div class="space-y-6">
+                <div class="grid grid-cols-1 gap-6">
                     {% for plant in location.plants %}
+                        {% set stressBadgeClass = plant.stressScore >= 80
+                            ? 'bg-[#E53935]/10 border-[#E53935]/20'
+                            : (plant.stressScore >= 40
+                                ? 'bg-[#FFB300]/10 border-[#FFB300]/20'
+                                : 'bg-[#7CB342]/10 border-[#7CB342]/20') %}
+
+                        {% set stressTextClass = plant.stressScore >= 80
+                            ? 'text-[#E53935]'
+                            : (plant.stressScore >= 40 ? 'text-[#FFB300]' : 'text-[#7CB342]') %}
+
                         <a href="{{ path('app_plants_show', { id: plant.id }) }}"
-                           class="block rounded-xl p-6 bg-surface-container-lowest
-                                  shadow-[0px_20px_40px_rgba(46,52,51,0.03)]
-                                  border border-transparent
-                                  transition-all
-                                  hover:border-primary-fixed
-                                  hover:shadow-[0px_20px_40px_rgba(46,52,51,0.06)]">
+                        class="block cursor-pointer transition-transform hover:scale-[1.01]">
 
-                            <div class="flex justify-between items-center gap-6">
+                            <article class="flex items-center gap-5 rounded-xl border border-transparent bg-surface-container-lowest p-4 shadow-[0px_20px_40px_rgba(46,52,51,0.03)] transition-all hover:border-primary-fixed">
 
-                                <div class="min-w-0">
-                                    <h3 class="text-xl font-bold truncate">{{ plant.name }}</h3>
-
-                                    {% if plant.description %}
-                                        <p class="text-on-surface-variant text-sm mt-1 line-clamp-2">
-                                            {{ plant.description }}
-                                        </p>
-                                    {% endif %}
+                                <div class="h-24 w-24 overflow-hidden rounded-lg shrink-0">
+                                    <img
+                                        src="{{ plant.displayPhotoPath starts with 'http' ? plant.displayPhotoPath : asset(plant.displayPhotoPath) }}"
+                                        alt="{{ plant.name }}"
+                                        class="h-full w-full object-cover"
+                                    >
                                 </div>
 
-                                <div class="text-right shrink-0">
-                                    <span class="material-symbols-outlined text-on-surface-variant">
-                                        chevron_right
+                                <div class="flex-grow min-w-0">
+                                    <h3 class="text-lg font-bold truncate">{{ plant.name }}</h3>
+
+                                    {% if plant.botanicalName %}
+                                        <p class="text-sm italic text-on-surface-variant mt-1 truncate">
+                                            {{ plant.botanicalName }}
+                                        </p>
+                                    {% endif %}
+
+                                    <p class="text-xs uppercase tracking-widest text-on-surface-variant mt-2">
+                                        {% if plant.location %}
+                                            {{ plant.location.name }}
+                                        {% else %}
+                                            Kein Standort
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <div class="text-center shrink-0">
+                                    <div class="rounded-full border px-3 py-1 {{ stressBadgeClass }}">
+                                        <span class="text-xs font-bold {{ stressTextClass }}">
+                                            {{ plant.stressScore }}%
+                                        </span>
+                                    </div>
+
+                                    <span class="text-[10px] font-bold text-on-surface-variant">
+                                        STRESS
                                     </span>
                                 </div>
 
-                            </div>
+                            </article>
                         </a>
                     {% else %}
                         <div class="rounded-xl bg-surface-container p-6 text-sm text-on-surface-variant">

@@ -2,91 +2,101 @@
 
 {% block title %}Pflanzen{% endblock %}
 
-{% block body %}
-    <h1>Pflanzen</h1>
-    {% embed 'utils/_pagination.html.twig' with {hasSearchTerm: true} %}
-        {% block pagination_header_order %}
-            <label>
-                <select name="order" onchange="this.form.submit()">
-                    <option value="nameAsc"
-                            {% if paginationResult.order == 'nameAsc' %}selected{% endif %}>Name aufsteigend</option>
-                    <option value="nameDesc"
-                            {% if paginationResult.order == 'nameDesc' %}selected{% endif %}>Name absteigend</option>
-                    <option value="locationAsc"
-                            {% if paginationResult.order == 'locationAsc' %}selected{% endif %}>Standort aufsteigend</option>
-                    <option value="locationDesc"
-                            {% if paginationResult.order == 'locationDesc' %}selected{% endif %}>Standort absteigend</option>
-                </select>
-                Sortierung
-            </label>
-        {% endblock %}
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
-        {% block pagination_body %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Beschreibung</th>
-                    <th>Botanischer Name</th>
-                    <th>Lichtbedürfnis</th>
-                    <th>Temperaturbedürfnis</th>
-                    <th>Feuchtigkeitsbedürfnis</th>
-                    <th>Bodenart</th>
-                    <th>Topfgröße</th>
-                    <th>Gießintervall in Tagen</th>
-                    <th>Düngerintervall in Tagen</th>
-                    <th>Umtopfintervall in Tagen</th>
-                    <th>Zuletzt gegossen</th>
-                    <th>Zuletzt gedüngt</th>
-                    <th>Zuletzt umgetopft</th>
-                    <th>Giftig für Menschen</th>
-                    <th>Giftig für Tiere</th>
-                    <th>Gekauft am</th>
-                    <th>Zufriedenheits-Score</th>
-                    <th>Standort</th>
-                    <th>Gestorben am</th>
-                    <th>Aktionen</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for plant in paginationResult.items %}
-                    <tr>
-                        <td>{{ plant.name }}</td>
-                        <td>{{ plant.description }}</td>
-                        <td>{{ plant.botanicalName }}</td>
-                        <td><img src="{{ plant.photoPath }}" alt="{{ plant.name }}" height="50px" width="50px"/></td>
-                        <td>{{ plant.lightRequirement.value }}</td>
-                        <td>{{ plant.temperatureRequirement.value }}</td>
-                        <td>{{ plant.humidityRequirement.value }}</td>
-                        <td>{{ plant.soilType }}</td>
-                        <td>{{ plant.potSize }}</td>
-                        <td>{{ plant.wateringIntervalDays }}</td>
-                        <td>{{ plant.fertilizingIntervalDays }}</td>
-                        <td>{{ plant.repottingIntervalDays }}</td>
-                        <td>{{ plant.lastWateredAt ? plant.lastWateredAt|date('Y-m-d') : '' }}</td>
-                        <td>{{ plant.lastFertilizedAt ? plant.lastFertilizedAt|date('Y-m-d') : '' }}</td>
-                        <td>{{ plant.lastRepottedAt ? plant.lastRepottedAt|date('Y-m-d') : '' }}</td>
-                        <td>{{ plant.toxicForHumans ? 'Ja' : 'Nein' }}</td>
-                        <td>{{ plant.toxicForAnimals ? 'Ja' : 'Nein' }}</td>
-                        <td>{{ plant.purchaseDate ? plant.purchaseDate|date('Y-m-d') : '' }}</td>
-                        <td>{{ plant.stressScore }}</td>
-                        <td>{% if plant.location %}{{ plant.location.name }}{% else %}  kein Standort zugeordnet{% endif %}</td>
-                        <td>{{ plant.diedAt ? plant.diedAt|date('Y-m-d') : '' }}</td>
-                        <td>
-                            <a href="{{ path('app_plants_show', {'id': plant.id}) }}">Details</a>
-                            <a href="{{ path('app_plants_edit', {'id': plant.id}) }}">Bearbeiten</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="23">Keine Pflanzen gefunden</td>
-                    </tr>
+{% block body %}
+    <main class="pt-24 pb-16 px-4 sm:px-8 max-w-5xl mx-auto w-full">
+
+        {# Header Section #}
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-2">
+                    Meine Pflanzen
+                </h1>
+                <p class="text-secondary text-lg">
+                    Hier findest du all deine Pflanzen auf einen Blick.
+                </p>
+            </div>
+
+            <a href="{{ path('app_plants_new') }}"
+               class="flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-full font-bold shadow-[0px_20px_40px_rgba(61,107,0,0.15)] hover:scale-105 active:scale-95 transition-all">
+                <span class="material-symbols-outlined">add</span>
+                Neue Pflanze
+            </a>
+        </div>
+
+        <div class="space-y-6">
+            {% if plants is empty %}
+                <div class="bg-white rounded-xl p-6 shadow text-center">
+                    <p class="text-gray-500">Du hast noch keine Pflanzen angelegt.</p>
+                </div>
+            {% else %}
+                {% for plant in plants %}
+                    <a href="{{ path('app_plants_show', { id: plant.id }) }}"
+                    class="block cursor-pointer transition-transform hover:scale-[1.01]">
+
+                        <article class="flex items-center gap-5 rounded-xl border border-transparent bg-surface-container-lowest p-4 shadow-[0px_20px_40px_rgba(46,52,51,0.03)] transition-all hover:border-primary-fixed">
+
+                            <div class="h-24 w-24 overflow-hidden rounded-lg shrink-0">
+                                <img
+                                    src="{{ plant.displayPhotoPath starts with 'http' ? plant.displayPhotoPath : asset(plant.displayPhotoPath) }}"
+                                    alt="{{ plant.name }}"
+                                    class="h-full w-full object-cover"
+                                >
+                            </div>
+
+                            <div class="flex-grow min-w-0">
+                                <h3 class="text-lg font-bold truncate">{{ plant.name }}</h3>
+
+                                {% if plant.botanicalName %}
+                                    <p class="text-sm italic text-on-surface-variant mt-1 truncate">
+                                        {{ plant.botanicalName }}
+                                    </p>
+                                {% endif %}
+
+                                <p class="text-xs uppercase tracking-widest text-on-surface-variant mt-2">
+                                    {% if plant.location %}
+                                        {{ plant.location.name }}
+                                    {% else %}
+                                        Kein Standort
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="text-center shrink-0">
+                                <div class="rounded-full border px-3 py-1
+                                    {% if plant.stressScore >= 80 %}
+                                        bg-[#E53935]/10 border-[#E53935]/20
+                                    {% elseif plant.stressScore >= 40 %}
+                                        bg-[#FFB300]/10 border-[#FFB300]/20
+                                    {% else %}
+                                        bg-[#7CB342]/10 border-[#7CB342]/20
+                                    {% endif %}
+                                ">
+                                    <span class="text-xs font-bold
+                                        {% if plant.stressScore >= 80 %}
+                                            text-[#E53935]
+                                        {% elseif plant.stressScore >= 40 %}
+                                            text-[#FFB300]
+                                        {% else %}
+                                            text-[#7CB342]
+                                        {% endif %}
+                                    ">
+                                        {{ plant.stressScore }}%
+                                    </span>
+                                </div>
+
+                                <span class="text-[10px] font-bold text-on-surface-variant">
+                                    STRESS
+                                </span>
+                            </div>
+
+                        </article>
+                    </a>
                 {% endfor %}
-                </tbody>
-            </table>
-        {% endblock %}
-        {% block pagination_footer %}
-            <a href="{{ path('app_plants_new') }}">Neue Pflanze</a>
-        {% endblock %}
-    {% endembed %}
+            {% endif %}
+        </div>
+    </main>
 {% endblock %}
