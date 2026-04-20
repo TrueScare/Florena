@@ -201,6 +201,13 @@ class Plants
         return '/uploads/plant_images/' . $this->getPhotoPath();
     }
 
+    public function getDisplayPhotoPath(): string
+    {
+        return $this->photo_path
+            ? '/uploads/plant_images/' . $this->photo_path
+            : 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=400&q=80';
+    }
+
     public function getLightRequirement(): ?LightRequirement
     {
         return $this->light_requirement;

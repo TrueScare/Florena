@@ -27,7 +27,8 @@ final class PlantsController extends AbstractController
         $paginationResult = $paginationService->paginate($queryBuilder, $pageInfo->getPage(), $pageInfo->getLimit(), $pageInfo->getOrder(), $pageInfo->getSearchTerm());
 
         return $this->render('plants/index.html.twig', [
-            'paginationResult' => $paginationResult
+            'paginationResult' => $paginationResult,
+            'plants' => $paginationResult->getItems(),
         ]);
     }
 
