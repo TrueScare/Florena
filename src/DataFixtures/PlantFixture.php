@@ -26,12 +26,12 @@ class PlantFixture extends Fixture implements DependentFixtureInterface, Fixture
             $plant->setHumidityRequirement(HumidityRequirement::medium);
             $plant->setSoilType("TestSoilType");
             $plant->setPotSize("20 cm");
-            $plant->setLastFertilizedAt(new \DateTimeImmutable());
-            $plant->setLastRepottedAt(new \DateTimeImmutable());
-            $plant->setLastWateredAt(new \DateTimeImmutable());
-            $plant->setWateringIntervalDays(15);
-            $plant->setFertilizingIntervalDays(51);
-            $plant->setRepottingIntervalDays(465);
+            $plant->setLastFertilizedAt(new \DateTimeImmutable()->modify("-1 month"));
+            $plant->setLastRepottedAt(new \DateTimeImmutable()->modify("-1 year"));
+            $plant->setLastWateredAt(new \DateTimeImmutable()->modify("-3 days"));
+            $plant->setWateringIntervalDays(7);
+            $plant->setFertilizingIntervalDays(30);
+            $plant->setRepottingIntervalDays(385);
             $plant->setToxicForAnimals(false);
             $plant->setToxicForHumans(false);
             $plant->setPurchaseDate(new \DateTimeImmutable());

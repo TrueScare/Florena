@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\CareTask;
+use App\Enum\CalenderTimeInterval;
 use App\Repository\CareTaskRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -14,10 +16,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class CareTaskController extends AbstractController
 {
     #[Route(name: 'app_care_task_index', methods: ['GET'])]
-    public function index(CareTaskRepository $careTaskRepository): Response
+    public function index(Request $request, CareTaskRepository $careTaskRepository): Response
     {
+        $interval = CalenderTimeInterval::tryFrom($request->query->get('interval'));
+        $interval ??= CalenderTimeInterval::week;
+
         return $this->render('care_task/index.html.twig', [
-            'care_tasks' => $careTaskRepository->findAllByUser($this->getUser()),
+            'care_tasks' => $careTaskRepository->findAllByUserInInterval($this->getUser(), $interval),
+            'interval' => $interval->value,
         ]);
     }
 
@@ -25,7 +31,7 @@ final class CareTaskController extends AbstractController
     public function show(CareTask $careTask): Response
     {
         if ($careTask->getPlant()->getUser() !== $this->getUser()) {
-        return $this->redirectToRoute('app_care_task_index',[], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_care_task_index', [], Response::HTTP_SEE_OTHER);
         }
         return $this->render('care_task/show.html.twig', [
             'care_task' => $careTask,
