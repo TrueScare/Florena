@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\NotificationsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: NotificationsRepository::class)]
 class Notifications
@@ -11,28 +12,35 @@ class Notifications
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['notification:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['notification:read'])]
     private ?string $message = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\Column]
+    #[Groups(['notification:read'])]
     private ?bool $is_read = false;
 
     #[ORM\Column]
+    #[Groups(['notification:read'])]
     private ?bool $is_active = true;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['notification:read'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
+    #[Groups(['notification:read'])]
     private ?PropagationActions $propagation_action = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
+    #[Groups(['notification:read'])]
     private ?CareTask $care_task = null;
 
     public function __construct()
