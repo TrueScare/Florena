@@ -1,14 +1,22 @@
 {% block calender_filter %}
-    <form id="calender_filter">
-        <label>
-            <select name="interval" onchange="this.form.submit()">
+    <form id="calender_filter"
+          class="flex flex-col gap-4 rounded-[1.75rem] bg-surface-container-lowest p-5 shadow-[0px_18px_45px_rgba(46,52,51,0.04)] sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <p class="text-sm font-semibold text-on-surface">Ansicht wählen</p>
+            <p class="mt-1 text-sm text-on-surface-variant">
+                Wechsle zwischen Tages-, Wochen- und Monatsansicht.
+            </p>
+        </div>
+
+        <label class="flex items-center gap-3 text-sm font-medium text-on-surface">
+            <span>Zeitintervall</span>
+            <select name="interval"
+                    onchange="this.form.submit()"
+                    class="rounded-full border border-outline-variant/20 bg-surface px-5 py-3 text-sm font-semibold text-on-surface shadow-sm transition-colors focus:border-primary focus:outline-none focus:ring-0">
                 <option value="Tag" {% if interval == "Tag" %}selected{% endif %}>Tag</option>
                 <option value="Woche" {% if interval == "Woche" %}selected{% endif %}>Woche</option>
                 <option value="Monat" {% if interval == "Monat" %}selected{% endif %}>Monat</option>
             </select>
-            Zeitintervall
         </label>
-
-
     </form>
 {% endblock %}
