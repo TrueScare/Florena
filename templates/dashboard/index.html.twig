@@ -27,7 +27,7 @@
     <main class="mx-auto max-w-[1440px] px-8 pb-24 pt-32">
         <header class="mb-12">
             <h1 class="mb-2 text-4xl font-extrabold tracking-tight text-on-surface">
-                Guten Morgen, {{ dashboardGreetingName }}
+                <span class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-2">Guten Morgen, {{ dashboardGreetingName }}</span>
             </h1>
             <p class="font-body text-on-surface-variant">
                 Deine botanischen Freunde benötigen heute ein wenig Aufmerksamkeit.
@@ -40,9 +40,11 @@
             <section class="space-y-6 lg:col-span-4">
                 <div class="flex items-center justify-between px-2">
                     <h2 class="text-xl font-bold tracking-tight">Anstehende Aufgaben</h2>
-                    <span class="cursor-pointer text-sm font-semibold text-primary underline-offset-4 hover:underline">
-                        Alle ansehen
-                    </span>
+                    <a href="{{ path('app_care_task_index') }}">
+                        <span class="cursor-pointer text-sm font-semibold text-primary underline-offset-4 hover:underline">
+                            Alle ansehen
+                        </span>
+                    </a>
                 </div>
 
                 <div class="space-y-4">
