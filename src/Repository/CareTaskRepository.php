@@ -43,14 +43,36 @@ class CareTaskRepository extends ServiceEntityRepository
     public function findAllByUserInInterval(UserInterface $user, CalenderTimeInterval $interval = CalenderTimeInterval::week): array
     {
         match ($interval) {
-            CalenderTimeInterval::day => $endDate = new DateTimeImmutable(""),
-            CalenderTimeInterval::week => $endDate = new DateTimeImmutable("last day of this week"),
-            CalenderTimeInterval::month => $endDate = new DateTimeImmutable("last day of this month")
+            CalenderTimeInterval::day => $endDate = new DateTimeImmutable("tomorrow"),
+            CalenderTimeInterval::week => $endDate = new DateTimeImmutable("last day of this week")->modify("+1 day"),
+            CalenderTimeInterval::month => $endDate = new DateTimeImmutable("last day of this month")->modify("+1 day")
         };
 
         return $this->getBaseUserQueryBuilder($user)
-            ->andWhere('c.due_date <= :endDate')
+            ->andWhere('c.due_date < :endDate')
             ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    /**
+     * Get all CareTasks that do not have a notification
+     *
+     * @return array
+     */
+    public function findAllWithoutNotification(): array
+    {
+        $endOfDay = new DateTimeImmutable("tomorrow");
+
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.plant', 'p')
+            ->leftJoin('c.notifications', 'n', 'WITH', 'n.is_read = 0')
+            ->addSelect('n')
+            ->addSelect('p')
+            ->andWhere('n IS NULL')
+            ->andWhere('c.due_date < :endDate')
+            ->setParameter('endDate', $endOfDay)
             ->getQuery()
             ->getResult();
     }
