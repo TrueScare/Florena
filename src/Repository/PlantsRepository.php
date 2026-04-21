@@ -26,6 +26,16 @@ class PlantsRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findHistoryByUser(UserInterface $user): array
+    {
+        return $this->getQueryBuilderFindAllByUser($user)
+            ->leftJoin('p.care_history', 'h')
+            ->addSelect('h')
+            ->andWhere('h IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getQueryBuilderFindAllByUser(UserInterface $user, PaginationOrder $order = PaginationOrder::NAME_ASC, ?string $searchTerm = null): QueryBuilder
     {
         $queryBuilder = $this->createQueryBuilder('p')
