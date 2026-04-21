@@ -1,0 +1,14 @@
+{% block calender_filter %}
+    <form id="calender_filter">
+        <label>
+            <select name="interval" onchange="this.form.submit()">
+                <option value="Tag" {% if interval == "Tag" %}selected{% endif %}>Tag</option>
+                <option value="Woche" {% if interval == "Woche" %}selected{% endif %}>Woche</option>
+                <option value="Monat" {% if interval == "Monat" %}selected{% endif %}>Monat</option>
+            </select>
+            Zeitintervall
+        </label>
+
+
+    </form>
+{% endblock %}
