@@ -18,7 +18,7 @@ final class CareTaskController extends AbstractController
     #[Route(name: 'app_care_task_index', methods: ['GET'])]
     public function index(Request $request, CareTaskRepository $careTaskRepository): Response
     {
-        $interval = CalenderTimeInterval::tryFrom($request->query->get('interval'));
+        $interval = CalenderTimeInterval::tryFrom($request->query->get('interval', CalenderTimeInterval::week->value));
         $interval ??= CalenderTimeInterval::week;
 
         return $this->render('care_task/index.html.twig', [
