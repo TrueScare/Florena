@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pflegehistorie{% endblock %}
+
+{% block body %}
+    <h1>Pflegehistorie</h1>
+
+    {% for plant in plants %}
+        <details>
+            <summary style="cursor: pointer;">{{ plant.name }}</summary>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Aufgabentyp</th>
+                    <th>Erledigt am</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for care_history in plant.careHistory %}
+                    <tr>
+                        <td>{{ care_history.careType.value }}</td>
+                        <td>{{ care_history.performedAt ? care_history.performedAt|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">Keine Historie Gefunden</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    {% else %}
+        <div>Noch keine Aufgaben erledigt</div>
+    {% endfor %}
+{% endblock %}
