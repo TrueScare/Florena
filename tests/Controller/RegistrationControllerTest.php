@@ -25,7 +25,7 @@ class RegistrationControllerTest extends WebTestCase
         $this->userRepository = $container->get(UserRepository::class);
 
         foreach ($this->userRepository->findAll() as $user) {
-            if($user->getUsername !== 'Testuser'){
+            if($user->getUsername() !== 'Testuser'  && $user->getUsername() !== 'TestuserNoRef'){
                 // prevent the fixture test user to be deleted...
                 $em->remove($user);
             }
@@ -50,7 +50,9 @@ class RegistrationControllerTest extends WebTestCase
 
         // Ensure the response redirects after submitting the form, the user exists, and is not verified
         self::assertResponseRedirects('/dashboard');
-        self::assertCount(1, $this->userRepository->findAll());
+
+        // we have to default users that should still be here plus the new one
+        self::assertCount(1, $this->userRepository->findBy(['username' => 'username_test']));
         self::assertFalse(($user = $this->userRepository->findAll()[0])->isVerified());
 
         // Ensure the verification email was sent
@@ -79,6 +81,6 @@ class RegistrationControllerTest extends WebTestCase
         $this->client->request('GET', $resetLink[1]);
         $this->client->followRedirect();
 
-        self::assertTrue(static::getContainer()->get(UserRepository::class)->findAll()[0]->isVerified());
+        self::assertTrue(static::getContainer()->get(UserRepository::class)->findOneBy(['username' => 'username_test'])->isVerified());
     }
 }

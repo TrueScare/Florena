@@ -24,13 +24,13 @@ class UserFixture extends Fixture implements FixtureGroupInterface
         $user1 = new User();
         $user1->setUsername('Testuser');
         $user1->setDisplayname('Ich bin ein Testuser');
-        $user1->setEmail('Test@test.de');
+        $user1->setEmail('Test1@test.de');
         $user1->setPassword($this->passwordHasher->hashPassword($user1, '!1234567'));
 
         $user2 = new User();
         $user2->setUsername('TestuserNoRef');
         $user2->setDisplayname('Ich bin ein Testuser ohne Referenzdaten');
-        $user2->setEmail('Test@test.de');
+        $user2->setEmail('Test2@test.de');
         $user2->setPassword($this->passwordHasher->hashPassword($user1, '!1234567'));
 
         $manager->persist($user1);

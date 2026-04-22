@@ -20,6 +20,9 @@ class LocationsRepository extends ServiceEntityRepository
 
     public function findAllByUser(UserInterface $user): array {
         return $this->createQueryBuilder('l')
+            ->leftJoin('l.plants', 'p')
+            ->leftJoin('l.wishlist_plants', 'wp')
+            ->addSelect('wp', 'p')
             ->andWhere('l.user = :user')
             ->setParameter('user', $user)
             ->getQuery()
