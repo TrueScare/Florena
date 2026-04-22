@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}WishlistPlants{% endblock %}
+
+{% block body %}
+    <h1>WishlistPlants</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td>{{ wishlist_plant.name }}</td>
+            </tr>
+            <tr>
+                <th>Beschreibung</th>
+                <td>{{ wishlist_plant.description }}</td>
+            </tr>
+            <tr>
+                <th>Botanischer Name</th>
+                <td>{{ wishlist_plant.botanicalName }}</td>
+            </tr>
+            <tr>
+                <th>Standort</th>
+                <td>{{ wishlist_plant.location?.name }}</td>
+            </tr>
+            <tr>
+                <th>Menge</th>
+                <td>{{ wishlist_plant.quantity }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_wishlist_plants_index') }}">zurück zur Liste</a>
+
+    <a href="{{ path('app_wishlist_plants_edit', {'id': wishlist_plant.id}) }}">Bearbeiten</a>
+
+    {{ include('wishlist_plants/_delete_form.html.twig') }}
+{% endblock %}

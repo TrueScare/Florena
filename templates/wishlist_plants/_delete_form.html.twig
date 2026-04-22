@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_wishlist_plants_delete', {'id': wishlist_plant.id}) }}" onsubmit="return confirm('Bist du dir sicher, dass du diese Pflanze aus der Wunschliste löschen möchtest?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('Löschen' ~ wishlist_plant.id) }}">
+    <button class="btn">Löschen</button>
+</form>

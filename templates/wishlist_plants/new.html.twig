@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wunschpflanze anlegen{% endblock %}
+
+{% block body %}
+    <h1>Wunschpflanze anlegen</h1>
+
+    {{ include('wishlist_plants/_form.html.twig') }}
+
+    <a href="{{ path('app_wishlist_plants_index') }}">zurück zur Liste</a>
+{% endblock %}

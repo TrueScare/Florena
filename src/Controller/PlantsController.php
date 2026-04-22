@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\DataFixtures\WishlistPlantFixture;
 use App\Entity\Plants;
+use App\Entity\WishlistPlants;
 use App\Form\PlantsType;
 use App\Repository\PlantsRepository;
 use App\Service\Pagination\PaginationService;
@@ -19,6 +21,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("IS_AUTHENTICATED")]
 final class PlantsController extends AbstractController
 {
+    public function __construct()
+    {
+    }
+
     #[Route(name: 'app_plants_index', methods: ['GET'])]
     public function index(Request $request, PlantsRepository $plantsRepository, PaginationService $paginationService): Response
     {
@@ -135,5 +141,28 @@ final class PlantsController extends AbstractController
         }
 
         return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/add/{id}', name: 'app_plants_add', methods: ['GET'])]
+    public function addToWishlist(Plants $plant, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->getUser() !== $plant->getUser()) {
+            return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $wishlistPlant = new WishlistPlants()
+            ->setName($plant->getName())
+            ->setDescription($plant->getDescription() ?? '')
+            ->setBotanicalName($plant->getBotanicalName() ?? '')
+            ->setUser($plant->getUser());
+
+        if($plant->getLocation()){
+            $wishlistPlant->setLocation($plant->getLocation());
+        }
+
+        $entityManager->persist($wishlistPlant);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_wishlist_plants_show', ['id' => $wishlistPlant->getId()], Response::HTTP_SEE_OTHER);
     }
 }

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wunschpflanze{% endblock %}
+
+{% block body %}
+    <h1>Wunschpflanze</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Beschreibung</th>
+                <th>Botanischer Name</th>
+                <th>Standort</th>
+                <th>Menge</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for wishlist_plant in wishlist_plants %}
+            <tr>
+                <td>{{ wishlist_plant.name }}</td>
+                <td>{{ wishlist_plant.description }}</td>
+                <td>{{ wishlist_plant.botanicalName }}</td>
+                <td>{{ wishlist_plant.location?.name }}</td>
+                <td>{{ wishlist_plant.quantity }}</td>
+                <td>
+                    <a href="{{ path('app_wishlist_plants_show', {'id': wishlist_plant.id}) }}">Anzeigen</a>
+                    <a href="{{ path('app_wishlist_plants_edit', {'id': wishlist_plant.id}) }}">Bearbeiten</a>
+                    <a href="{{ path('app_wishlist_plants_add', {'id': wishlist_plant.id}) }}">Übernehmen</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">keine Wunschpflazen gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_wishlist_plants_new') }}">Neue Wunschpflanze anlegen</a>
+{% endblock %}

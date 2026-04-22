@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wunschpflanze bearbeiten{% endblock %}
+
+{% block body %}
+    <h1>Wunschpflanze bearbeiten</h1>
+
+    {{ include('wishlist_plants/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_wishlist_plants_index') }}">Zurück zur Liste</a>
+
+    {{ include('wishlist_plants/_delete_form.html.twig') }}
+{% endblock %}

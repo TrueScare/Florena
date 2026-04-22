@@ -6,6 +6,7 @@ use App\Repository\WishlistPlantsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: WishlistPlantsRepository::class)]
+#[ORM\UniqueConstraint(name: 'unique_wishlist_plant', columns: ['user_id', 'name', 'location_id', 'quantity'])]
 class WishlistPlants
 {
     #[ORM\Id]
@@ -20,7 +21,7 @@ class WishlistPlants
     private ?string $botanical_name = null;
 
     #[ORM\Column]
-    private int $quantity = 0;
+    private int $quantity = 1;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -31,6 +32,9 @@ class WishlistPlants
     #[ORM\ManyToOne(inversedBy: 'wishlistPlants')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $name = null;
 
     public function __construct()
     {
@@ -110,6 +114,18 @@ class WishlistPlants
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
