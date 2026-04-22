@@ -40,7 +40,7 @@ final class WishlistPlantsControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('WishlistPlants index');
+        self::assertPageTitleContains('Wunschpflanze');
     }
 
     public function testNew(): void
@@ -86,7 +86,7 @@ final class WishlistPlantsControllerTest extends WebTestCase
 
         $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
 
-        $this->client->submitForm('Beaerbeiten', [
+        $this->client->submitForm('Bearbeiten', [
             'wishlist_plants[name]' => 'Something New',
             'wishlist_plants[description]' => 'Something New',
             'wishlist_plants[botanical_name]' => 'Something New',
