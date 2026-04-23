@@ -9,6 +9,7 @@ use App\Repository\LocationsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LocationsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_location_name', columns: ['user_id', 'name'])]
@@ -17,21 +18,27 @@ class Locations
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('location:ref')]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups('location:ref')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('location:ref')]
     private ?string $description = null;
 
     #[ORM\Column(enumType: LightRequirement::class)]
+    #[Groups('location:ref')]
     private ?LightRequirement $light_condition = null;
 
     #[ORM\Column(enumType: TemperatureRequirement::class)]
+    #[Groups('location:ref')]
     private ?TemperatureRequirement $temperature_level = null;
 
     #[ORM\Column(enumType: HumidityRequirement::class)]
+    #[Groups('location:ref')]
     private ?HumidityRequirement $humidity_level = null;
 
     #[ORM\Column]
