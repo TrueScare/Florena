@@ -25,6 +25,7 @@ class LocationsRepository extends ServiceEntityRepository
             ->addSelect('wp', 'p')
             ->andWhere('l.user = :user')
             ->setParameter('user', $user)
+            ->OrderBy('l.name', 'ASC')
             ->getQuery()
             ->getResult();
     }

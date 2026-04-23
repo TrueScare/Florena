@@ -22,6 +22,7 @@ class PlantsRepository extends ServiceEntityRepository
     public function findAllByUser(UserInterface $user)
     {
         return $this->getQueryBuilderFindAllByUser($user)
+            ->OrderBy('p.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
