@@ -2,14 +2,13 @@
 
 namespace App\Controller;
 
-use App\DataFixtures\WishlistPlantFixture;
 use App\Entity\Plants;
 use App\Entity\WishlistPlants;
 use App\Form\PlantsType;
 use App\Repository\PlantsRepository;
+use App\Service\Fitness\FitnessService;
 use App\Service\Pagination\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("IS_AUTHENTICATED")]
 final class PlantsController extends AbstractController
 {
-    public function __construct()
+    public function __construct(private FitnessService $fitnessService)
     {
     }
 
@@ -80,14 +79,24 @@ final class PlantsController extends AbstractController
             return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        if ($plant->getLocation()) {
+            $fitnessStatus = $this->fitnessService->checkFitForPlantInLocation(
+                $plant->getLightRequirement(),
+                $plant->getTemperatureRequirement(),
+                $plant->getHumidityRequirement(),
+                $plant->getLocation());
+        }
+
         return $this->render('plants/show.html.twig', [
             'plant' => $plant,
+            'fitnessStatus' => $fitnessStatus ?? null,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_plants_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Plants $plant, EntityManagerInterface $entityManager, string $uploadsPath): Response
     {
+
         //make sure that we only show plants to the owner of the plant
         if ($this->getUser() !== $plant->getUser()) {
             return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
@@ -156,7 +165,7 @@ final class PlantsController extends AbstractController
             ->setBotanicalName($plant->getBotanicalName() ?? '')
             ->setUser($plant->getUser());
 
-        if($plant->getLocation()){
+        if ($plant->getLocation()) {
             $wishlistPlant->setLocation($plant->getLocation());
         }
 
