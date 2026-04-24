@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\PropagationActions;
+use App\Form\PropagationActionsType;
+use App\Repository\PropagationActionsRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[Route('/propagation_actions')]
+#[IsGranted("IS_AUTHENTICATED")]
+final class PropagationActionsController extends AbstractController
+{
+    #[Route(name: 'app_propagation_actions_index', methods: ['GET'])]
+    public function index(PropagationActionsRepository $propagationActionsRepository): Response
+    {
+        return $this->render('propagation_actions/index.html.twig', [
+            'propagation_actions' => $propagationActionsRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/new', name: 'app_propagation_actions_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $propagationAction = new PropagationActions();
+        $form = $this->createForm(PropagationActionsType::class, $propagationAction, [
+            'user' => $this->getUser(),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($propagationAction);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_propagation_actions_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('propagation_actions/new.html.twig', [
+            'propagation_action' => $propagationAction,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_propagation_actions_show', methods: ['GET'])]
+    public function show(PropagationActions $propagationAction): Response
+    {
+        if ($propagationAction->getPlant()->getUser() !== $this->getUser()) {
+            return $this->redirectToRoute('app_propagation_actions_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('propagation_actions/show.html.twig', [
+            'propagation_action' => $propagationAction,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_propagation_actions_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, PropagationActions $propagationAction, EntityManagerInterface $entityManager): Response
+    {
+        if ($propagationAction->getPlant()->getUser() !== $this->getUser()) {
+            return $this->redirectToRoute('app_propagation_actions_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $form = $this->createForm(PropagationActionsType::class, $propagationAction,[
+            'user' => $this->getUser(),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_propagation_actions_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('propagation_actions/edit.html.twig', [
+            'propagation_action' => $propagationAction,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_propagation_actions_delete', methods: ['POST'])]
+    public function delete(Request $request, PropagationActions $propagationAction, EntityManagerInterface $entityManager): Response
+    {
+        if ($propagationAction->getPlant()->getUser() !== $this->getUser()) {
+            return $this->redirectToRoute('app_propagation_actions_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $propagationAction->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($propagationAction);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_propagation_actions_index', [], Response::HTTP_SEE_OTHER);
+    }
+}
