@@ -27,6 +27,17 @@ class PlantsRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findAllByUserWithImperfectLocation(UserInterface $user): array
+    {
+        return $this->getQueryBuilderFindAllByUser($user)
+            ->andWhere(
+                'l is null
+                or p.temperature_requirement != l.temperature_level
+                OR p.light_requirement != l.light_condition')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findHistoryByUser(UserInterface $user): array
     {
         return $this->getQueryBuilderFindAllByUser($user)
