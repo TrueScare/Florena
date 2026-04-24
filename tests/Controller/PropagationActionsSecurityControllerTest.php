@@ -12,6 +12,8 @@ use App\Enum\PropagationMethod;
 use App\Enum\Status;
 use App\Enum\TemperatureRequirement;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ObjectManager;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PropagationActionsSecurityControllerTest extends WebTestCase
@@ -21,6 +23,10 @@ class PropagationActionsSecurityControllerTest extends WebTestCase
     private EntityRepository $plantRepository;
     private string $path = '/propagation_actions/';
     private PropagationActions $propagationAction;
+    private KernelBrowser $client;
+    private ObjectManager $manager;
+    private User $owner;
+    private User $attacker;
 
     protected function setUp(): void
     {
