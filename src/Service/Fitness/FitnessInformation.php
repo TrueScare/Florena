@@ -2,19 +2,26 @@
 
 namespace App\Service\Fitness;
 
+use App\Entity\RequirementsEntityInterface;
 use App\Enum\FitnessStatus;
 use App\Enum\RequirementInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 class FitnessInformation
 {
+    #[Groups('fitnessinformation:ref')]
     /** @var FitnessStatus $status */
     private FitnessStatus $status;
 
+    #[Groups('fitnessinformation:ref')]
     /** @var array<RequirementInterface, RequirementInterface> $missmatches */
     private array $missmatches;
 
     public function __construct(
-        private int $locationId
+        #[Groups('fitnessinformation:ref')]
+        private RequirementsEntityInterface $entity,
+        #[Groups('fitnessinformation:ref')]
+        private string                      $entityClass
     )
     {
         $this->missmatches = [];
@@ -41,21 +48,38 @@ class FitnessInformation
     }
 
     /**
-     * @param array<RequirementInterface, RequirementInterface> $match
+     * The missmatch array structure is as follows:
+     * [
+     *    RequirementInterface::class => [
+     *          'fromEntity' => 'toEntity'
+     *      ]
+     * ]
+     *
+     * @param array<array<RequirementInterface>> $match
      * @return void
      */
     public function addMissmatch(array $match): void
     {
-       $this->missmatches[] = $match;
+        $this->missmatches = array_merge($this->missmatches, $match);
     }
 
-    public function getLocationId(): int
+    public function getEntity(): RequirementsEntityInterface
     {
-        return $this->locationId;
+        return $this->entity;
     }
 
-    public function setLocationId(int $locationId): void
+    public function setEntity(RequirementsEntityInterface $entity): void
     {
-        $this->locationId = $locationId;
+        $this->entity = $entity;
+    }
+
+    public function getEntityClass(): string
+    {
+        return $this->entityClass;
+    }
+
+    public function setEntityClass(string $entityClass): void
+    {
+        $this->entityClass = $entityClass;
     }
 }

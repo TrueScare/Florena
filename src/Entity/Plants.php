@@ -14,39 +14,42 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: PlantsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_plant_name', columns: ['user_id', 'name'])]
 #[ORM\HasLifecycleCallbacks]
-class Plants
+class Plants implements RequirementsEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?string $botanical_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?string $photo_path = null;
 
     private ?string $full_photo_path = null;
 
     #[ORM\Column(enumType: LightRequirement::class)]
+    #[Groups(['plant:ref'])]
     private ?LightRequirement $light_requirement = null;
 
     #[ORM\Column(enumType: TemperatureRequirement::class)]
+    #[Groups(['plant:ref'])]
     private ?TemperatureRequirement $temperature_requirement = null;
 
     #[ORM\Column(enumType: HumidityRequirement::class)]
+    #[Groups(['plant:ref'])]
     private ?HumidityRequirement $humidity_requirement = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -56,43 +59,46 @@ class Plants
     private ?string $pot_size = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?int $watering_interval_days = 0;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?int $fertilizing_interval_days = 0;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?int $repotting_interval_days = 0;
 
     #[ORM\Column]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?\DateTimeImmutable $last_watered_at;
 
     #[ORM\Column]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?\DateTimeImmutable $last_fertilized_at = null;
 
     #[ORM\Column]
-    #[Groups(['care_task:read'])]
+    #[Groups(['plant:ref'])]
     private ?\DateTimeImmutable $last_repotted_at = null;
 
     #[ORM\Column]
+    #[Groups(['plant:ref'])]
     private ?bool $toxic_for_humans = null;
 
     #[ORM\Column]
+    #[Groups(['plant:ref'])]
     private ?bool $toxic_for_animals = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['plant:ref'])]
     private ?\DateTimeImmutable $purchase_date = null;
 
     #[ORM\Column]
-    #[Groups(['plant:ref'])]
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\Column]
+    #[Groups(['plant:ref'])]
     private ?int $stress_score = 100;
 
     #[ORM\Column(nullable: true)]
@@ -127,7 +133,6 @@ class Plants
     private Collection $care_history;
 
     #[ORM\ManyToOne(inversedBy: 'plants')]
-    #[Groups(['plant:ref'])]
     private ?Locations $location = null;
 
     public function __construct()

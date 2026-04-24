@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Finess Check{% endblock %}
+
+{% block body %}
+    <form>
+        <label>
+            <select
+                onchange="this.form.action='/fitness/location/'+ this.options[this.selectedIndex].value; this.form.submit()">
+                {% for location in locations %}
+                    <option value="{{ location.id }}"
+                            {% if location == selected %}selected{% endif %}>{{ location.name }}</option>
+                {% endfor %}
+            </select>
+            Standortauswahl
+        </label>
+    </form>
+    {# using the default for when there are no fiting plants #}
+    {% for information in fitnessInformation['geeignet']|default([]) %}
+        <div>{{ information.entity.name }}{% if information.entity.location is not empty %} Standort nicht optimal{% else %} kein Standort{% endif %}</div>
+    {% else %}
+        <div>keine geeigneten Pflanze vorhanden</div>
+    {% endfor %}
+{% endblock %}
+
+

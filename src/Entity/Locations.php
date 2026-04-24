@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LocationsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_location_name', columns: ['user_id', 'name'])]
-class Locations
+class Locations implements RequirementsEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
