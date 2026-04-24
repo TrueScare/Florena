@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New PropagationActions{% endblock %}
+
+{% block body %}
+    <h1>Create new PropagationActions</h1>
+
+    {{ include('propagation_actions/_form.html.twig') }}
+
+    <a href="{{ path('app_propagation_actions_index') }}">zurück zur Liste</a>
+{% endblock %}
