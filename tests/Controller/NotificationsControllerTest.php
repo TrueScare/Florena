@@ -6,11 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class NotificationsControllerTest extends WebTestCase
 {
-    public function testIndex(): void
+    public function testIndexRedirectsToLoginForAnonymousUser(): void
     {
         $client = static::createClient();
         $client->request('GET', '/notifications');
 
-        self::assertResponseIsSuccessful();
+        self::assertResponseRedirects('/login');
     }
 }
