@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Notifications;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,31 @@ class NotificationsRepository extends ServiceEntityRepository
         parent::__construct($registry, Notifications::class);
     }
 
-//    /**
-//     * @return Notifications[] Returns an array of Notifications objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('n')
-//            ->andWhere('n.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('n.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 
-//    public function findOneBySomeField($value): ?Notifications
-//    {
-//        return $this->createQueryBuilder('n')
-//            ->andWhere('n.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @return Notifications[]
+     */
+    public function findUnreadActiveByUser(User $user): array
+    {
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.user = :user')
+            ->andWhere('n.is_read = false')
+            ->andWhere('n.is_active = true')
+            ->setParameter('user', $user)
+            ->orderBy('n.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countUnreadActiveByUser(User $user): int
+    {
+        return (int) $this->createQueryBuilder('n')
+            ->select('COUNT(n.id)')
+            ->andWhere('n.user = :user')
+            ->andWhere('n.is_read = false')
+            ->andWhere('n.is_active = true')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

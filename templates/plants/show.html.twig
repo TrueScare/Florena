@@ -209,6 +209,55 @@
             </div>
         </div>
 
+        <div class="mt-12 bg-surface-container-lowest rounded-xl p-8 shadow-[0px_20px_40px_rgba(46,52,51,0.03)]">
+            <h2 class="text-xl font-bold mb-6">Pflegehistorie</h2>
+
+            <div class="space-y-4">
+                {% for entry in plant.careHistory|slice(0, 5) %}
+                <div class="flex items-center justify-between rounded-xl bg-surface-container p-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center
+                            {% if entry.careType.value == 'gießen' %}
+                                bg-tertiary-container text-on-tertiary-container
+                            {% elseif entry.careType.value == 'düngen' %}
+                                bg-secondary-container text-on-secondary-container
+                            {% else %}
+                                bg-primary-container text-on-primary-container
+                            {% endif %}
+                        ">
+                            <span class="material-symbols-outlined">
+                                {% if entry.careType.value == 'gießen' %}
+                                    water_drop
+                                {% elseif entry.careType.value == 'düngen' %}
+                                    compost
+                                {% else %}
+                                    potted_plant
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div>
+                            <p class="font-semibold text-on-surface capitalize">
+                                {{ entry.careType.value }}
+                            </p>
+                            <p class="text-sm text-on-surface-variant">
+                                {{ entry.performedAt|date('d.m.Y H:i') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">
+                        check_circle
+                    </span>
+                </div>
+                {% else %}
+                    <p class="text-sm text-on-surface-variant">
+                        Noch keine Pflegehistorie vorhanden.
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+
         {# Notizen #}
 
         <div class="mt-12 grid grid-cols-1 gap-8">

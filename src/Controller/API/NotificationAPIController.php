@@ -20,8 +20,8 @@ class NotificationAPIController extends AbstractController
     {
     }
 
-    #[Route('/{id}', name: 'app_notification_read', methods: ['GET'])]
-    public function read(Notifications $notification)
+    #[Route('/{id}/read', name: 'app_notification_read', methods: ['POST'])]
+    public function read(Notifications $notification): Response
     {
         if ($notification->getUser() !== $this->getUser()) {
             return $this->json([], Response::HTTP_FORBIDDEN);
@@ -29,14 +29,11 @@ class NotificationAPIController extends AbstractController
 
         $notification->setIsRead(true);
 
-        $this->entityManager->persist($notification);
         $this->entityManager->flush();
 
-        // requery to get updated information
-        $notification = $this->notificationsRepository->find($notification->getId());
-
         return $this->json([
-            'notification' => $notification],
-            context: ['groups' => ['notification:read', 'user:ref']]);
+            'success' => true,
+            'notificationId' => $notification->getId(),
+        ]);
     }
 }

@@ -6,10 +6,11 @@ use App\Entity\User;
 use App\Repository\CareTaskRepository;
 use App\Repository\LocationsRepository;
 use App\Repository\PlantsRepository;
+use App\Enum\CalenderTimeInterval;
 
 final class DashboardService
 {
-    private const int MAX_UPCOMING_TASKS = 3;
+    private const int MAX_UPCOMING_TASKS = 10;
     private const int MAX_PLANTS = 4;
     private const int MAX_LOCATIONS = 3;
     private const string FALLBACK_PLANT_IMAGE =
@@ -24,7 +25,7 @@ final class DashboardService
 
     public function getDashboardData(User $user): array
     {
-        $tasks = $this->careTaskRepository->findAllByUser($user);
+        $tasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::week);
         $plants = $this->plantsRepository->findAllByUser($user);
         $locations = $this->locationsRepository->findAllByUser($user);
 
@@ -66,8 +67,10 @@ final class DashboardService
         $type = $task->getTaskType()?->value ?? '';
 
         return [
+            'id' => $task->getId(),
             'type' => ucfirst($type),
             'plant' => $task->getPlant()?->getName() ?? 'Unbekannte Pflanze',
+            'plantId' => $task->getPlant()?->getId(),
             'dueDate' => $task->getDueDate(),
         ];
     }
