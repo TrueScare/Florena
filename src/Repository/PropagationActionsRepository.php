@@ -20,7 +20,7 @@ class PropagationActionsRepository extends ServiceEntityRepository
 
     public function findAllWithoutNotification(?User $user = null): array
     {
-        $now = new \DateTimeImmutable();
+        $endDate = new \DateTimeImmutable("tomorrow");
 
         $queryBuilder = $this->createQueryBuilder('p')
             ->leftJoin('p.plant', 'pl')
@@ -28,9 +28,9 @@ class PropagationActionsRepository extends ServiceEntityRepository
             ->leftJoin('p.notifications', 'n', 'WITH', 'n.is_read = 0')
             ->addSelect('n', 'u', 'pl')
             ->andWhere('n is null')
-            ->andWhere('p.planned_date <= :now')
+            ->andWhere('p.planned_date < :endDate')
             ->andWhere('p.status IN (:activeStatuses)')
-            ->setParameter('now', $now)
+            ->setParameter('endDate', $endDate)
             ->setParameter('activeStatuses', [Status::planned, Status::in_progress]);
 
         if ($user !== null) {

@@ -63,7 +63,7 @@ class CareTaskRepository extends ServiceEntityRepository
      */
     public function findAllWithoutNotification(?UserInterface $user = null): array
     {
-        $now = new DateTimeImmutable();
+        $endOfDay = new DateTimeImmutable("tomorrow");
 
         $queryBuilder = $this->createQueryBuilder('c')
             ->leftJoin('c.plant', 'p')
@@ -71,8 +71,8 @@ class CareTaskRepository extends ServiceEntityRepository
             ->addSelect('n')
             ->addSelect('p')
             ->andWhere('n IS NULL')
-            ->andWhere('c.due_date <= :now')
-            ->setParameter('now', $now);
+            ->andWhere('c.due_date < :endDate')
+            ->setParameter('endDate', $endOfDay);
 
         if ($user !== null) {
             $queryBuilder
