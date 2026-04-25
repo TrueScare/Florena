@@ -27,17 +27,20 @@
         data-controller="care-task"
     {% endif %}
     class="care-task-card group flex items-center justify-between rounded-xl bg-surface-container-lowest p-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:scale-[1.01]"
->
-    <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 items-center justify-center rounded-full {{ taskPresentation.iconBackgroundClass }} {{ taskPresentation.iconTextClass }}">
+    >
+    <a
+        href="{{ task.plantId is defined ? path('app_plants_show', { id: task.plantId }) : '#' }}"
+        class="flex min-w-0 flex-1 items-center gap-4"
+    >
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full {{ taskPresentation.iconBackgroundClass }} {{ taskPresentation.iconTextClass }}">
             <span class="material-symbols-outlined">{{ taskPresentation.icon }}</span>
         </div>
 
-        <div>
+        <div class="min-w-0">
             <h3 class="font-bold leading-tight text-on-surface">{{ task.type }}</h3>
-            <p class="text-sm text-on-surface-variant">{{ task.plant }}</p>
+            <p class="truncate text-sm text-on-surface-variant">{{ task.plant }}</p>
         </div>
-    </div>
+    </a>
 
     <div class="text-right">
         {% if showDoneButton|default(false) %}

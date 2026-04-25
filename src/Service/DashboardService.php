@@ -70,6 +70,7 @@ final class DashboardService
             'id' => $task->getId(),
             'type' => ucfirst($type),
             'plant' => $task->getPlant()?->getName() ?? 'Unbekannte Pflanze',
+            'plantId' => $task->getPlant()?->getId(),
             'dueDate' => $task->getDueDate(),
         ];
     }
