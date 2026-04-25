@@ -54,7 +54,10 @@
                             iconBackgroundClass: 'bg-surface-container-high',
                             iconTextClass: 'text-on-surface-variant'
                         }) %}
-                        <div class="group flex items-center justify-between rounded-xl bg-surface-container-lowest p-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:scale-[1.01]">
+                        <div
+                            data-controller="care-task"
+                            class="care-task-card group flex items-center justify-between rounded-xl bg-surface-container-lowest p-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:scale-[1.01]"
+                            >
                             <div class="flex items-center gap-4">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-full {{ taskPresentation.iconBackgroundClass }} {{ taskPresentation.iconTextClass }}">
                                     <span class="material-symbols-outlined">{{ taskPresentation.icon }}</span>
@@ -64,11 +67,17 @@
                                     <p class="text-sm text-on-surface-variant">{{ task.plant }}</p>
                                 </div>
                             </div>
+
                             <div class="text-right">
-                                <button type="button"
-                                        class="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary transition-all hover:bg-primary-dim active:scale-95">
+                                <button
+                                    type="button"
+                                    data-action="click->care-task#done"
+                                    data-care-task-url="{{ path('app_care_task_done', { id: task.id }) }}"
+                                    class="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary transition-all hover:bg-primary-dim active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
                                     Erledigen
                                 </button>
+
                                 {% if task.dueDate %}
                                     <p class="mt-2 text-xs font-medium text-on-surface-variant">
                                         Fällig {{ task.dueDate|date('d.m.Y') }}

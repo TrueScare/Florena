@@ -66,6 +66,7 @@ final class DashboardService
         $type = $task->getTaskType()?->value ?? '';
 
         return [
+            'id' => $task->getId(),
             'type' => ucfirst($type),
             'plant' => $task->getPlant()?->getName() ?? 'Unbekannte Pflanze',
             'dueDate' => $task->getDueDate(),
