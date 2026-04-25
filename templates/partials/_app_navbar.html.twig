@@ -34,10 +34,15 @@
                 <button
                     type="button"
                     data-action="click->notifications#toggle"
-                    class="rounded-full p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
+                    class="relative rounded-full p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
                     aria-label="Benachrichtigungen öffnen"
                 >
                     <span class="material-symbols-outlined">notifications</span>
+
+                    <span
+                        data-notifications-target="badge"
+                        class="hidden absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-error"
+                    ></span>
                 </button>
 
                 <div
