@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Entity\CareHistory;
 use App\Entity\CareTask;
 use App\Enum\CareType;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +17,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("IS_AUTHENTICATED")]
 class CareTaskAPIController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private NotificationService $notificationService,
+    )
     {
     }
 
@@ -37,6 +41,8 @@ class CareTaskAPIController extends AbstractController
             CareType::fertilice => $careTask->getPlant()->setLastFertilizedAt($careHistory->getPerformedAt()),
             CareType::repot => $careTask->getPlant()->setLastRepottedAt($careHistory->getPerformedAt())
         };
+
+        $this->notificationService->deactivateNotificationsForCareTask($careTask);
 
         $this->entityManager->persist($careHistory);
         $this->entityManager->flush();

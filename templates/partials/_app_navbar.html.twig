@@ -30,11 +30,23 @@
         </nav>
 
         <div class="flex items-center gap-4">
-            <button type="button"
+            <div data-controller="notifications" class="relative">
+                <button
+                    type="button"
+                    data-action="click->notifications#toggle"
                     class="rounded-full p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
-                    aria-label="Suche öffnen">
-                <span class="material-symbols-outlined">search</span>
-            </button>
+                    aria-label="Benachrichtigungen öffnen"
+                >
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+
+                <div
+                    data-notifications-target="dropdown"
+                    class="hidden absolute right-0 z-50 mt-3 w-80 rounded-xl border border-surface-container-high bg-surface-container-lowest p-2 shadow-[0px_20px_40px_rgba(46,52,51,0.12)]"
+                >
+                    <p class="p-3 text-sm text-on-surface-variant">Lade...</p>
+                </div>
+            </div>
             <button type="button"
                     class="rounded-full border border-outline-variant/20 p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
                     aria-label="Benutzerkonto">

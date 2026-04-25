@@ -1,0 +1,17 @@
+{% for n in notifications %}
+    {% if n.careTask %}
+        {% include 'partials/_care_task_card.html.twig' with {
+            task: {
+                id: n.careTask.id,
+                type: n.careTask.taskType.value|capitalize,
+                plant: n.careTask.plant.name,
+                dueDate: n.careTask.dueDate
+            },
+            showDoneButton: false
+        } %}
+    {% endif %}
+{% else %}
+    <p class="text-sm text-on-surface-variant p-3">
+        Keine Benachrichtigungen
+    </p>
+{% endfor %}

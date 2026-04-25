@@ -61,20 +61,26 @@ class CareTaskRepository extends ServiceEntityRepository
      *
      * @return array
      */
-    public function findAllWithoutNotification(): array
+    public function findAllWithoutNotification(?UserInterface $user = null): array
     {
-        $endOfDay = new DateTimeImmutable("tomorrow");
+        $now = new DateTimeImmutable();
 
-        return $this->createQueryBuilder('c')
+        $queryBuilder = $this->createQueryBuilder('c')
             ->leftJoin('c.plant', 'p')
             ->leftJoin('c.notifications', 'n', 'WITH', 'n.is_read = 0')
             ->addSelect('n')
             ->addSelect('p')
             ->andWhere('n IS NULL')
-            ->andWhere('c.due_date < :endDate')
-            ->setParameter('endDate', $endOfDay)
-            ->getQuery()
-            ->getResult();
+            ->andWhere('c.due_date <= :now')
+            ->setParameter('now', $now);
+
+        if ($user !== null) {
+            $queryBuilder
+                ->andWhere('p.user = :user')
+                ->setParameter('user', $user);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     private function getBaseUserQueryBuilder(UserInterface $user)

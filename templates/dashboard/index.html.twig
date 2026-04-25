@@ -7,23 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    {% set taskIconMap = {
-        'Gießen': {
-            icon: 'water_drop',
-            iconBackgroundClass: 'bg-secondary-container',
-            iconTextClass: 'text-primary'
-        },
-        'Umtopfen': {
-            icon: 'potted_plant',
-            iconBackgroundClass: 'bg-tertiary-container',
-            iconTextClass: 'text-tertiary'
-        },
-        'Düngen': {
-            icon: 'eco',
-            iconBackgroundClass: 'bg-primary-fixed',
-            iconTextClass: 'text-on-primary-fixed'
-        }
-    } %}
+    
     <main class="mx-auto max-w-[1440px] px-8 pb-24 pt-32">
         <header class="mb-12">
             <h1 class="mb-2 text-4xl font-extrabold tracking-tight text-on-surface">
@@ -47,44 +31,13 @@
                     </a>
                 </div>
 
+                {# Aufgaben-Card #}
                 <div class="space-y-4">
                     {% for task in upcomingTasks %}
-                        {% set taskPresentation = taskIconMap[task.type]|default({
-                            icon: 'local_florist',
-                            iconBackgroundClass: 'bg-surface-container-high',
-                            iconTextClass: 'text-on-surface-variant'
-                        }) %}
-                        <div
-                            data-controller="care-task"
-                            class="care-task-card group flex items-center justify-between rounded-xl bg-surface-container-lowest p-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:scale-[1.01]"
-                            >
-                            <div class="flex items-center gap-4">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-full {{ taskPresentation.iconBackgroundClass }} {{ taskPresentation.iconTextClass }}">
-                                    <span class="material-symbols-outlined">{{ taskPresentation.icon }}</span>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold leading-tight text-on-surface">{{ task.type }}</h3>
-                                    <p class="text-sm text-on-surface-variant">{{ task.plant }}</p>
-                                </div>
-                            </div>
-
-                            <div class="text-right">
-                                <button
-                                    type="button"
-                                    data-action="click->care-task#done"
-                                    data-care-task-url="{{ path('app_care_task_done', { id: task.id }) }}"
-                                    class="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary transition-all hover:bg-primary-dim active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                    Erledigen
-                                </button>
-
-                                {% if task.dueDate %}
-                                    <p class="mt-2 text-xs font-medium text-on-surface-variant">
-                                        Fällig {{ task.dueDate|date('d.m.Y') }}
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% include 'partials/_care_task_card.html.twig' with {
+                            task: task,
+                            showDoneButton: true
+                        } %}
                     {% else %}
                         <div class="rounded-xl bg-surface-container-lowest p-5 text-sm text-on-surface-variant shadow-[0px_10px_30px_rgba(46,52,51,0.04)]">
                             Keine anstehenden Aufgaben vorhanden.
@@ -113,6 +66,7 @@
                             </div>
                         </div>
 
+                        {# Pflanzen-Card #}
                         <div class="grid grid-cols-1 gap-6">
                             {% for plant in plants %}
                                 {% include 'partials/_plant_card.html.twig' with { plant: plant } %}
