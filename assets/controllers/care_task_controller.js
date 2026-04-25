@@ -1,9 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-    connect() {
-        console.log("CareTaskController connected");
-    }
 
     async done(event) {
         const button = event.currentTarget;
@@ -17,6 +14,8 @@ export default class extends Controller {
             const response = await fetch(url);
 
             if (!response.ok) throw new Error();
+
+            window.location.reload();
 
             card?.remove();
         } catch (e) {
