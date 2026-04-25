@@ -43,7 +43,6 @@ export default class extends Controller {
 
             this.dropdownTarget.innerHTML = await response.text();
 
-            // 🔥 Badge ausblenden, weil User hat sie gesehen
             this.badgeTarget.classList.add("hidden");
         } catch (error) {
             this.dropdownTarget.innerHTML =
