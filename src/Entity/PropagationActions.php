@@ -47,6 +47,9 @@ class PropagationActions
     {
         $this->created_at = new \DateTimeImmutable();
         $this->notifications = new ArrayCollection();
+        $this->planned_date = new \DateTimeImmutable();
+
+        $this->status ??= Status::planned;
     }
 
     public function getId(): ?int

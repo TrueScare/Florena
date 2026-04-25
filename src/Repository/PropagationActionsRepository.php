@@ -16,28 +16,19 @@ class PropagationActionsRepository extends ServiceEntityRepository
         parent::__construct($registry, PropagationActions::class);
     }
 
-//    /**
-//     * @return PropagationActions[] Returns an array of PropagationActions objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findAllWithoutNotification(): array
+    {
+        $endDate = new \DateTimeImmutable("tomorrow");
 
-//    public function findOneBySomeField($value): ?PropagationActions
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.plant', 'pl')
+            ->leftJoin('pl.user', 'u')
+            ->leftJoin('p.notifications', 'n', 'WITH', 'n.is_read = 0')
+            ->addSelect('n', 'u', 'pl')
+            ->andWhere('n is null')
+            ->andWhere('p.planned_date < :endDate')
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+    }
 }

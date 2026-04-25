@@ -6,6 +6,7 @@ use App\Entity\CareTask;
 use App\Entity\Notifications;
 use App\Repository\CareTaskRepository;
 use App\Repository\NotificationsRepository;
+use App\Repository\PropagationActionsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -23,6 +24,7 @@ class CreateNotificationsCommand extends Command
     public function __construct(
         private CareTaskRepository      $careTaskRepository,
         private NotificationsRepository $notificationsRepository,
+        private PropagationActionsRepository $propagationActionsRepository,
         private EntityManagerInterface  $entityManager,
         private LoggerInterface $logger
     )
@@ -53,6 +55,19 @@ class CreateNotificationsCommand extends Command
             $notification->setMessage("Aufgabe fällig! " . $careTask->getPlant()->getName() . " " . $careTask->getTaskType()->value);
             $notification->setCareTask($careTask);
             $notification->setUser($careTask->getPlant()->getUser());
+
+            $this->entityManager->persist($notification);
+        }
+
+        $propagationActions = $this->propagationActionsRepository->findAllWithoutNotification();
+        $io->info("[ " . count($propagationActions) . " ] PropagationActions found without a notification");
+        $this->logger->info("[ " . count($propagationActions) . " ] PropagationActions found without a notifications");
+
+        foreach($propagationActions as $propagationAction) {
+            $notification = new Notifications()
+                ->setMessage("Vermehrungsmaßnahmen fällig! " . $careTask->getPlant()->getName() . " " . $careTask->getTaskType()->value)
+                ->setPropagationAction($propagationAction)
+                ->setUser($propagationAction->getPlant()->getUser());
 
             $this->entityManager->persist($notification);
         }

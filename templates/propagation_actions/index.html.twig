@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PropagationActions index{% endblock %}
+
+{% block body %}
+    <h1>PropagationActions index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Methode</th>
+                <th>geplant am</th>
+                <th>Status</th>
+                <th>Notizen</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for propagation_action in propagation_actions %}
+            <tr>
+
+                <td>{{ propagation_action.method.value }}</td>
+                <td>{{ propagation_action.plannedDate ? propagation_action.plannedDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ propagation_action.status.value }}</td>
+                <td>{{ propagation_action.notes }}</td>
+                <td>{{ propagation_action.createdAt ? propagation_action.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_propagation_actions_show', {'id': propagation_action.id}) }}">anzeigen</a>
+                    <a href="{{ path('app_propagation_actions_edit', {'id': propagation_action.id}) }}">bearbeiten</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">keine Aufgaben gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_propagation_actions_new') }}">neue Aufgabe</a>
+{% endblock %}
