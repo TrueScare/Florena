@@ -10,7 +10,7 @@ use App\Enum\CalenderTimeInterval;
 
 final class DashboardService
 {
-    private const int MAX_UPCOMING_TASKS = 3;
+    private const int MAX_UPCOMING_TASKS = 10;
     private const int MAX_PLANTS = 4;
     private const int MAX_LOCATIONS = 3;
     private const string FALLBACK_PLANT_IMAGE =
@@ -25,7 +25,7 @@ final class DashboardService
 
     public function getDashboardData(User $user): array
     {
-        $tasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::day);
+        $tasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::week);
         $plants = $this->plantsRepository->findAllByUser($user);
         $locations = $this->locationsRepository->findAllByUser($user);
 
