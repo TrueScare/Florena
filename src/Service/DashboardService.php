@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\CareTaskRepository;
 use App\Repository\LocationsRepository;
 use App\Repository\PlantsRepository;
+use App\Enum\CalenderTimeInterval;
 
 final class DashboardService
 {
@@ -24,7 +25,7 @@ final class DashboardService
 
     public function getDashboardData(User $user): array
     {
-        $tasks = $this->careTaskRepository->findAllByUser($user);
+        $tasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::day);
         $plants = $this->plantsRepository->findAllByUser($user);
         $locations = $this->locationsRepository->findAllByUser($user);
 
