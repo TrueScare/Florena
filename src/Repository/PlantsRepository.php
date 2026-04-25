@@ -52,8 +52,10 @@ class PlantsRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('p')
             ->addSelect('l')
+            ->addSelect('ct')
             ->where('p.user = :user')
             ->leftJoin('p.location', 'l')
+            ->leftJoin('p.care_tasks', 'ct')
             ->setParameter('user', $user);
 
         if ($order) {

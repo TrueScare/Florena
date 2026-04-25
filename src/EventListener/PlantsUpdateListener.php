@@ -5,6 +5,7 @@ namespace App\EventListener;
 use App\Entity\CareTask;
 use App\Entity\Plants;
 use App\Enum\CareType;
+use App\Service\StressScoreService;
 use DateInterval;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,9 +14,11 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 #[AsEntityListener(event: Events::postUpdate, entity: Plants::class)]
 #[AsEntityListener(event: Events::postPersist, entity: Plants::class)]
+#[AsEntityListener(event: Events::postLoad, entity: Plants::class)]
 final class PlantsUpdateListener
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em,
+                                private StressScoreService     $stressScoreService)
     {
     }
 
@@ -129,5 +132,10 @@ final class PlantsUpdateListener
         // this is literally the same as the Update, just without the persist i guess
         $this->handlePlantsIntervalUpdate($plant, null);
         $this->em->flush();
+    }
+
+    public function postLoad(Plants $plant, LifecycleEventArgs $args): void
+    {
+        $plant->setStressScore($this->stressScoreService->calculate($plant));
     }
 }
