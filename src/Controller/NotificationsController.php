@@ -29,4 +29,12 @@ final class NotificationsController extends AbstractController
             'notifications' => $notifications,
         ]);
     }
+
+    #[Route('/notifications/count', name: 'app_notifications_count', methods: ['GET'])]
+    public function count(): Response
+    {
+        return $this->json([
+            'count' => $this->notificationsRepository->countUnreadActiveByUser($this -> getUser()),
+        ]);
+    }
 }
