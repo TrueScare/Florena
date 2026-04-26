@@ -1,9 +1,17 @@
 {% set stressBadgeClass = plant.stressLevel >= 80
-    ? 'bg-[#E53935]/10 border-[#E53935]/20'
-    : (plant.stressLevel >= 40 ? 'bg-[#FFB300]/10 border-[#FFB300]/20' : 'bg-[#7CB342]/10 border-[#7CB342]/20') %}
+    ? 'bg-[#7CB342]/10 border-[#7CB342]/20'
+    : (plant.stressLevel >= 40 ? 'bg-[#FFB300]/10 border-[#FFB300]/20' : 'bg-[#E53935]/10 border-[#E53935]/20') %}
 {% set stressTextClass = plant.stressLevel >= 80
-    ? 'text-[#E53935]'
-    : (plant.stressLevel >= 40 ? 'text-[#FFB300]' : 'text-[#7CB342]') %}
+    ? 'text-[#7CB342]'
+    : (plant.stressLevel >= 40 ? 'text-[#FFB300]' : 'text-[#E53935]') %}
+
+{% set fitnessStatus = plant.fitnessStatus ?? null %}
+{% set fitnessBadgeClass = fitnessStatus == 'geeignet'
+    ? 'bg-primary/10 border-primary/20'
+    : (fitnessStatus == 'teilweise geeignet' ? 'bg-[#FFB300]/10 border-[#FFB300]/20' : 'bg-[#E53935]/10 border-[#E53935]/20') %}
+{% set fitnessTextClass = fitnessStatus == 'geeignet'
+    ? 'text-primary'
+    : (fitnessStatus == 'teilweise geeignet' ? 'text-[#FFB300]' : 'text-[#E53935]') %}
 
 <a href="{{ path('app_plants_show', { id: plant.id }) }}"
    class="block cursor-pointer transition-transform hover:scale-[1.01]">
@@ -26,6 +34,19 @@
             </p>
         </div>
 
+        {% if fitnessStatus %}
+            <div class="text-center">
+                <div class="rounded-full border px-3 py-1 {{ fitnessBadgeClass }}">
+                    <span class="text-xs font-bold {{ fitnessTextClass }}">
+                        {{ fitnessStatus }}
+                    </span>
+                </div>
+                <span class="text-[10px] font-bold text-on-surface-variant">
+                    EIGNUNG
+                </span>
+            </div>
+        {% endif %}
+
         <div class="text-center">
             <div class="rounded-full border px-3 py-1 {{ stressBadgeClass }}">
                 <span class="text-xs font-bold {{ stressTextClass }}">
@@ -33,7 +54,7 @@
                 </span>
             </div>
             <span class="text-[10px] font-bold text-on-surface-variant">
-                STRESS
+                Health
             </span>
         </div>
     </article>

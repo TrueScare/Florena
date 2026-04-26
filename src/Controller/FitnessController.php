@@ -24,6 +24,32 @@ class FitnessController extends AbstractController
     {
     }
 
+    #[Route("/plant/{id}", name: "app_fitness_plant")]
+    public function plantIndex(Plants $plant): Response
+    {
+        if($this->getUser() !== $plant->getUser()){
+            return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $fitness = [];
+        $locations = $this->locationsRepository->findAllByUser($this->getUser());
+        /** @var Locations $location */
+        foreach ($locations as $location) {
+            $fitnessInformation = $this->fitnessService->checkFitForPlantInLocation(
+                $plant->getLightRequirement(),
+                $plant->getTemperatureRequirement(),
+                $plant->getHumidityRequirement(),
+                $location
+            );
+            $fitness[$fitnessInformation->getStatus()->value][$location->getId()] = $fitnessInformation;
+        }
+
+        return $this->render('fitness/plant.html.twig', [
+            'fitnessInformation' => $fitness,
+            'plant' => $plant,
+        ]);
+    }
+
     #[Route("/location/{id}", name: "app_fitness_location")]
     public function locationIndex(Locations $location): Response
     {

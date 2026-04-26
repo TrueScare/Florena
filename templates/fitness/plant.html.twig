@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Standortvorschläge - {{ plant.name }}{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
+
+{% block body %}
+    <main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
+        <div class="mb-8">
+            <a href="{{ path('app_plants_show', { id: plant.id }) }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Pflanze</span>
+            </a>
+        </div>
+
+        <section class="mb-12">
+            <h1 class="mb-3 text-4xl font-extrabold tracking-tight text-on-surface">
+                <span class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-2">Standortempfehlung für {{ plant.name }}</span>
+            </h1>
+            <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                Bewertung basierend auf Licht, Temperatur und Luftfeuchtigkeit.
+            </p>
+        </section>
+
+        {% set groups = {
+            'geeignet': 'Geeignete Standorte',
+            'teilweise geeignet': 'Teilweise geeignete Standorte',
+            'nicht geeignet': 'Nicht geeignete Standorte'
+        } %}
+
+        <div class="space-y-10">
+            {% for status, title in groups %}
+                {% set locations = fitnessInformation[status]|default([]) %}
+
+                <section>
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="text-2xl font-bold">{{ title }}</h2>
+                        <span class="text-sm text-on-surface-variant">
+                            {{ locations|length }} Standort{{ locations|length == 1 ? '' : 'e' }}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        {% for information in locations %}
+                            {% set location = information.entity %}
+                            {% include 'partials/_location_card.html.twig' with {
+                                location: location,
+                                fitnessStatus: status
+                            } only %}
+                        {% else %}
+                            <div class="rounded-xl bg-surface-container p-6 text-sm text-on-surface-variant">
+                                {% if status == 'geeignet' %}
+                                    Kein vollständig geeigneter Standort gefunden.
+                                {% else %}
+                                    Keine Standorte in dieser Kategorie.
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}

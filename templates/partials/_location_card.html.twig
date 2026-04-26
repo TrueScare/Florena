@@ -1,0 +1,62 @@
+{% set fitnessStatus = fitnessStatus ?? null %}
+{% set fitnessBadgeClass = fitnessStatus == 'geeignet'
+    ? 'bg-primary/10 border-primary/20'
+    : (fitnessStatus == 'teilweise geeignet' ? 'bg-[#FFB300]/10 border-[#FFB300]/20' : 'bg-[#E53935]/10 border-[#E53935]/20') %}
+{% set fitnessTextClass = fitnessStatus == 'geeignet'
+    ? 'text-primary'
+    : (fitnessStatus == 'teilweise geeignet' ? 'text-[#FFB300]' : 'text-[#E53935]') %}
+
+<a href="{{ path('app_locations_show', { id: location.id }) }}"
+   class="block rounded-xl border border-transparent bg-surface-container-lowest p-6 shadow-[0px_20px_40px_rgba(46,52,51,0.03)] transition-all hover:border-primary-fixed hover:shadow-[0px_20px_40px_rgba(46,52,51,0.06)]">
+    <div class="flex items-center justify-between gap-6">
+        <div class="min-w-0">
+            <h2 class="text-xl font-bold text-on-surface">{{ location.name }}</h2>
+
+            {% if location.description %}
+                <p class="mt-1 text-sm text-on-surface-variant">
+                    {{ location.description }}
+                </p>
+            {% endif %}
+
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                {% if location.lightCondition %}
+                    <span class="rounded-full px-3 py-1 {{ location.lightColor }}">
+                        {{ location.lightCondition.value }}
+                    </span>
+                {% endif %}
+
+                {% if location.temperatureLevel %}
+                    <span class="rounded-full px-3 py-1 {{ location.temperatureColor }}">
+                        {{ location.temperatureLevel.value }}
+                    </span>
+                {% endif %}
+
+                {% if location.humidityLevel %}
+                    <span class="rounded-full px-3 py-1 {{ location.humidityColor }}">
+                        {{ location.humidityLevel.value }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if fitnessStatus %}
+            <div class="shrink-0 text-center">
+                <div class="rounded-full border px-3 py-1 {{ fitnessBadgeClass }}">
+                    <span class="text-xs font-bold {{ fitnessTextClass }}">
+                        {{ fitnessStatus }}
+                    </span>
+                </div>
+                <span class="text-[10px] font-bold text-on-surface-variant">
+                    EIGNUNG
+                </span>
+            </div>
+        {% else %}
+            <div class="shrink-0 text-right">
+                <div class="text-lg font-bold text-primary">
+                    {{ location.plants|length }}
+                </div>
+                <div class="text-xs text-on-surface-variant">Pflanzen</div>
+            </div>
+        {% endif %}
+    </div>
+</a>

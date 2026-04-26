@@ -58,6 +58,7 @@
                     </div>
                 </div>
 
+                {# Bild und Eigenschaften #}
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                     <div class="lg:col-span-7 relative group">
                         <div class="absolute -inset-4 bg-primary/5 rounded-xl -rotate-2 -z-10 transition-transform group-hover:rotate-1"></div>
@@ -69,15 +70,16 @@
                     </div>
 
                     <div class="lg:col-span-5 flex flex-col gap-10">
+                        {# Stress(Fitness)Score #}
                         <div class="bg-surface-container-low rounded-lg p-8 flex items-center justify-between">
                             <div>
-                                <p class="text-on-surface-variant font-medium text-sm mb-1">Stress Score</p>
+                                <p class="text-on-surface-variant font-medium text-sm mb-1">Health Score</p>
                                 <p class="text-3xl font-bold text-on-surface">{{ plant.stressScore }}%</p>
 
                                 {% if plant.stressScore < 40 %}
-                                    <p class="text-primary text-xs font-semibold mt-2 flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">check_circle</span>
-                                        Optimaler Zustand
+                                    <p class="text-[#E53935] text-xs font-semibold mt-2 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">error</span>
+                                        Hoher Stress
                                     </p>
                                 {% elseif plant.stressScore < 80 %}
                                     <p class="text-[#FFB300] text-xs font-semibold mt-2 flex items-center gap-1">
@@ -85,9 +87,9 @@
                                         Leichter Stress
                                     </p>
                                 {% else %}
-                                    <p class="text-[#E53935] text-xs font-semibold mt-2 flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">error</span>
-                                        Hoher Stress
+                                    <p class="text-primary text-xs font-semibold mt-2 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                                        Optimaler Zustand
                                     </p>
                                 {% endif %}
                             </div>
@@ -106,7 +108,49 @@
                             </div>
                         </div>
 
+                        {# Letzte Pflegeaufgaben und Standort-Eignung #}
                         <div class="space-y-6">
+                            {% if fitnessStatus %}
+                                {% set status = fitnessStatus.status %}
+
+                                <a href="{{ path('app_fitness_plant', { id: plant.id }) }}"
+                                   class="flex items-center gap-4 rounded-lg p-2 -m-2 transition-colors hover:bg-surface-container-low">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0
+                                        {% if status.name == 'perfect' %}
+                                            bg-primary-container text-on-primary-container
+                                        {% elseif status.name == 'partly' %}
+                                            bg-[#FFB300]/20 text-[#8A5A00]
+                                        {% else %}
+                                            bg-error-container text-error
+                                        {% endif %}
+                                        ">
+                                        <span class="material-symbols-outlined text-xl">
+                                            {% if status.name == 'perfect' %}
+                                                check_circle
+                                            {% elseif status.name == 'partly' %}
+                                                warning
+                                            {% else %}
+                                                error
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">
+                                            Standort-Eignung
+                                        </p>
+
+                                        <p class="text-on-surface font-semibold text-lg">
+                                            {{ status.value }}
+                                        </p>
+
+                                        <p class="text-on-surface-variant text-sm mt-1 italic">
+                                            Bewertung basierend auf Licht, Temperatur und Luftfeuchtigkeit.
+                                        </p>
+                                    </div>
+                                </a>
+                            {% endif %}
+
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shrink-0">
                                     <span class="material-symbols-outlined text-xl">schedule</span>
@@ -267,7 +311,6 @@
         </div>
 
         {# Notizen #}
-
         <div class="mt-12 grid grid-cols-1 gap-8">
             <div class="p-8 bg-surface-container rounded-lg">
                 <div class="flex justify-between items-center gap-4 mb-4">
