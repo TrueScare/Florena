@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Locations;
 use App\Form\LocationsType;
 use App\Repository\LocationsRepository;
+use App\Service\Fitness\FitnessService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,15 +48,30 @@ final class LocationsController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_locations_show', methods: ['GET'])]
-    public function show(Locations $location): Response
+    public function show(Locations $location, FitnessService $fitnessService): Response
     {
         // make sure the user that is trying to perform the action is also the owner of the resource
         if($this->getUser() !== $location->getUser()){
             return $this->redirectToRoute('app_locations_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $plantFitnessStatuses = [];
+
+        foreach ($location->getPlants() as $plant) {
+            $plantFitnessStatuses[$plant->getId()] = $fitnessService
+                ->checkFitForPlantInLocation(
+                    $plant->getLightRequirement(),
+                    $plant->getTemperatureRequirement(),
+                    $plant->getHumidityRequirement(),
+                    $location
+                )
+                ->getStatus()
+                ->value;
+        }
+
         return $this->render('locations/show.html.twig', [
             'location' => $location,
+            'plantFitnessStatuses' => $plantFitnessStatuses,
         ]);
     }
 

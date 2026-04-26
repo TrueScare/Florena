@@ -52,7 +52,7 @@
             {# Content Grid #}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-                {# Left: Visual Card #}
+                {# Bild #}
                 <div class="lg:col-span-7 relative group">
                     <div class="absolute -inset-4 bg-primary/5 rounded-xl -rotate-2 -z-10 transition-transform group-hover:rotate-1"></div>
 
@@ -72,7 +72,7 @@
                     </div>
                 </div>
 
-                {# Right: Eigenschaften #}
+                {# Eigenschaften #}
                 <div class="lg:col-span-5 flex flex-col gap-10">
 
                     <div class="space-y-6">
@@ -147,7 +147,8 @@
                                     : asset(plant.displayPhotoPath),
                                 imageAlt: plant.name,
                                 location: plant.location ? plant.location.name : 'Kein Standort',
-                                stressLevel: plant.stressScore ?? 100
+                                stressLevel: plant.stressScore ?? 100,
+                                fitnessStatus: plantFitnessStatuses[plant.id] ?? null
                             }
                         } only %}
                     {% else %}
