@@ -1,11 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Wunschpflanze anlegen{% endblock %}
+{% block title %}Neue Wunschpflanze{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Wunschpflanze anlegen</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ path('app_wishlist_plants_index') }}" class="mb-8 inline-flex items-center font-medium text-primary">
+                <span class="material-symbols-outlined mr-2 text-lg">arrow_back</span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Wunschliste</span>
+            </a>
 
-    {{ include('wishlist_plants/_form.html.twig') }}
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        Neue Wunschpflanze <span class="font-bold italic text-primary">anlegen</span>
+                    </h1>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Merke dir Pflanzen, die du zukünftig kaufen oder später in deinen Bestand übernehmen möchtest.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    <a href="{{ path('app_wishlist_plants_index') }}">zurück zur Liste</a>
+        {{ include('wishlist_plants/_form.html.twig', { button_label: 'Zur Wunschliste hinzufügen' }) }}
+    </main>
 {% endblock %}
