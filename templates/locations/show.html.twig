@@ -159,6 +159,39 @@
                 </div>
             </div>
 
+            {# Geeignete Pflanzenliste #}
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Geeignete Pflanzen für diesen Standort</h2>
+                    <span class="text-sm text-on-surface-variant">
+                        {{ suitablePlants|length }} Pflanze{{ suitablePlants|length == 1 ? '' : 'n' }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    {% for plant in suitablePlants %}
+                        {% include 'partials/_plant_card.html.twig' with {
+                            plant: {
+                                id: plant.id,
+                                name: plant.name,
+                                botanicalName: plant.botanicalName,
+                                imageUrl: plant.displayPhotoPath starts with 'http'
+                                    ? plant.displayPhotoPath
+                                    : asset(plant.displayPhotoPath),
+                                imageAlt: plant.name,
+                                location: plant.location ? plant.location.name : 'Kein Standort',
+                                stressLevel: plant.stressScore ?? 100,
+                                fitnessStatus: plantFitnessStatuses[plant.id] ?? null
+                            }
+                        } only %}
+                    {% else %}
+                        <div class="rounded-xl bg-surface-container p-6 text-sm text-on-surface-variant">
+                            Keine weiteren Pflanzen passen vollständig zu diesem Standort.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             {# Wunschpflanzenliste #}
             <div>
                 <div class="flex items-center justify-between mb-6">

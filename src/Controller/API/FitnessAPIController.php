@@ -4,7 +4,6 @@ namespace App\Controller\API;
 
 use App\Entity\Locations;
 use App\Entity\Plants;
-use App\Enum\FitnessStatus;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Locations;
 use App\Form\LocationsType;
 use App\Repository\LocationsRepository;
+use App\Repository\PlantsRepository;
 use App\Service\Fitness\FitnessService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,7 +49,7 @@ final class LocationsController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_locations_show', methods: ['GET'])]
-    public function show(Locations $location, FitnessService $fitnessService): Response
+    public function show(Locations $location, FitnessService $fitnessService, PlantsRepository $plantsRepository): Response
     {
         // make sure the user that is trying to perform the action is also the owner of the resource
         if($this->getUser() !== $location->getUser()){
@@ -69,9 +70,35 @@ final class LocationsController extends AbstractController
                 ->value;
         }
 
+        $suitablePlants = [];
+
+        foreach ($plantsRepository->findAllByUser($this->getUser()) as $plant) {
+            if ($plant->getLocation()?->getId() === $location->getId()) {
+                continue;
+            }
+
+            $fitnessStatus = $fitnessService
+                ->checkFitForLocationInPlant(
+                    $location->getLightCondition(),
+                    $location->getTemperatureLevel(),
+                    $location->getHumidityLevel(),
+                    $plant
+                )
+                ->getStatus()
+                ->value;
+
+            if ('geeignet' !== $fitnessStatus) {
+                continue;
+            }
+
+            $suitablePlants[] = $plant;
+            $plantFitnessStatuses[$plant->getId()] = $fitnessStatus;
+        }
+
         return $this->render('locations/show.html.twig', [
             'location' => $location,
             'plantFitnessStatuses' => $plantFitnessStatuses,
+            'suitablePlants' => $suitablePlants,
         ]);
     }
 
