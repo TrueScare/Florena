@@ -78,7 +78,7 @@
 
                                 {% if plant.stressScore < 40 %}
                                     <p class="text-[#E53935] text-xs font-semibold mt-2 flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                                        <span class="material-symbols-outlined text-xs">error</span>
                                         Hoher Stress
                                     </p>
                                 {% elseif plant.stressScore < 80 %}
@@ -88,7 +88,7 @@
                                     </p>
                                 {% else %}
                                     <p class="text-primary text-xs font-semibold mt-2 flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">error</span>
+                                        <span class="material-symbols-outlined text-xs">check_circle</span>
                                         Optimaler Zustand
                                     </p>
                                 {% endif %}
@@ -150,7 +150,7 @@
                                     </div>
                                 </a>
                             {% endif %}
-                            
+
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shrink-0">
                                     <span class="material-symbols-outlined text-xl">schedule</span>
