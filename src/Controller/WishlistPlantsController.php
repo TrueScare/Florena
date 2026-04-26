@@ -130,6 +130,6 @@ class WishlistPlantsController extends AbstractController
         $entityManager->persist($plant);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_wishlist_plants_edit', ['id' => $plant->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_plants_edit', ['id' => $plant->getId()], Response::HTTP_SEE_OTHER);
     }
 }

@@ -1,42 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Wunschpflanze{% endblock %}
+{% block title %}Wunschpflanzen{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'wishlist' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Wunschpflanze</h1>
+    <main class="pt-24 pb-16 px-4 sm:px-8 max-w-5xl mx-auto w-full">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Beschreibung</th>
-                <th>Botanischer Name</th>
-                <th>Standort</th>
-                <th>Menge</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for wishlist_plant in wishlist_plants %}
-            <tr>
-                <td>{{ wishlist_plant.name }}</td>
-                <td>{{ wishlist_plant.description }}</td>
-                <td>{{ wishlist_plant.botanicalName }}</td>
-                <td>{{ wishlist_plant.location?.name }}</td>
-                <td>{{ wishlist_plant.quantity }}</td>
-                <td>
-                    <a href="{{ path('app_wishlist_plants_show', {'id': wishlist_plant.id}) }}">Anzeigen</a>
-                    <a href="{{ path('app_wishlist_plants_edit', {'id': wishlist_plant.id}) }}">Bearbeiten</a>
-                    <a href="{{ path('app_wishlist_plants_add', {'id': wishlist_plant.id}) }}">Übernehmen</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">keine Wunschpflazen gefunden</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-2">
+                    Wunschliste
+                </h1>
+                <p class="text-secondary text-lg">
+                    Hier findest du Pflanzen, die du dir für später vormerken möchtest.
+                </p>
+            </div>
 
-    <a href="{{ path('app_wishlist_plants_new') }}">Neue Wunschpflanze anlegen</a>
+            <a href="{{ path('app_wishlist_plants_new') }}"
+               class="flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-full font-bold shadow-[0px_20px_40px_rgba(61,107,0,0.15)] hover:scale-105 active:scale-95 transition-all">
+                <span class="material-symbols-outlined">add</span>
+                Neue Wunschpflanze
+            </a>
+        </div>
+
+        <div class="space-y-6">
+            {% if wishlist_plants is empty %}
+                <div class="bg-white rounded-xl p-6 shadow text-center">
+                    <p class="text-gray-500">Du hast noch keine Wunschpflanzen angelegt.</p>
+                </div>
+            {% else %}
+                {% for wishlist_plant in wishlist_plants %}
+                    {{ include('partials/_wishlist_plant_card.html.twig', {
+                        wishlist_plant: wishlist_plant
+                    }) }}
+                {% endfor %}
+            {% endif %}
+        </div>
+
+    </main>
 {% endblock %}

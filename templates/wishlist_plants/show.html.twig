@@ -1,38 +1,125 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}WishlistPlants{% endblock %}
+{% block title %}Wunschpflanze - {{ wishlist_plant.name }}{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'wishlist' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>WishlistPlants</h1>
+    <main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
+        <div class="mb-8">
+            <a href="{{ path('app_wishlist_plants_index') }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Wunschliste</span>
+            </a>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Name</th>
-                <td>{{ wishlist_plant.name }}</td>
-            </tr>
-            <tr>
-                <th>Beschreibung</th>
-                <td>{{ wishlist_plant.description }}</td>
-            </tr>
-            <tr>
-                <th>Botanischer Name</th>
-                <td>{{ wishlist_plant.botanicalName }}</td>
-            </tr>
-            <tr>
-                <th>Standort</th>
-                <td>{{ wishlist_plant.location?.name }}</td>
-            </tr>
-            <tr>
-                <th>Menge</th>
-                <td>{{ wishlist_plant.quantity }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0px_20px_40px_rgba(46,52,51,0.06)] overflow-hidden relative border border-transparent">
+            <div class="p-8 md:p-16 flex flex-col gap-12">
 
-    <a href="{{ path('app_wishlist_plants_index') }}">zurück zur Liste</a>
+                <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+                    <div>
+                        <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-container px-4 py-2 text-on-primary-container">
+                            <span class="text-xs font-bold uppercase tracking-widest">Wunschpflanze</span>
+                        </div>
 
-    <a href="{{ path('app_wishlist_plants_edit', {'id': wishlist_plant.id}) }}">Bearbeiten</a>
+                        <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+                            {{ wishlist_plant.name }}
+                        </h1>
 
-    {{ include('wishlist_plants/_delete_form.html.twig') }}
+                        {% if wishlist_plant.botanicalName %}
+                            <p class="text-lg italic text-on-surface-variant">
+                                {{ wishlist_plant.botanicalName }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <a href="{{ path('app_wishlist_plants_edit', {'id': wishlist_plant.id}) }}"
+                           class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">edit</span>
+                            Bearbeiten
+                        </a>
+
+                        <a href="{{ path('app_wishlist_plants_add', {'id': wishlist_plant.id}) }}"
+                           class="px-6 py-3 bg-primary text-on-primary rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">add_circle</span>
+                            In Bestand übernehmen
+                        </a>
+
+                        {{ include('wishlist_plants/_delete_form.html.twig') }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-surface-container-high">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-on-secondary-fixed-variant">
+                            <span class="material-symbols-outlined text-xl">format_list_numbered</span>
+                            <span class="font-bold text-sm tracking-wide">ANZAHL</span>
+                        </div>
+                        <p class="text-on-surface font-medium">{{ wishlist_plant.quantity }}</p>
+                        <p class="text-xs text-on-surface-variant">
+                            Gewünschte Anzahl dieser Pflanze.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-on-secondary-fixed-variant">
+                            <span class="material-symbols-outlined text-xl">location_on</span>
+                            <span class="font-bold text-sm tracking-wide">WUNSCHSTANDORT</span>
+                        </div>
+
+                        <p class="text-on-surface font-medium">
+                            {% if wishlist_plant.location %}
+                                <a href="{{ path('app_locations_show', { id: wishlist_plant.location.id }) }}"
+                                class="inline-flex items-center gap-1 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-xs">location_on</span>
+                                    {{ wishlist_plant.location.name }}
+                                </a>
+                            {% else %}
+                                Kein Wunschstandort
+                            {% endif %}
+                        </p>
+
+                        <p class="text-xs text-on-surface-variant">
+                            Geplanter Standort nach dem Kauf.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-on-secondary-fixed-variant">
+                            <span class="material-symbols-outlined text-xl">calendar_month</span>
+                            <span class="font-bold text-sm tracking-wide">ANGELEGT</span>
+                        </div>
+                        <p class="text-on-surface font-medium">
+                            {{ wishlist_plant.createdAt ? wishlist_plant.createdAt|date('d.m.Y') : '–' }}
+                        </p>
+                        <p class="text-xs text-on-surface-variant">
+                            Zeitpunkt, an dem die Wunschpflanze gespeichert wurde.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-surface-container rounded-lg">
+                    <h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined">description</span>
+                        Notiz
+                    </h3>
+
+                    <p class="text-on-surface-variant text-sm leading-relaxed">
+                        {% if wishlist_plant.description %}
+                            {{ wishlist_plant.description }}
+                        {% else %}
+                            Noch keine Notiz vorhanden.
+                        {% endif %}
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </main>
 {% endblock %}

@@ -158,6 +158,28 @@
                 </div>
             </div>
 
+            {# Wunschpflanzenliste #}
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Wunschpflanzen für diesen Standort</h2>
+                    <span class="text-sm text-on-surface-variant">
+                        {{ location.wishlistPlants|length }} Wunschpflanze{{ location.wishlistPlants|length == 1 ? '' : 'n' }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    {% for wishlist_plant in location.wishlistPlants %}
+                        {% include 'partials/_wishlist_plant_card.html.twig' with {
+                            wishlist_plant: wishlist_plant
+                        } %}
+                    {% else %}
+                        <div class="rounded-xl bg-surface-container p-6 text-sm text-on-surface-variant">
+                            Für diesen Standort sind noch keine Wunschpflanzen vorgemerkt.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
     </div>
 

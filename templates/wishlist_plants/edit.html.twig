@@ -2,12 +2,49 @@
 
 {% block title %}Wunschpflanze bearbeiten{% endblock %}
 
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'wishlist' } %}
+{% endblock %}
+
 {% block body %}
-    <h1>Wunschpflanze bearbeiten</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ path('app_wishlist_plants_show', {'id': wishlist_plant.id}) }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Wunschpflanze</span>
+            </a>
 
-    {{ include('wishlist_plants/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+            <div>
+                <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                    Wunschpflanze <span class="italic text-primary">bearbeiten</span>
+                </h1>
+                <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                    Aktualisiere die Informationen deiner Wunschpflanze.
+                </p>
+            </div>
+        </header>
 
-    <a href="{{ path('app_wishlist_plants_index') }}">Zurück zur Liste</a>
+        {{ include('wishlist_plants/_form.html.twig', {
+            button_label: 'Bearbeiten'
+        }) }}
 
-    {{ include('wishlist_plants/_delete_form.html.twig') }}
+        <section class="mt-12 border-t border-outline/20 pt-8">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-3">
+                Gefahrenbereich
+            </h2>
+
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <p class="max-w-md text-sm text-on-surface-variant">
+                    Diese Aktion löscht die Wunschpflanze dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden.
+                </p>
+
+                {{ include('wishlist_plants/_delete_form.html.twig', {
+                    wishlist_plant: wishlist_plant
+                }) }}
+            </div>
+        </section>
+    </main>
 {% endblock %}

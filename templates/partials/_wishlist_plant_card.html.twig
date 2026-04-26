@@ -1,0 +1,40 @@
+<a href="{{ path('app_wishlist_plants_show', { id: wishlist_plant.id }) }}"
+   class="block cursor-pointer transition-transform hover:scale-[1.01]">
+    <article class="flex items-center gap-5 rounded-xl border border-transparent bg-surface-container-lowest p-4 shadow-[0px_20px_40px_rgba(46,52,51,0.03)] transition-all hover:border-primary-fixed">
+
+        <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary-container text-on-primary-container">
+            <span class="material-symbols-outlined text-4xl">favorite</span>
+        </div>
+
+        <div class="flex-grow min-w-0">
+            <h3 class="text-lg font-bold truncate">{{ wishlist_plant.name }}</h3>
+
+            {% if wishlist_plant.botanicalName %}
+                <p class="text-sm italic text-on-surface-variant mt-1 truncate">
+                    {{ wishlist_plant.botanicalName }}
+                </p>
+            {% endif %}
+
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant mt-2">
+                {% if wishlist_plant.location %}
+                    {{ wishlist_plant.location.name }}
+                {% else %}
+                    Kein Wunschstandort
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="text-center shrink-0">
+            <div class="rounded-full border border-primary/20 bg-primary/10 px-3 py-1">
+                <span class="text-xs font-bold text-primary">
+                    {{ wishlist_plant.quantity }}x
+                </span>
+            </div>
+
+            <span class="text-[10px] font-bold text-on-surface-variant">
+                ANZAHL
+            </span>
+        </div>
+
+    </article>
+</a>
