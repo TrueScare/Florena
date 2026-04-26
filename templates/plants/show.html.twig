@@ -73,13 +73,13 @@
                         {# Stress(Fitness)Score #}
                         <div class="bg-surface-container-low rounded-lg p-8 flex items-center justify-between">
                             <div>
-                                <p class="text-on-surface-variant font-medium text-sm mb-1">Stress Score</p>
+                                <p class="text-on-surface-variant font-medium text-sm mb-1">Health Score</p>
                                 <p class="text-3xl font-bold text-on-surface">{{ plant.stressScore }}%</p>
 
                                 {% if plant.stressScore < 40 %}
-                                    <p class="text-primary text-xs font-semibold mt-2 flex items-center gap-1">
+                                    <p class="text-[#E53935] text-xs font-semibold mt-2 flex items-center gap-1">
                                         <span class="material-symbols-outlined text-xs">check_circle</span>
-                                        Optimaler Zustand
+                                        Hoher Stress
                                     </p>
                                 {% elseif plant.stressScore < 80 %}
                                     <p class="text-[#FFB300] text-xs font-semibold mt-2 flex items-center gap-1">
@@ -87,9 +87,9 @@
                                         Leichter Stress
                                     </p>
                                 {% else %}
-                                    <p class="text-[#E53935] text-xs font-semibold mt-2 flex items-center gap-1">
+                                    <p class="text-primary text-xs font-semibold mt-2 flex items-center gap-1">
                                         <span class="material-symbols-outlined text-xs">error</span>
-                                        Hoher Stress
+                                        Optimaler Zustand
                                     </p>
                                 {% endif %}
                             </div>
