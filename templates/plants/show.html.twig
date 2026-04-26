@@ -113,7 +113,8 @@
                             {% if fitnessStatus %}
                                 {% set status = fitnessStatus.status %}
 
-                                <div class="flex items-start gap-4">
+                                <a href="{{ path('app_fitness_plant', { id: plant.id }) }}"
+                                   class="flex items-center gap-4 rounded-lg p-2 -m-2 transition-colors hover:bg-surface-container-low">
                                     <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0
                                         {% if status.name == 'perfect' %}
                                             bg-primary-container text-on-primary-container
@@ -147,8 +148,9 @@
                                             Bewertung basierend auf Licht, Temperatur und Luftfeuchtigkeit.
                                         </p>
                                     </div>
-                                </div>
+                                </a>
                             {% endif %}
+                            
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shrink-0">
                                     <span class="material-symbols-outlined text-xl">schedule</span>
