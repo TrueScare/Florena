@@ -7,6 +7,7 @@ use App\Enum\CalenderTimeInterval;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -81,6 +82,27 @@ class CareTaskRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function findAllAssignedToUserInInterval(?UserInterface $getUser, CalenderTimeInterval $interval)
+    {
+        $endDate = match ($interval) {
+            CalenderTimeInterval::day => new DateTimeImmutable("tomorrow"),
+            CalenderTimeInterval::week => new DateTimeImmutable("last day of this week")->modify("+1 day"),
+            CalenderTimeInterval::month => new DateTimeImmutable("last day of this month")->modify("+1 day")
+        };
+
+        return $this->createQueryBuilder('c')
+            ->addSelect('ta', 'u')
+            ->leftJoin('c.taskAssignments', 'ta')
+            ->leftJoin('ta.to_user', 'u')
+            ->andWhere('ta.to_user = :user')
+            ->andWhere('c.due_date <= ta.end_date ')
+            ->andWhere('c.due_date < :endDate')
+            ->setParameter('user', $getUser)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
     }
 
     private function getBaseUserQueryBuilder(UserInterface $user)
