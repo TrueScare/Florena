@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\CareHistory;
 use App\Entity\CareTask;
+use App\Entity\Notifications;
 use App\Entity\Plants;
 use App\Entity\User;
 use App\Enum\HumidityRequirement;
@@ -26,6 +27,7 @@ final class CareHistoryControllerTest extends WebTestCase
     private CareTask $task;
     private Plants $plant;
     private EntityRepository $plantRepository;
+    private EntityRepository $notificationRepository;
 
     protected function setUp(): void
     {
@@ -33,6 +35,7 @@ final class CareHistoryControllerTest extends WebTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $userRepository = $this->manager->getRepository(User::class);
         $this->plantRepository = $this->manager->getRepository(Plants::class);
+        $this->notificationRepository = $this->manager->getRepository(Notifications::class);
         $careTaskRepository = $this->manager->getRepository(CareTask::class);
 
         $this->user = $userRepository->findOneBy(['username' => 'Testuser']);
@@ -52,6 +55,9 @@ final class CareHistoryControllerTest extends WebTestCase
     {
         foreach ($this->plantRepository->findAll() as $p) {
             $this->manager->remove($p);
+        }
+        foreach($this->notificationRepository->findAll() as $n){
+            $this->manager->remove($n);
         }
         $this->manager->flush();
 

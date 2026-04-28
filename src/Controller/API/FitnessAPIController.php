@@ -32,9 +32,9 @@ class FitnessAPIController extends AbstractController
     #[Route('/location', name: 'app_api_fitness_location', methods: ['GET'])]
     public function getLocation(Request $request): JsonResponse
     {
-        $light = LightRequirement::tryFrom($request->query->get('light_requirement'));
-        $temperature = TemperatureRequirement::tryFrom($request->query->get('temperature_requirement'));
-        $humidity = HumidityRequirement::tryFrom($request->query->get('humidity_requirement'));
+        $light = LightRequirement::tryFrom($request->query->get('light_requirement', 'error'));
+        $temperature = TemperatureRequirement::tryFrom($request->query->get('temperature_requirement', 'error'));
+        $humidity = HumidityRequirement::tryFrom($request->query->get('humidity_requirement', 'error'));
 
         if ($light == null || $temperature == null || $humidity == null) {
             return $this->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -61,9 +61,9 @@ class FitnessAPIController extends AbstractController
     #[Route('/plant', name: 'app_api_fitness_plant', methods: ['GET'])]
     public function getPlant(Request $request): JsonResponse
     {
-        $light = LightRequirement::tryFrom($request->query->get('light_condition'));
-        $temperature = TemperatureRequirement::tryFrom($request->query->get('temperature_level'));
-        $humidity = HumidityRequirement::tryFrom($request->query->get('humidity_level'));
+        $light = LightRequirement::tryFrom($request->query->get('light_condition', 'error'));
+        $temperature = TemperatureRequirement::tryFrom($request->query->get('temperature_level', 'error'));
+        $humidity = HumidityRequirement::tryFrom($request->query->get('humidity_level', 'error'));
 
         if ($light == null || $temperature == null || $humidity == null) {
             return $this->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
