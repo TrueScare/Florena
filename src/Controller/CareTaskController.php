@@ -23,6 +23,7 @@ final class CareTaskController extends AbstractController
 
         return $this->render('care_task/index.html.twig', [
             'care_tasks' => $careTaskRepository->findAllByUserInInterval($this->getUser(), $interval),
+            'assigned_tasks' => $careTaskRepository->findAllAssignedToUserInInterval($this->getUser(), $interval),
             'interval' => $interval->value,
         ]);
     }

@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_task_assignments_delete', {'id': task_assignment.id}) }}" onsubmit="return confirm('Bist du sicher, dass du die Aufgabenübertragung löschen möchtest?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ task_assignment.id) }}">
+    <button class="btn">Löschen</button>
+</form>

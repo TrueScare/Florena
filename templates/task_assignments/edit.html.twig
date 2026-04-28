@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit TaskAssignments{% endblock %}
+
+{% block body %}
+    <h1>Edit TaskAssignments</h1>
+
+    {{ include('task_assignments/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+
+    <a href="{{ path('app_task_assignments_index') }}">zurück zur Liste</a>
+
+    {{ include('task_assignments/_delete_form.html.twig') }}
+{% endblock %}

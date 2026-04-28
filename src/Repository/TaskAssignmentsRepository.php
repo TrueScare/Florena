@@ -2,9 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\CareTask;
 use App\Entity\TaskAssignments;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<TaskAssignments>
@@ -14,6 +17,19 @@ class TaskAssignmentsRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, TaskAssignments::class);
+    }
+
+    public function countTaskAssignmentsForCareTaskByUser(CareTask $careTask, UserInterface $user): int{
+        return $this->createQueryBuilder('ta')
+            ->select('COUNT(ta.id)')
+            ->join('ta.care_task', 'ct')
+            ->join('ta.to_user', 'u')
+            ->where('ct.id = :taskId')
+            ->andWhere('u.id = :userId')
+            ->setParameter('taskId', $careTask->getId())
+            ->setParameter('userId', $user->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     //    /**

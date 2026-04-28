@@ -25,7 +25,7 @@ class RegistrationControllerTest extends WebTestCase
         $this->userRepository = $container->get(UserRepository::class);
 
         foreach ($this->userRepository->findAll() as $user) {
-            if($user->getUsername() !== 'Testuser'  && $user->getUsername() !== 'TestuserNoRef'){
+            if ($user->getUsername() !== 'Testuser' && $user->getUsername() !== 'TestuserNoRef' && $user->getUsername() !== 'TestuserNoPlants') {
                 // prevent the fixture test user to be deleted...
                 $em->remove($user);
             }
@@ -57,7 +57,7 @@ class RegistrationControllerTest extends WebTestCase
 
         // Ensure the verification email was sent
         // Use either assertQueuedEmailCount() || assertEmailCount() depending on your mailer setup
-         self::assertQueuedEmailCount(1);
+        self::assertQueuedEmailCount(1);
         // self::assertEmailCount(1);
 
         self::assertCount(1, $messages = $this->getMailerMessages());

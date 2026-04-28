@@ -6,6 +6,7 @@ use App\Repository\TaskAssignmentsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaskAssignmentsRepository::class)]
+#[ORM\UniqueConstraint(name: 'task_assignment_user', columns: ['to_user_id', 'care_task_id'])]
 class TaskAssignments
 {
     #[ORM\Id]
@@ -22,7 +23,7 @@ class TaskAssignments
     #[ORM\Column]
     private ?\DateTimeImmutable $assigned_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $responded_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'send_task_assignemnts')]
@@ -36,6 +37,11 @@ class TaskAssignments
     #[ORM\ManyToOne(inversedBy: 'taskAssignments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?CareTask $care_task = null;
+
+    public function __construct()
+    {
+        $this->assigned_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
