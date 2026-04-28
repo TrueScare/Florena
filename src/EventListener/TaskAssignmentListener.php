@@ -5,10 +5,7 @@ namespace App\EventListener;
 use App\Entity\CareTask;
 use App\Entity\Notifications;
 use App\Entity\TaskAssignments;
-use App\Repository\NotificationsRepository;
-use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -32,16 +29,11 @@ final class TaskAssignmentListener
 
     /**
      * Create a notification if a TaskAssignment was edited
-     *
-     * @param TaskAssignments $taskAssignment
-     * @param LifecycleEventArgs $args
-     * @return void
      */
     public function postUpdate(TaskAssignments $taskAssignment, LifecycleEventArgs $args): void
     {
         $changeset = $args->getObjectManager()->getUnitOfWork()->getEntityChangeSet($taskAssignment);
 
-        // nothing to do if there were no changes
         if (count($changeset) <= 0) {
             return;
         }
@@ -57,7 +49,6 @@ final class TaskAssignmentListener
     {
         $changeset = $args->getObjectManager()->getUnitOfWork()->getEntityChangeSet($taskAssignment);
 
-        // nothing to do if there were no changes
         if (count($changeset) <= 0) {
             return;
         }
@@ -69,21 +60,38 @@ final class TaskAssignmentListener
         );
     }
 
-
     public function postRemove(TaskAssignments $taskAssignment): void
     {
-        $notifcation = new Notifications()
-            ->setCareTask($taskAssignment->getCareTask())
-            ->setUser($taskAssignment->getToUser())
-            ->setMessage(
-                sprintf(
-                    $this->messageMapping[Events::postRemove],
-                    $taskAssignment->getCareTask()->getTaskType()->value,
-                    $taskAssignment->getCareTask()->getPlant()->getName(),
-                    $taskAssignment->getFromUser()->getUsername()
-                ));
+        $careTask = $taskAssignment->getCareTask();
 
-        $this->entityManager->persist($notifcation);
+        if ($careTask === null) {
+            return;
+        }
+
+        // The CareTask may be detached or scheduled for deletion (e.g. when the parent
+        // Plant is cascade-deleted). In that case there is nothing meaningful to notify about.
+        $uow = $this->entityManager->getUnitOfWork();
+        if ($uow->isScheduledForDelete($careTask) || !$uow->isInIdentityMap($careTask)) {
+            return;
+        }
+
+        // Re-fetch from the DB to guarantee a managed instance before persisting the Notification.
+        $managedCareTask = $this->entityManager->find(CareTask::class, $careTask->getId());
+        if ($managedCareTask === null) {
+            return;
+        }
+
+        $notification = new Notifications();
+        $notification->setCareTask($managedCareTask);
+        $notification->setUser($taskAssignment->getToUser());
+        $notification->setMessage(sprintf(
+            $this->messageMapping[Events::postRemove],
+            $managedCareTask->getTaskType()->value,
+            $managedCareTask->getPlant()->getName(),
+            $taskAssignment->getFromUser()->getUsername()
+        ));
+
+        $this->entityManager->persist($notification);
         $this->entityManager->flush();
     }
 }

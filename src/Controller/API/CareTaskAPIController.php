@@ -6,6 +6,7 @@ use App\Entity\CareHistory;
 use App\Entity\CareTask;
 use App\Entity\TaskAssignments;
 use App\Enum\CareType;
+use App\Repository\TaskAssignmentsRepository;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,20 +27,19 @@ class CareTaskAPIController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_care_task_done', methods: ['GET'])]
-    public function done(CareTask $careTask): JsonResponse
+    public function done(CareTask $careTask, TaskAssignmentsRepository $taskAssignmentsRepository): JsonResponse
     {
         // this statement checkt weither or not the user is owner of the task
         // or the user is anywhere assigned to the task
-        if ($careTask->getPlant()->getUser() !== $this->getUser()
-            && !in_array(
-                $this->getUser(),
-                array_map(
-                    function (TaskAssignments $taskAssignment) {
-                        return $taskAssignment->getToUser();
-                    },
-                    $careTask->getTaskAssignments()->toArray())
-            )
-        ) {
+        $currentUserId = $this->getUser()->getId();
+        $isOwner = $careTask->getPlant()->getUser()->getId() === $currentUserId;
+        $isAssigned = false;
+        $count = $taskAssignmentsRepository->countTaskAssignmentsForCareTaskByUser($careTask, $this->getUser());
+        if(!$isOwner){
+            $isAssigned = $count >0;
+        }
+
+        if (!$isOwner && !$isAssigned) {
             return $this->json([], Response::HTTP_FORBIDDEN);
         }
 

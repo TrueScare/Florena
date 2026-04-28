@@ -2,7 +2,14 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\CareTask;
+use App\Entity\Notifications;
+use App\Entity\Plants;
 use App\Entity\TaskAssignments;
+use App\Entity\User;
+use App\Enum\HumidityRequirement;
+use App\Enum\LightRequirement;
+use App\Enum\TemperatureRequirement;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -15,140 +22,275 @@ final class TaskAssignmentsControllerTest extends WebTestCase
 
     /** @var EntityRepository<TaskAssignments> */
     private EntityRepository $taskAssignmentRepository;
-    private string $path = '/task/assignments/';
+
+    /** @var EntityRepository<Plants> */
+    private EntityRepository $plantRepository;
+
+    /** @var EntityRepository<User> */
+    private EntityRepository $userRepository;
+
+    private User $owner;
+    private User $otherUser;
+    private Plants $plant;
+    private CareTask $careTask;
+
+    private string $path = '/task_assignments';
+    private EntityRepository $notificationRepository;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->taskAssignmentRepository = $this->manager->getRepository(TaskAssignments::class);
+        $this->plantRepository = $this->manager->getRepository(Plants::class);
+        $this->userRepository = $this->manager->getRepository(User::class);
+        $this->notificationRepository = $this->manager->getRepository(Notifications::class);
 
-        foreach ($this->taskAssignmentRepository->findAll() as $object) {
-            $this->manager->remove($object);
+        foreach ($this->taskAssignmentRepository->findAll() as $ta) {
+            $this->manager->remove($ta);
         }
+        foreach ($this->plantRepository->findAll() as $p) {
+            $this->manager->remove($p);
+        }
+        foreach ($this->notificationRepository->findAll() as $n){
+            $this->manager->remove($n);
+        }
+        $this->manager->flush();
 
+        $this->owner = $this->userRepository->findOneBy(['username' => 'Testuser']);
+        $this->otherUser = $this->userRepository->findOneBy(['username' => 'TestuserNoRef']);
+
+        $this->plant = $this->createPlant($this->owner);
+        $this->manager->persist($this->plant);
+        $this->manager->flush();
+
+        $this->careTask = $this->manager->getRepository(CareTask::class)
+            ->findOneBy(['plant' => $this->plant]);
+        self::assertNotNull($this->careTask, 'PlantsUpdateListener must have created a CareTask');
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->taskAssignmentRepository->findAll() as $ta) {
+            $this->manager->remove($ta);
+        }
+        foreach ($this->plantRepository->findAll() as $p) {
+            $this->manager->remove($p);
+        }
+        foreach ($this->notificationRepository->findAll() as $n){
+            $this->manager->remove($n);
+        }
         $this->manager->flush();
     }
 
-    public function testIndex(): void
+    public function testIndexRedirectsWhenNotLoggedIn(): void
     {
-        $this->client->followRedirects();
-        $crawler = $this->client->request('GET', $this->path);
-
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('TaskAssignment index');
-
-        // Use the $crawler to perform additional assertions e.g.
-        // self::assertSame('Some text on the page', $crawler->filter('.p')->first()->text());
+        $this->client->request('GET', $this->path);
+        self::assertResponseRedirects('/login');
     }
 
-    public function testNew(): void
+    public function testNewRedirectsWhenNotLoggedIn(): void
     {
-        $this->client->request('GET', sprintf('%snew', $this->path));
+        $this->client->request('GET', $this->path . '/new');
+        self::assertResponseRedirects('/login');
+    }
+    public function testIndexRendersForAuthenticatedUser(): void
+    {
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path);
 
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+    }
+    public function testNewFormRendersForAuthenticatedUser(): void
+    {
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/new');
 
-        $this->client->submitForm('Save', [
-            'task_assignment[start_date]' => 'Testing',
-            'task_assignment[end_date]' => 'Testing',
-            'task_assignment[assigned_at]' => 'Testing',
-            'task_assignment[responded_at]' => 'Testing',
-            'task_assignment[from_user]' => 'Testing',
-            'task_assignment[to_user]' => 'Testing',
-            'task_assignment[care_task]' => 'Testing',
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testNewCreatesAssignmentsForSelectedTasks(): void
+    {
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/new');
+
+        $this->client->submitForm('Speichern', [
+            'task_assignments[start_date]' => (new \DateTimeImmutable('+1 day'))->format('Y-m-d H:i'),
+            'task_assignments[end_date]'   => (new \DateTimeImmutable('+7 days'))->format('Y-m-d H:i'),
+            'task_assignments[to_user]'    => $this->otherUser->getId(),
+            'task_assignments[care_tasks]' => [$this->careTask->getId()],
         ]);
 
-        self::assertResponseRedirects('/task/assignments');
-
+        self::assertResponseRedirects($this->path);
         self::assertSame(1, $this->taskAssignmentRepository->count([]));
 
-        $this->markTestIncomplete('This test was generated');
+        $assignment = $this->taskAssignmentRepository->findAll()[0];
+        self::assertSame($this->otherUser->getId(), $assignment->getToUser()->getId());
+        self::assertSame($this->owner->getId(), $assignment->getFromUser()->getId());
+        self::assertSame($this->careTask->getId(), $assignment->getCareTask()->getId());
+    }
+    public function testShowAllowedForToUser(): void
+    {
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
+
+        $this->client->loginUser($this->otherUser);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId());
+
+        self::assertResponseIsSuccessful();
     }
 
-    public function testShow(): void
+    public function testShowAllowedForFromUser(): void
     {
-        $fixture = new TaskAssignments();
-        $fixture->setStartDate('My Title');
-        $fixture->setEndDate('My Title');
-        $fixture->setAssignedAt('My Title');
-        $fixture->setRespondedAt('My Title');
-        $fixture->setFromUser('My Title');
-        $fixture->setToUser('My Title');
-        $fixture->setCareTask('My Title');
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
 
-        $this->manager->persist($fixture);
-        $this->manager->flush();
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId());
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
-
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('TaskAssignment');
-
-        // Use assertions to check that the properties are properly displayed.
-        $this->markTestIncomplete('This test was generated');
+        self::assertResponseIsSuccessful();
     }
 
-    public function testEdit(): void
+    public function testShowRedirectsForUnrelatedUser(): void
     {
-        $fixture = new TaskAssignments();
-        $fixture->setStartDate('Value');
-        $fixture->setEndDate('Value');
-        $fixture->setAssignedAt('Value');
-        $fixture->setRespondedAt('Value');
-        $fixture->setFromUser('Value');
-        $fixture->setToUser('Value');
-        $fixture->setCareTask('Value');
+        $thirdUser = $this->userRepository->findOneBy(['username' => 'TestuserNoPlants']);
 
-        $this->manager->persist($fixture);
-        $this->manager->flush();
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
 
-        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        $this->client->loginUser($thirdUser);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId());
 
-        $this->client->submitForm('Update', [
-            'task_assignment[start_date]' => 'Something New',
-            'task_assignment[end_date]' => 'Something New',
-            'task_assignment[assigned_at]' => 'Something New',
-            'task_assignment[responded_at]' => 'Something New',
-            'task_assignment[from_user]' => 'Something New',
-            'task_assignment[to_user]' => 'Something New',
-            'task_assignment[care_task]' => 'Something New',
+        self::assertResponseRedirects($this->path);
+    }
+
+    public function testEditAllowedForFromUser(): void
+    {
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
+
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId() . '/edit');
+
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testEditRedirectsForToUser(): void
+    {
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
+
+        $this->client->loginUser($this->otherUser);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId() . '/edit');
+
+        self::assertResponseRedirects($this->path);
+    }
+
+    public function testEditPostRedirectsForToUser(): void
+    {
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
+
+        $this->client->loginUser($this->otherUser);
+        $this->client->request('POST', $this->path . '/' . $assignment->getId() . '/edit');
+
+        self::assertResponseRedirects($this->path);
+    }
+
+    public function testEditUpdatesEndDate(): void
+    {
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
+        $newEnd = (new \DateTimeImmutable('+14 days'))->format('Y-m-d H:i');
+
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId() . '/edit');
+
+        $this->client->submitForm('Bearbeiten', [
+            'task_assignments[start_date]' => $assignment->getStartDate()->format('Y-m-d H:i'),
+            'task_assignments[end_date]'   => $newEnd,
+            'task_assignments[to_user]'    => $this->otherUser->getId(),
+            'task_assignments[care_task]'  => $this->careTask->getId(),
         ]);
 
-        self::assertResponseRedirects('/task/assignments');
+        self::assertResponseRedirects($this->path);
 
-        $fixture = $this->taskAssignmentRepository->findAll();
+        $this->manager->clear();
+        $updated = $this->taskAssignmentRepository->find($assignment->getId());
+        self::assertSame($newEnd, $updated->getEndDate()->format('Y-m-d H:i'));
+    }
+    public function testDeleteAllowedForFromUser(): void
+    {
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
 
-        self::assertSame('Something New', $fixture[0]->getStartDate());
-        self::assertSame('Something New', $fixture[0]->getEndDate());
-        self::assertSame('Something New', $fixture[0]->getAssignedAt());
-        self::assertSame('Something New', $fixture[0]->getRespondedAt());
-        self::assertSame('Something New', $fixture[0]->getFromUser());
-        self::assertSame('Something New', $fixture[0]->getToUser());
-        self::assertSame('Something New', $fixture[0]->getCareTask());
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId());
+        $this->client->submitForm('Löschen');
 
-        $this->markTestIncomplete('This test was generated');
+        self::assertResponseRedirects($this->path);
+        self::assertSame(0, $this->taskAssignmentRepository->count([]));
     }
 
-    public function testRemove(): void
+    public function testDeleteAllowedForToUser(): void
     {
-        $fixture = new TaskAssignments();
-        $fixture->setStartDate('Value');
-        $fixture->setEndDate('Value');
-        $fixture->setAssignedAt('Value');
-        $fixture->setRespondedAt('Value');
-        $fixture->setFromUser('Value');
-        $fixture->setToUser('Value');
-        $fixture->setCareTask('Value');
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
 
-        $this->manager->persist($fixture);
+        $this->client->loginUser($this->otherUser);
+        $this->client->request('GET', $this->path . '/' . $assignment->getId());
+        $this->client->submitForm('Löschen');
+
+        self::assertResponseRedirects($this->path);
+        self::assertSame(0, $this->taskAssignmentRepository->count([]));
+    }
+
+    public function testDeleteBlockedForUnrelatedUser(): void
+    {
+        $thirdUser = $this->userRepository->findOneBy(['username' => 'TestuserNoPlants']);
+
+        $assignment = $this->createAssignment($this->owner, $this->otherUser);
+
+        // Log in as the unrelated user and send a POST directly.
+        // The controller checks ownership BEFORE CSRF, so the user is redirected away
+        // regardless of token validity. Using an invalid token keeps us from needing
+        // a session-bound CSRF manager outside of a real request context.
+        $this->client->loginUser($thirdUser);
+        $this->client->request('POST', $this->path . '/' . $assignment->getId(), ['_token' => 'invalid']);
+
+        self::assertResponseRedirects($this->path);
+        self::assertSame(1, $this->taskAssignmentRepository->count([]));
+
+    }
+    private function createAssignment(User $from, User $to): TaskAssignments
+    {
+        $assignment = (new TaskAssignments())
+            ->setFromUser($from)
+            ->setToUser($to)
+            ->setCareTask($this->careTask)
+            ->setStartDate(new \DateTimeImmutable('+1 day'))
+            ->setEndDate(new \DateTimeImmutable('+7 days'));
+
+        $this->manager->persist($assignment);
         $this->manager->flush();
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
-        $this->client->submitForm('Delete');
+        return $assignment;
+    }
 
-        self::assertResponseRedirects('/task/assignments');
-        self::assertSame(0, $this->taskAssignmentRepository->count([]));
+    private function createPlant(User $user): Plants
+    {
+        $plant = new Plants();
+        $plant->setName('Testpflanze');
+        $plant->setDescription('Beschreibung');
+        $plant->setBotanicalName('Plantus testicus');
+        $plant->setLightRequirement(LightRequirement::halfshady);
+        $plant->setTemperatureRequirement(TemperatureRequirement::cool);
+        $plant->setHumidityRequirement(HumidityRequirement::medium);
+        $plant->setSoilType('Erde');
+        $plant->setPotSize('12 cm');
+        $plant->setLastWateredAt(new \DateTimeImmutable());
+        $plant->setLastFertilizedAt(new \DateTimeImmutable());
+        $plant->setLastRepottedAt(new \DateTimeImmutable());
+        $plant->setWateringIntervalDays(7);
+        $plant->setFertilizingIntervalDays(30);
+        $plant->setRepottingIntervalDays(365);
+        $plant->setToxicForHumans(false);
+        $plant->setToxicForAnimals(false);
+        $plant->setUser($user);
 
-        $this->markTestIncomplete('This test was generated');
+        return $plant;
     }
 }
