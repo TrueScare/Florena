@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\PlantNotes;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<PlantNotes>
@@ -16,28 +18,14 @@ class PlantNotesRepository extends ServiceEntityRepository
         parent::__construct($registry, PlantNotes::class);
     }
 
-    //    /**
-    //     * @return PlantNotes[] Returns an array of PlantNotes objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?PlantNotes
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findAllByUser(UserInterface $user): array
+    {
+        return $this->createQueryBuilder('n')
+            ->addSelect('p')
+            ->leftJoin('n.plant', 'p')
+            ->andWhere('n.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 }
