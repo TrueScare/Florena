@@ -29,8 +29,8 @@ class PaginationService
     public function getPageInfoFromRequest(Request $request): PageInfo
     {
         return new PageInfo(
-            PaginationOrder::tryFrom($request->query->get('order', PaginationOrder::NAME_ASC->value)),
-            PaginationLimit::tryFrom($request->query->get('limit', PaginationLimit::ten->value)),
+            PaginationOrder::tryFrom($request->query->get('order', PaginationOrder::NAME_ASC->value)) ?? PaginationOrder::NAME_ASC,
+            PaginationLimit::tryFrom($request->query->get('limit', PaginationLimit::ten->value)) ?? PaginationLimit::ten,
             $request->query->get('page', 1),
             $request->query->get('searchTerm')
         );
