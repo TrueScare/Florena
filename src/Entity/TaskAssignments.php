@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\TaskAssignmentsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: TaskAssignmentsRepository::class)]
 #[ORM\UniqueConstraint(name: 'task_assignment_user', columns: ['to_user_id', 'care_task_id'])]
+#[UniqueEntity(fields: ['to_user', 'care_task'], message: "Dem User wurde diese Aufgabe bereits zugeordnet.")]
 class TaskAssignments
 {
     #[ORM\Id]
