@@ -30,7 +30,7 @@ final class LocationsController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $location = new Locations();
-        $form = $this->createForm(LocationsType::class, $location);
+        $form = $this->createForm(LocationsType::class, $location, ['user' => $this->getUser()]);
         $form->handleRequest($request);
 
         $location->setUser($this->getUser());
@@ -110,7 +110,7 @@ final class LocationsController extends AbstractController
             return $this->redirectToRoute('app_locations_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $form = $this->createForm(LocationsType::class, $location);
+        $form = $this->createForm(LocationsType::class, $location, ['user' => $this->getUser()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

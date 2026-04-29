@@ -51,6 +51,12 @@ class LocationsType extends AbstractType
                 'choice_label' => 'value',
                 'label' => 'Feuchtigkeit',
                 'help' => "Badezimmer = feucht, Wohnzimmer = mittel"
+            ])->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'username',
+                'attr' => ['hidden' => true],
+                'data' => $options['user'],
+                'choices' => [$options['user']],
             ]);
     }
 
@@ -58,6 +64,7 @@ class LocationsType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Locations::class,
+            'user' => null,
         ]);
     }
 }

@@ -9,10 +9,12 @@ use App\Repository\PlantsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PlantsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_plant_name', columns: ['user_id', 'name'])]
+#[UniqueEntity(fields: ['name', 'user'], message: "Eine Pflanze mit diesem Namen existiert bereits.")]
 #[ORM\HasLifecycleCallbacks]
 class Plants implements RequirementsEntityInterface
 {

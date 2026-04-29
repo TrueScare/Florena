@@ -9,10 +9,12 @@ use App\Repository\LocationsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LocationsRepository::class)]
 #[ORM\UniqueConstraint(name: 'user_location_name', columns: ['user_id', 'name'])]
+#[UniqueEntity(fields: ['name', 'user'], message: 'Ein Standort mit diesem Namen existiert bereits.')]
 class Locations implements RequirementsEntityInterface
 {
     #[ORM\Id]
