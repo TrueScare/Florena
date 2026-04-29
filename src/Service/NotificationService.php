@@ -70,6 +70,14 @@ final class NotificationService
         }
     }
 
+    public function deactivateNotificationsForPropagationAction(PropagationActions $propagationAction): void
+    {
+        foreach ($propagationAction->getNotifications() as $notification) {
+            $notification->setIsActive(false);
+            $notification->setIsRead(true);
+        }
+    }
+
     private function createCareTaskNotification(CareTask $careTask): Notifications
     {
         $dueDate = $careTask->getDueDate()?->format('d.m.Y H:i') ?? 'jetzt';

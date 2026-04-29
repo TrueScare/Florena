@@ -1,11 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New PropagationActions{% endblock %}
+{% block title %}
+    {% if plant %}
+        Vermehrung für {{ plant.name }} planen
+    {% else %}
+        Vermehrung planen
+    {% endif %}
+{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Create new PropagationActions</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ plant ? path('app_plants_show', { id: plant.id }) : path('app_propagation_actions_index') }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">
+                    {{ plant ? 'Zurück zur Pflanze' : 'Zurück zur Liste' }}
+                </span>
+            </a>
 
-    {{ include('propagation_actions/_form.html.twig') }}
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        {% if plant %}
+                            Vermehrung für <span class="font-bold italic text-primary">{{ plant.name }}</span> planen
+                        {% else %}
+                            Vermehrung <span class="font-bold italic text-primary">planen</span>
+                        {% endif %}
+                    </h1>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Halte Methode, Termin, Status und Notizen fest, damit du die Vermehrung strukturiert nachverfolgen kannst.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    <a href="{{ path('app_propagation_actions_index') }}">zurück zur Liste</a>
+        {{ include('propagation_actions/_form.html.twig', { plant: plant }) }}
+    </main>
 {% endblock %}

@@ -1,4 +1,11 @@
-<form method="post" action="{{ path('app_propagation_actions_delete', {'id': propagation_action.id}) }}" onsubmit="return confirm('Bist du dir sicher, dass du die Aufgabe löschen möchtest?');">
+<form method="post"
+      action="{{ path('app_propagation_actions_delete', {'id': propagation_action.id}) }}"
+      onsubmit="return confirm('Bist du sicher, dass du diese Vermehrungsmaßnahme löschen möchtest?');">
+
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ propagation_action.id) }}">
-    <button class="btn">Löschen</button>
+
+    <button class="inline-flex items-center gap-2 rounded-full border border-red-300 px-6 py-3 font-semibold text-red-600 transition hover:bg-red-50 hover:border-red-400">
+        <span class="material-symbols-outlined text-lg">delete</span>
+        Löschen
+    </button>
 </form>

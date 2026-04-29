@@ -119,7 +119,7 @@ final class PropagationActionsControllerTest extends WebTestCase
             'propagation_actions[notes]' => 'neue notiz'
         ]);
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants/' . $plant->getId());
 
         $fixture = $this->propagationActionRepository->findAll();
 

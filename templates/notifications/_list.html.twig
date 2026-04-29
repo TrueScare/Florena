@@ -10,6 +10,46 @@
             },
             showDoneButton: false
         } %}
+    {% elseif n.propagationAction %}
+        {% set propagationAction = n.propagationAction %}
+        {% set iconClass = propagationAction.method.name == 'cuttings'
+            ? 'bg-tertiary-container text-on-tertiary-container'
+            : propagationAction.method.name == 'lowering'
+                ? 'bg-secondary-container text-on-secondary-container'
+                : 'bg-primary-container text-on-primary-container'
+        %}
+        {% set iconName = propagationAction.method.name == 'cuttings'
+            ? 'content_cut'
+            : propagationAction.method.name == 'lowering'
+                ? 'grass'
+                : 'potted_plant'
+        %}
+
+        <div class="care-task-card group flex items-center justify-between rounded-xl bg-surface-container-lowest p-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:scale-[1.01]">
+            <a
+                href="{{ path('app_plants_show', { id: propagationAction.plant.id }) }}"
+                class="flex min-w-0 flex-1 items-center gap-4"
+            >
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full {{ iconClass }}">
+                    <span class="material-symbols-outlined">{{ iconName }}</span>
+                </div>
+
+                <div class="min-w-0">
+                    <h3 class="font-bold leading-tight text-on-surface">
+                        {{ propagationAction.method.value|capitalize }}
+                    </h3>
+                    <p class="truncate text-sm text-on-surface-variant">
+                        {{ propagationAction.plant.name }}
+                    </p>
+                </div>
+            </a>
+
+            <div class="text-right">
+                <p class="text-xs font-medium text-on-surface-variant">
+                    Fällig {{ propagationAction.plannedDate ? propagationAction.plannedDate|date('d.m.Y') : 'jetzt' }}
+                </p>
+            </div>
+        </div>
     {% endif %}
 {% else %}
     <p class="text-sm text-on-surface-variant p-3">

@@ -1,4 +1,130 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Speichern') }}</button>
-{{ form_end(form) }}
+{% set currentPlant = plant|default(null) %}
+
+{{ form_start(form, { attr: { class: 'space-y-8' } }) }}
+
+<div class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-[0_20px_40px_rgba(46,52,51,0.06)]">
+    <section class="p-8 md:p-12 space-y-10">
+        <div class="flex items-center gap-3">
+            <span class="rounded-lg bg-primary-container p-2 text-on-primary-container">
+                <span class="material-symbols-outlined block">local_florist</span>
+            </span>
+            <h2 class="text-2xl font-bold tracking-tight">Vermehrungsmaßnahme</h2>
+        </div>
+
+        {% if currentPlant %}
+            <div class="flex items-center gap-5 rounded-xl bg-surface-container-low p-4">
+                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-lg">
+                    <img
+                        src="{{ currentPlant.displayPhotoPath starts with 'http' ? currentPlant.displayPhotoPath : asset(currentPlant.displayPhotoPath) }}"
+                        alt="{{ currentPlant.name }}"
+                        class="h-full w-full object-cover"
+                    >
+                </div>
+
+                <div class="min-w-0 flex-grow">
+                    <p class="font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant">
+                        Pflanze
+                    </p>
+                    <p class="mt-1 truncate text-lg font-semibold text-on-surface">{{ currentPlant.name }}</p>
+                    {% if currentPlant.botanicalName %}
+                        <p class="mt-1 truncate text-sm italic text-on-surface-variant">
+                            {{ currentPlant.botanicalName }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div class="space-y-2">
+                {{ form_label(form.method, null, {
+                    label_attr: {
+                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                    }
+                }) }}
+                {{ form_widget(form.method, {
+                    attr: {
+                        class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                    }
+                }) }}
+                {{ form_errors(form.method) }}
+            </div>
+
+            <div class="space-y-2">
+                {{ form_label(form.planned_date, null, {
+                    label_attr: {
+                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                    }
+                }) }}
+                {{ form_widget(form.planned_date, {
+                    attr: {
+                        class: 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                    }
+                }) }}
+                {{ form_errors(form.planned_date) }}
+            </div>
+
+            <div class="space-y-2">
+                {{ form_label(form.status, null, {
+                    label_attr: {
+                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                    }
+                }) }}
+                {{ form_widget(form.status, {
+                    attr: {
+                        class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                    }
+                }) }}
+                {{ form_errors(form.status) }}
+            </div>
+
+            {% if form.plant is defined %}
+                <div class="space-y-2">
+                    {{ form_label(form.plant, null, {
+                        label_attr: {
+                            class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                        }
+                    }) }}
+                    {{ form_widget(form.plant, {
+                        attr: {
+                            class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }
+                    }) }}
+                    {{ form_errors(form.plant) }}
+                </div>
+            {% endif %}
+
+            <div class="space-y-2 md:col-span-2">
+                {{ form_label(form.notes, null, {
+                    label_attr: {
+                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                    }
+                }) }}
+                {{ form_widget(form.notes, {
+                    attr: {
+                        class: 'w-full resize-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface placeholder:text-outline-variant transition-all focus:border-primary focus:ring-4 focus:ring-primary/10',
+                        placeholder: 'Notiere z.B. Anzahl der Stecklinge, Substrat oder nächste Schritte...',
+                        rows: 5
+                    }
+                }) }}
+                {{ form_errors(form.notes) }}
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="mt-10 flex flex-col items-center justify-end gap-4 md:flex-row">
+    <a href="{{ currentPlant ? path('app_plants_show', { id: currentPlant.id }) : path('app_propagation_actions_index') }}"
+       class="w-full px-10 py-4 text-center font-bold text-on-surface-variant transition-colors hover:text-on-surface md:w-auto">
+        Abbrechen
+    </a>
+
+    <button type="submit"
+            class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-12 py-4 font-bold text-on-primary shadow-[0_10px_20px_rgba(61,107,0,0.2)] transition-all active:scale-95 md:w-auto">
+        <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">save</span>
+        {{ button_label|default('Speichern') }}
+    </button>
+</div>
+
+{{ form_widget(form._token) }}
+{{ form_end(form, { render_rest: false }) }}

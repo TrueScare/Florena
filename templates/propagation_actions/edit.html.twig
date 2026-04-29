@@ -1,13 +1,51 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit PropagationActions{% endblock %}
+{% block title %}Vermehrung für {{ propagation_action.plant.name }} bearbeiten{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Edit PropagationActions</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ path('app_plants_show', { id: propagation_action.plant.id }) }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Pflanze</span>
+            </a>
 
-    {{ include('propagation_actions/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        Vermehrung für <span class="font-bold italic text-primary">{{ propagation_action.plant.name }}</span> bearbeiten
+                    </h1>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Aktualisiere Methode, Termin, Status und Notizen dieser Vermehrungsmaßnahme.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    <a href="{{ path('app_propagation_actions_index') }}">zurück zur Liste</a>
+        {{ include('propagation_actions/_form.html.twig', {
+            button_label: 'Bearbeiten',
+            plant: propagation_action.plant
+        }) }}
 
-    {{ include('propagation_actions/_delete_form.html.twig') }}
+        <section class="mt-12 border-t border-outline/20 pt-8">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-3">
+                Gefahrenbereich
+            </h2>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <p class="text-sm text-on-surface-variant max-w-md">
+                    Diese Aktion löscht die Vermehrungsmaßnahme dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden.
+                </p>
+
+                {{ include('propagation_actions/_delete_form.html.twig') }}
+            </div>
+        </section>
+    </main>
 {% endblock %}

@@ -9,7 +9,6 @@ use App\Enum\Status;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -37,8 +36,13 @@ class PropagationActionsType extends AbstractType
             ])
             ->add('notes', null, [
                 'label' => 'Notizen'
-            ])
-            ->add('plant', EntityType::class, [
+            ]);
+
+        if (!$options['include_plant_field']) {
+            return;
+        }
+
+        $builder->add('plant', EntityType::class, [
                 'class' => Plants::class,
                 'choice_label' => 'Name',
                 'query_builder' => function (EntityRepository $er) use ($options) {
@@ -55,7 +59,8 @@ class PropagationActionsType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => PropagationActions::class,
-            'user' => null
+            'user' => null,
+            'include_plant_field' => true,
         ]);
     }
 }
