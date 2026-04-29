@@ -3,9 +3,19 @@
 {% block title %}New PropagationActions{% endblock %}
 
 {% block body %}
-    <h1>Create new PropagationActions</h1>
+    <h1>
+        {% if plant %}
+            Vermehrung für {{ plant.name }} planen
+        {% else %}
+            Create new PropagationActions
+        {% endif %}
+    </h1>
 
     {{ include('propagation_actions/_form.html.twig') }}
 
-    <a href="{{ path('app_propagation_actions_index') }}">zurück zur Liste</a>
+    {% if plant %}
+        <a href="{{ path('app_plants_show', { id: plant.id }) }}">zurück zur Pflanze</a>
+    {% else %}
+        <a href="{{ path('app_propagation_actions_index') }}">zurück zur Liste</a>
+    {% endif %}
 {% endblock %}

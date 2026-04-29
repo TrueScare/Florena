@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Plants;
 use App\Entity\PropagationActions;
 use App\Form\PropagationActionsType;
 use App\Repository\PropagationActionsRepository;
@@ -43,6 +44,37 @@ final class PropagationActionsController extends AbstractController
         return $this->render('propagation_actions/new.html.twig', [
             'propagation_action' => $propagationAction,
             'form' => $form,
+            'plant' => null,
+        ]);
+    }
+
+    #[Route('/new/plant/{id}', name: 'app_propagation_actions_new_for_plant', methods: ['GET', 'POST'])]
+    public function newForPlant(Request $request, Plants $plant, EntityManagerInterface $entityManager): Response
+    {
+        if ($plant->getUser() !== $this->getUser()) {
+            return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $propagationAction = new PropagationActions();
+        $propagationAction->setPlant($plant);
+
+        $form = $this->createForm(PropagationActionsType::class, $propagationAction, [
+            'user' => $this->getUser(),
+            'include_plant_field' => false,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($propagationAction);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_plants_show', ['id' => $plant->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('propagation_actions/new.html.twig', [
+            'propagation_action' => $propagationAction,
+            'form' => $form,
+            'plant' => $plant,
         ]);
     }
 

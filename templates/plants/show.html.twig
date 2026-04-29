@@ -204,6 +204,15 @@
                                     </p>
                                 </div>
                             </div>
+
+                            {# Propagation #}
+                            <div class="flex justify-center">
+                                <a href="{{ path('app_propagation_actions_new_for_plant', { id: plant.id }) }}"
+                                   class="inline-flex items-center gap-2 rounded-full border border-outline-variant/30 px-4 py-2 text-sm font-medium text-on-surface-variant transition-all hover:border-primary/40 hover:bg-primary-container/40 hover:text-primary">
+                                    <span class="material-symbols-outlined text-lg">add_circle</span>
+                                    Vermehrung planen
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
