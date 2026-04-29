@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('app_plant_notes_delete', {'note': plant_note.id, 'id': plant.id} ) }}"
+      onsubmit="return confirm('Bist du dir sicher, dass du die Notiz löschen möchtest?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plant_note.id) }}">
+    <button class="btn">Löschen</button>
+</form>

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New PlantNotes{% endblock %}
+
+{% block body %}
+    <h1>Create new PlantNotes</h1>
+
+    {{ include('plant_notes/_form.html.twig') }}
+
+    <a href="{{ path('app_plants_show', {'id': plant.id  }) }}">zurück zur Pflanze</a>
+{% endblock %}

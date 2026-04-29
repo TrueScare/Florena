@@ -108,6 +108,7 @@ class Plants implements RequirementsEntityInterface
      * @var Collection<int, PlantNotes>
      */
     #[ORM\OneToMany(targetEntity: PlantNotes::class, mappedBy: 'plant', orphanRemoval: true)]
+    #[ORM\OrderBy(['updated_at' => 'DESC'])]
     private Collection $plantNotes;
 
     #[ORM\ManyToOne(inversedBy: 'plants')]
