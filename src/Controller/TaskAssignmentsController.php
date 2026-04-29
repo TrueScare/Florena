@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\CareTask;
 use App\Entity\TaskAssignments;
 use App\EventListener\TaskAssignmentListener;
 use App\Form\TaskAssignmentsType;
 use App\Repository\TaskAssignmentsRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\Migrations\Configuration\EntityManager\ManagerRegistryEntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +34,7 @@ final class TaskAssignmentsController extends AbstractController
     }
 
     #[Route('/new', name: 'app_task_assignments_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, TaskAssignmentsRepository $taskAssignmentsRepository): Response
     {
         $taskAssignment = new TaskAssignments();
         $form = $this->createForm(TaskAssignmentsType::class, $taskAssignment, ['user' => $this->getUser()]);
@@ -41,19 +45,26 @@ final class TaskAssignmentsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $tasks = $form->get('care_tasks')->getData();
+            $dbTasks = $taskAssignmentsRepository->findBy(['to_user' => $taskAssignment->getToUser(), 'care_task' => array_map(fn(CareTask $task) => $task->getId(), $tasks->toArray())]);
+
+            /** @var CareTask $task */
             foreach ($tasks as $task) {
+                if (in_array($task->getId(), array_map(fn(TaskAssignments $task) => $task->getCareTask()->getId(), $dbTasks))) {
+                    $this->addFlash('error', sprintf("Die Aufgabe '%s %s' ist bereits an User '%s' vergeben.", $task->getPlant()->getName(), $task->getTaskType()->value, $taskAssignment->getToUser()->getUsername()));
+                    continue;
+                }
                 // create an assignment for every task selected in the form
                 // while using the formdata as a template
-                $entityManager->persist(new TaskAssignments()
+                $newTaskAssignment = new TaskAssignments()
                     ->setCareTask($task)
                     ->setToUser($taskAssignment->getToUser())
                     ->setFromUser($taskAssignment->getFromUser())
                     ->setStartDate($taskAssignment->getStartDate())
                     ->setEndDate($taskAssignment->getEndDate())
-                    ->setAssignedAt($taskAssignment->getAssignedAt())
-                );
+                    ->setAssignedAt($taskAssignment->getAssignedAt());
+                $entityManager->persist($newTaskAssignment);
+                $this->addFlash("success", sprintf("Die Aufgabe '%s %s' wurde an User '%s' vergeben.", $task->getPlant()->getName(), $task->getTaskType()->value, $taskAssignment->getToUser()->getUsername()));
             }
-
             $entityManager->flush();
 
             return $this->redirectToRoute('app_task_assignments_index', [], Response::HTTP_SEE_OTHER);

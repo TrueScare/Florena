@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\WishlistPlantsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: WishlistPlantsRepository::class)]
 #[ORM\UniqueConstraint(name: 'unique_wishlist_plant', columns: ['user_id', 'name', 'location_id', 'quantity'])]
+#[UniqueEntity(fields: ['name', 'user', 'location', 'quantity'], message: "Eine Wunschpflanze mit dieser Konfiguration existiert bereits.")]
 class WishlistPlants
 {
     #[ORM\Id]

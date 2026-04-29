@@ -26,14 +26,14 @@ class WishlistPlantsType extends AbstractType
                     new NotBlank(),
                 ]
             ])
-            ->add('description', null,[
+            ->add('description', null, [
                 'label' => 'Beschreibung',
                 'constraints' => [
                     new Length(max: 255),
                 ]
             ])
             ->add('botanical_name')
-            ->add('quantity', null,[
+            ->add('quantity', null, [
                 'label' => 'Anzahl',
                 'attr' => ['min' => 1],
             ])
@@ -48,6 +48,13 @@ class WishlistPlantsType extends AbstractType
                 'choice_label' => 'Name ',
                 'label' => 'Standort',
                 'required' => false,
+            ])
+            ->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'username',
+                'attr' => ['hidden' => true],
+                'data' => $options['user'],
+                'choices' => [$options['user']],
             ])
         ;
     }

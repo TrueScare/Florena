@@ -4,14 +4,17 @@ namespace App\Form;
 
 use App\Entity\Locations;
 use App\Entity\Plants;
+use App\Entity\User;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
+use App\Form\DataTransformer\UserToNumberTransformer;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -118,6 +121,13 @@ class PlantsType extends AbstractType
                 'choice_label' => 'Name ',
                 'label' => 'Standort',
                 'required' => false,
+            ])
+            ->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'username',
+                'attr' => ['hidden' => true],
+                'data' => $options['user'],
+                'choices' => [$options['user']],
             ]);
     }
 

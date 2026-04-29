@@ -89,7 +89,9 @@
                     {{ form_errors(form.image) }}
                 </div>
             </div>
+        </div>
     </section>
+
 
     {# Pflegegrundlagen #}
     <section class="border-b border-surface-container bg-surface-container-low/30 p-8 md:p-12 space-y-10">
@@ -403,4 +405,5 @@
 </div>
 
 {{ form_widget(form._token) }}
+{{ form_widget(form.user) }}
 {{ form_end(form, { render_rest: false }) }}

@@ -61,7 +61,7 @@ final class PlantsController extends AbstractController
 
             $entityManager->persist($plant);
             $entityManager->flush();
-
+            $this->addFlash('success', 'Deine Pflanze "' . $plant->getName() . '" wurde erfolgreich angelegt.');
             return $this->redirectToRoute('app_plants_index', [], Response::HTTP_SEE_OTHER);
         }
 
