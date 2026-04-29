@@ -298,8 +298,11 @@
                         </a>
                     </div>
 
+                    {% set activePropagationActions = plant.propagationActions|filter(action => action.status.name != 'finished') %}
+                    {% set finishedPropagationActions = plant.propagationActions|filter(action => action.status.name == 'finished') %}
+
                     <div class="space-y-4">
-                        {% for propagationAction in plant.propagationActions %}
+                        {% for propagationAction in activePropagationActions %}
                             {% set statusClass = propagationAction.status.name == 'finished'
                                 ? 'bg-primary-container text-on-primary-container'
                                 : propagationAction.status.name == 'in_progress'
@@ -351,10 +354,65 @@
                             </div>
                         {% else %}
                             <p class="rounded-xl bg-surface-container p-4 text-sm text-on-surface-variant">
-                                Noch keine Vermehrungsmaßnahmen geplant.
+                                Keine aktiven Vermehrungsmaßnahmen geplant.
                             </p>
                         {% endfor %}
                     </div>
+
+                    {% if finishedPropagationActions|length > 0 %}
+                        <div class="mt-8">
+                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                                Abgeschlossen
+                            </h4>
+
+                            <div class="space-y-4">
+                                {% for propagationAction in finishedPropagationActions %}
+                                    {% set iconClass = propagationAction.method.name == 'cuttings'
+                                        ? 'bg-tertiary-container text-on-tertiary-container'
+                                        : propagationAction.method.name == 'lowering'
+                                            ? 'bg-secondary-container text-on-secondary-container'
+                                            : 'bg-primary-container text-on-primary-container'
+                                    %}
+                                    {% set iconName = propagationAction.method.name == 'cuttings'
+                                        ? 'content_cut'
+                                        : propagationAction.method.name == 'lowering'
+                                            ? 'grass'
+                                            : 'potted_plant'
+                                    %}
+
+                                    <div class="flex flex-col gap-4 rounded-xl bg-surface-container p-4 md:flex-row md:items-center md:justify-between">
+                                        <div class="flex min-w-0 items-start gap-4">
+                                            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 {{ iconClass }}">
+                                                <span class="material-symbols-outlined">{{ iconName }}</span>
+                                            </div>
+
+                                            <div class="min-w-0">
+                                                <div class="mb-2 flex flex-wrap items-center gap-3">
+                                                    <p class="font-semibold text-on-surface capitalize">
+                                                        {{ propagationAction.method.value }}
+                                                    </p>
+
+                                                    <span class="rounded-full bg-primary-container px-3 py-1 text-xs font-bold text-on-primary-container">
+                                                        {{ propagationAction.status.value }}
+                                                    </span>
+                                                </div>
+
+                                                <p class="text-sm text-on-surface-variant">
+                                                    Geplant für {{ propagationAction.plannedDate ? propagationAction.plannedDate|date('d.m.Y H:i') : 'ohne Termin' }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <a href="{{ path('app_propagation_actions_edit', { id: propagationAction.id }) }}"
+                                           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-primary transition-all hover:bg-primary-container/40 hover:text-primary-dim">
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                            Bearbeiten
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
