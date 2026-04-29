@@ -1,3 +1,5 @@
+{% set currentPlant = plant|default(null) %}
+
 {{ form_start(form, { attr: { class: 'space-y-8' } }) }}
 
 <div class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-[0_20px_40px_rgba(46,52,51,0.06)]">
@@ -9,16 +11,26 @@
             <h2 class="text-2xl font-bold tracking-tight">Vermehrungsmaßnahme</h2>
         </div>
 
-        {% if plant %}
-            <div class="flex items-start gap-4 rounded-lg bg-surface-container-low p-5">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
-                    <span class="material-symbols-outlined">potted_plant</span>
+        {% if currentPlant %}
+            <div class="flex items-center gap-5 rounded-xl bg-surface-container-low p-4">
+                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-lg">
+                    <img
+                        src="{{ currentPlant.displayPhotoPath starts with 'http' ? currentPlant.displayPhotoPath : asset(currentPlant.displayPhotoPath) }}"
+                        alt="{{ currentPlant.name }}"
+                        class="h-full w-full object-cover"
+                    >
                 </div>
-                <div>
+
+                <div class="min-w-0 flex-grow">
                     <p class="font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant">
                         Pflanze
                     </p>
-                    <p class="mt-1 text-lg font-semibold text-on-surface">{{ plant.name }}</p>
+                    <p class="mt-1 truncate text-lg font-semibold text-on-surface">{{ currentPlant.name }}</p>
+                    {% if currentPlant.botanicalName %}
+                        <p class="mt-1 truncate text-sm italic text-on-surface-variant">
+                            {{ currentPlant.botanicalName }}
+                        </p>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
@@ -102,7 +114,7 @@
 </div>
 
 <div class="mt-10 flex flex-col items-center justify-end gap-4 md:flex-row">
-    <a href="{{ plant ? path('app_plants_show', { id: plant.id }) : path('app_propagation_actions_index') }}"
+    <a href="{{ currentPlant ? path('app_plants_show', { id: currentPlant.id }) : path('app_propagation_actions_index') }}"
        class="w-full px-10 py-4 text-center font-bold text-on-surface-variant transition-colors hover:text-on-surface md:w-auto">
         Abbrechen
     </a>
