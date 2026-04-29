@@ -13,7 +13,8 @@
             Florena
         </a>
 
-        <nav class="hidden items-center gap-1 rounded-full border border-outline-variant/10 bg-surface-container-low px-2 py-1.5 shadow-sm md:flex">
+        <nav
+            class="hidden items-center gap-1 rounded-full border border-outline-variant/10 bg-surface-container-low px-2 py-1.5 shadow-sm md:flex">
             {% for item in navItems %}
                 {% set isActive = item.key == activePage %}
                 {% set sharedClasses = 'rounded-full px-6 py-2 text-sm transition-all duration-200' %}
@@ -23,7 +24,8 @@
                         {{ item.label }}
                     </a>
                 {% else %}
-                    <span class="{{ sharedClasses }} {{ isActive ? 'bg-primary font-bold text-on-primary shadow-md shadow-primary/20' : 'cursor-default font-medium text-on-surface-variant/70' }}">
+                    <span
+                        class="{{ sharedClasses }} {{ isActive ? 'bg-primary font-bold text-on-primary shadow-md shadow-primary/20' : 'cursor-default font-medium text-on-surface-variant/70' }}">
                         {{ item.label }}
                     </span>
                 {% endif %}
@@ -60,4 +62,17 @@
             </button>
         </div>
     </div>
+    {% block messages %}
+        {% if app.session.flashbag.peekAll()|length > 0 %}
+            <div class="message-container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-8">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash-{{ label }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endblock %}
 </header>
