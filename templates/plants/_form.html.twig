@@ -222,17 +222,110 @@
         </div>
     </section>
 
-    {# Standort & Umgebung #}
-    <section class="border-b border-surface-container p-8 md:p-12 space-y-10">
-        <div class="mb-8 flex items-center gap-3">
-            <span class="rounded-lg bg-surface-container-highest p-2 text-on-surface">
-                <span class="material-symbols-outlined block">wb_sunny</span>
-            </span>
-            <h2 class="text-2xl font-bold tracking-tight">Standort & Umgebung</h2>
-        </div>
+    <div
+        data-controller="plant-location-suggestions"
+        data-plant-location-suggestions-url-value="{{ path('app_api_fitness_location') }}"
+    >
+        {# Umgebung #}
+        <section class="border-b border-surface-container p-8 md:p-12 space-y-10">
+            <div class="mb-8 flex items-center gap-3">
+                <span class="rounded-lg bg-surface-container-highest p-2 text-on-surface">
+                    <span class="material-symbols-outlined block">wb_sunny</span>
+                </span>
+                <h2 class="text-2xl font-bold tracking-tight">Umgebung</h2>
+            </div>
 
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div class="space-y-2">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+                <div class="space-y-2">
+                    {{ form_label(form.light_requirement, null, {
+                        label_attr: {
+                            class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                        }
+                    }) }}
+                    {{ form_widget(form.light_requirement, {
+                        attr: {
+                            'data-plant-location-suggestions-target': 'light',
+                            'data-action': 'change->plant-location-suggestions#refresh',
+                            class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }
+                    }) }}
+                    {{ form_errors(form.light_requirement) }}
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.temperature_requirement, null, {
+                        label_attr: {
+                            class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                        }
+                    }) }}
+                    {{ form_widget(form.temperature_requirement, {
+                        attr: {
+                            'data-plant-location-suggestions-target': 'temperature',
+                            'data-action': 'change->plant-location-suggestions#refresh',
+                            class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }
+                    }) }}
+                    {{ form_errors(form.temperature_requirement) }}
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.humidity_requirement, null, {
+                        label_attr: {
+                            class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                        }
+                    }) }}
+                    {{ form_widget(form.humidity_requirement, {
+                        attr: {
+                            'data-plant-location-suggestions-target': 'humidity',
+                            'data-action': 'change->plant-location-suggestions#refresh',
+                            class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }
+                    }) }}
+                    {{ form_errors(form.humidity_requirement) }}
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.soil_type, null, {
+                        label_attr: {
+                            class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                        }
+                    }) }}
+                    {{ form_widget(form.soil_type, {
+                        attr: {
+                            class: 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface placeholder:text-outline-variant transition-all focus:border-primary focus:ring-4 focus:ring-primary/10',
+                            placeholder: 'z.B. Kokoserde-Mix'
+                        }
+                    }) }}
+                    {{ form_errors(form.soil_type) }}
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.pot_size, null, {
+                        label_attr: {
+                            class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
+                        }
+                    }) }}
+                    {{ form_widget(form.pot_size, {
+                        attr: {
+                            class: 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface placeholder:text-outline-variant transition-all focus:border-primary focus:ring-4 focus:ring-primary/10',
+                            placeholder: 'z.B. 15 cm Ø'
+                        }
+                    }) }}
+                    {{ form_errors(form.pot_size) }}
+                </div>
+            </div>
+        </section>
+
+        {# Standort #}
+        <section class="border-b border-surface-container bg-surface-container-low/30 p-8 md:p-12 space-y-6">
+            <div class="mb-8 flex items-center gap-3">
+                <span class="rounded-lg bg-primary-container p-2 text-on-primary-container">
+                    <span class="material-symbols-outlined block">location_on</span>
+                </span>
+                <h2 class="text-2xl font-bold tracking-tight">Standort</h2>
+            </div>
+
+            <div class="max-w-xl space-y-2">
                 {{ form_label(form.location, null, {
                     label_attr: {
                         class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
@@ -240,85 +333,20 @@
                 }) }}
                 {{ form_widget(form.location, {
                     attr: {
+                        'data-plant-location-suggestions-target': 'location',
                         class: 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
                     }
                 }) }}
                 {{ form_errors(form.location) }}
+                <p
+                    data-plant-location-suggestions-target="status"
+                    class="text-xs text-on-surface-variant"
+                >
+                    Standortvorschläge basieren auf Lichtbedarf, Temperaturbedarf und Luftfeuchtigkeit.
+                </p>
             </div>
-
-            <div class="space-y-2">
-                {{ form_label(form.light_requirement, null, {
-                    label_attr: {
-                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
-                    }
-                }) }}
-                {{ form_widget(form.light_requirement, {
-                    attr: {
-                        class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
-                    }
-                }) }}
-                {{ form_errors(form.light_requirement) }}
-            </div>
-
-            <div class="space-y-2">
-                {{ form_label(form.temperature_requirement, null, {
-                    label_attr: {
-                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
-                    }
-                }) }}
-                {{ form_widget(form.temperature_requirement, {
-                    attr: {
-                        class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
-                    }
-                }) }}
-                {{ form_errors(form.temperature_requirement) }}
-            </div>
-
-            <div class="space-y-2">
-                {{ form_label(form.humidity_requirement, null, {
-                    label_attr: {
-                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
-                    }
-                }) }}
-                {{ form_widget(form.humidity_requirement, {
-                    attr: {
-                        class: 'w-full appearance-none rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10'
-                    }
-                }) }}
-                {{ form_errors(form.humidity_requirement) }}
-            </div>
-
-            <div class="space-y-2">
-                {{ form_label(form.soil_type, null, {
-                    label_attr: {
-                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
-                    }
-                }) }}
-                {{ form_widget(form.soil_type, {
-                    attr: {
-                        class: 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface placeholder:text-outline-variant transition-all focus:border-primary focus:ring-4 focus:ring-primary/10',
-                        placeholder: 'z.B. Kokoserde-Mix'
-                    }
-                }) }}
-                {{ form_errors(form.soil_type) }}
-            </div>
-
-            <div class="space-y-2">
-                {{ form_label(form.pot_size, null, {
-                    label_attr: {
-                        class: 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant'
-                    }
-                }) }}
-                {{ form_widget(form.pot_size, {
-                    attr: {
-                        class: 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface placeholder:text-outline-variant transition-all focus:border-primary focus:ring-4 focus:ring-primary/10',
-                        placeholder: 'z.B. 15 cm Ø'
-                    }
-                }) }}
-                {{ form_errors(form.pot_size) }}
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     {# Weitere Eigenschaften #}
     <section class="p-8 md:p-12 space-y-10">

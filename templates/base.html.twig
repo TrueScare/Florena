@@ -103,10 +103,15 @@
 
         <!-- Footer -->
         <footer class="w-full py-8">
-            <div class="max-w-7xl mx-auto px-8 flex justify-start items-center">
+            <div class="max-w-7xl mx-auto px-8 flex items-center gap-6">
                 <a href="{{ path('app_impressum') }}"
-                    class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+                class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
                     Impressum
+                </a>
+
+                <a href="{{ path('app_contact') }}"
+                class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+                    Kontakt
                 </a>
             </div>
         </footer>
