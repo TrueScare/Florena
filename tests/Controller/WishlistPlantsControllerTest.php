@@ -54,7 +54,6 @@ final class WishlistPlantsControllerTest extends WebTestCase
             'wishlist_plants[name]' => "Testing",
             'wishlist_plants[description]' => 'Testing',
             'wishlist_plants[botanical_name]' => 'Testing',
-            'wishlist_plants[quantity]' => 5
         ]);
 
         self::assertResponseRedirects('/wishlist_plants');
@@ -90,7 +89,6 @@ final class WishlistPlantsControllerTest extends WebTestCase
             'wishlist_plants[name]' => 'Something New',
             'wishlist_plants[description]' => 'Something New',
             'wishlist_plants[botanical_name]' => 'Something New',
-            'wishlist_plants[quantity]' => 8,
         ]);
 
         self::assertResponseRedirects('/wishlist_plants');
@@ -100,7 +98,6 @@ final class WishlistPlantsControllerTest extends WebTestCase
         self::assertSame('Something New', $fixture[0]->getName());
         self::assertSame('Something New', $fixture[0]->getDescription());
         self::assertSame('Something New', $fixture[0]->getBotanicalName());
-        self::assertSame(8, $fixture[0]->getQuantity());
     }
 
     public function testRemove(): void

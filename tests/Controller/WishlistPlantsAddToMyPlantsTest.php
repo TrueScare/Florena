@@ -52,7 +52,10 @@ final class WishlistPlantsAddToMyPlantsTest extends WebTestCase
         self::assertResponseRedirects();
         $location = $this->client->getResponse()->headers->get('Location');
         self::assertStringContainsString('/plants/', $location);
-        self::assertStringContainsString('/edit', $location);
+        self::assertStringContainsString('/new', $location);
+        $this->client->followRedirect();
+
+        $this->client->submitForm('Pflanze speichern');
 
         // Wishlist item must be gone
         $this->em->clear();

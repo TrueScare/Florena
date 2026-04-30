@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Plants;
 use App\Entity\WishlistPlants;
 use App\Form\PlantsType;
+use App\Repository\LocationsRepository;
 use App\Repository\PlantsRepository;
+use App\Repository\WishlistPlantsRepository;
 use App\Service\Fitness\FitnessService;
 use App\Service\Pagination\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +22,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("IS_AUTHENTICATED")]
 final class PlantsController extends AbstractController
 {
-    public function __construct(private FitnessService $fitnessService)
+    public function __construct(private FitnessService           $fitnessService,
+                                private LocationsRepository      $locationsRepository,
+                                private WishlistPlantsRepository $wishlistPlantsRepository)
     {
     }
 
@@ -40,13 +44,13 @@ final class PlantsController extends AbstractController
     #[Route('/new', name: 'app_plants_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, string $uploadsPath): Response
     {
-        $plant = new Plants();
+        $plant = $this->getPlantFromRequestOrDefault($request);
+
         $form = $this->createForm(PlantsType::class, $plant, [
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
+            'wishlist_plant' => $request->query->all('plants')['wishlist_plant'] ?? null,
         ]);
         $form->handleRequest($request);
-
-        $plant->setUser($this->getUser());
 
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('image')->getData();
@@ -57,6 +61,12 @@ final class PlantsController extends AbstractController
                 $uploadedFile->move($destination, $newFileName);
 
                 $plant->setPhotoPath($newFileName);
+            }
+
+            $wishlistId = $form->get('wishlist_plant')?->getData();
+            if ($wishlistId && $wishlistPlant = $this->wishlistPlantsRepository->find($wishlistId)) {
+                $entityManager->remove($wishlistPlant);
+                $this->addFlash('success', "Wunschpflanze wurde übernommen.");
             }
 
             $entityManager->persist($plant);
@@ -173,5 +183,20 @@ final class PlantsController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_wishlist_plants_show', ['id' => $wishlistPlant->getId()], Response::HTTP_SEE_OTHER);
+    }
+
+    private function getPlantFromRequestOrDefault(Request $request): Plants
+    {
+        $plantsQuery = $request->query->all('plants');
+
+        $plant = new Plants()
+            ->setName($plantsQuery['name'] ?? '')
+            ->setDescription($plantsQuery['description'] ?? '')
+            ->setBotanicalName($plantsQuery['botanical_name'] ?? '');
+        if ($plantsQuery['location'] ?? null) {
+            $plant->setLocation($this->locationsRepository->find($plantsQuery['location']));
+        }
+
+        return $plant;
     }
 }

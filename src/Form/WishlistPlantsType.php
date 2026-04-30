@@ -33,10 +33,6 @@ class WishlistPlantsType extends AbstractType
                 ]
             ])
             ->add('botanical_name')
-            ->add('quantity', null, [
-                'label' => 'Anzahl',
-                'attr' => ['min' => 1],
-            ])
             ->add('location', EntityType::class, [
                 'class' => Locations::class,
                 'query_builder' => function (EntityRepository $er) use ($options) {
