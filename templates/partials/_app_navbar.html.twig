@@ -33,6 +33,44 @@
         </nav>
 
         <div class="flex items-center gap-4">
+
+            <div data-controller="mobile-nav" class="relative md:hidden">
+                <button
+                    type="button"
+                    data-action="click->mobile-nav#toggle"
+                    class="rounded-full border border-outline-variant/20 p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
+                    aria-label="Navigation öffnen"
+                >
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+
+                <div
+                    data-mobile-nav-target="dropdown"
+                    class="hidden absolute right-0 z-50 mt-3 w-56 rounded-xl border border-surface-container-high bg-surface-container-lowest p-2 shadow-[0px_20px_40px_rgba(46,52,51,0.12)]"
+                >
+                    {% for item in navItems %}
+                        {% set isActive = item.key == activePage %}
+
+                        {% if item.route %}
+                            <a
+                                href="{{ path(item.route) }}"
+                                data-action="click->mobile-nav#close"
+                                class="flex items-center rounded-lg px-4 py-3 text-sm transition-colors {{ isActive ? 'bg-[#3d6b00]/10 font-bold text-[#3d6b00]' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary' }}"
+                            >
+                                {{ item.label }}
+                            </a>
+                        {% else %}
+                            <span
+                                aria-disabled="true"
+                                class="flex cursor-not-allowed items-center rounded-lg px-4 py-3 text-sm text-on-surface-variant/50"
+                            >
+                                {{ item.label }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            
             <div data-controller="notifications" class="relative">
                 <button
                     type="button"

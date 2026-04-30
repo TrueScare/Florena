@@ -75,67 +75,20 @@
                 </div>
             {% else %}
                 {% for plant in plants %}
-                    <a href="{{ path('app_plants_show', { id: plant.id }) }}"
-                    class="block cursor-pointer transition-transform hover:scale-[1.01]">
-
-                        <article class="flex items-center gap-5 rounded-xl border border-transparent bg-surface-container-lowest p-4 shadow-[0px_20px_40px_rgba(46,52,51,0.03)] transition-all hover:border-primary-fixed">
-
-                            <div class="h-24 w-24 overflow-hidden rounded-lg shrink-0">
-                                <img
-                                    src="{{ plant.displayPhotoPath starts with 'http' ? plant.displayPhotoPath : asset(plant.displayPhotoPath) }}"
-                                    alt="{{ plant.name }}"
-                                    class="h-full w-full object-cover"
-                                >
-                            </div>
-
-                            <div class="flex-grow min-w-0">
-                                <h3 class="text-lg font-bold truncate">{{ plant.name }}</h3>
-
-                                {% if plant.botanicalName %}
-                                    <p class="text-sm italic text-on-surface-variant mt-1 truncate">
-                                        {{ plant.botanicalName }}
-                                    </p>
-                                {% endif %}
-
-                                <p class="text-xs uppercase tracking-widest text-on-surface-variant mt-2">
-                                    {% if plant.location %}
-                                        {{ plant.location.name }}
-                                    {% else %}
-                                        Kein Standort
-                                    {% endif %}
-                                </p>
-                            </div>
-
-                            <div class="text-center shrink-0">
-                                <div class="rounded-full border px-3 py-1
-                                    {% if plant.stressScore >= 80 %}
-                                        bg-[#E53935]/10 border-[#E53935]/20
-                                    {% elseif plant.stressScore >= 40 %}
-                                        bg-[#FFB300]/10 border-[#FFB300]/20
-                                    {% else %}
-                                        bg-[#7CB342]/10 border-[#7CB342]/20
-                                    {% endif %}
-                                ">
-                                    <span class="text-xs font-bold
-                                        {% if plant.stressScore >= 80 %}
-                                            text-[#E53935]
-                                        {% elseif plant.stressScore >= 40 %}
-                                            text-[#FFB300]
-                                        {% else %}
-                                            text-[#7CB342]
-                                        {% endif %}
-                                    ">
-                                        {{ plant.stressScore }}%
-                                    </span>
-                                </div>
-
-                                <span class="text-[10px] font-bold text-on-surface-variant">
-                                    STRESS
-                                </span>
-                            </div>
-
-                        </article>
-                    </a>
+                    {% include 'partials/_plant_card.html.twig' with {
+                        plant: {
+                            id: plant.id,
+                            name: plant.name,
+                            botanicalName: plant.botanicalName,
+                            imageUrl: plant.displayPhotoPath starts with 'http'
+                                ? plant.displayPhotoPath
+                                : asset(plant.displayPhotoPath),
+                            imageAlt: plant.name,
+                            location: plant.location ? plant.location.name : 'Kein Standort',
+                            stressLevel: plant.stressScore ?? 100,
+                            fitnessStatus: null
+                        }
+                    } only %}
                 {% endfor %}
             {% endif %}
         </div>
