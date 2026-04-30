@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Kontakt{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: '' } %}
+{% endblock %}
+
+{% block body %}
+<main class="max-w-5xl mx-auto px-6 py-12 pt-32 md:py-20">
+
+    <section class="mb-12">
+        <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
+            Das Team hinter <span class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-2">Florena</span>
+        </h1>
+    </section>
+
+    <section class="grid grid-cols-1 gap-8">
+        {# Zsofia #}
+        <article class="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-transparent">
+            <div class="flex flex-col md:flex-row gap-6">
+                <img
+                    src="{{ asset('images/team/zsofia.jpg') }}"
+                    alt="Zsofia"
+                    class="w-32 h-32 rounded-xl object-cover shadow-sm shrink-0"
+                >
+
+                <div>
+                    <h2 class="font-headline text-2xl font-bold text-on-surface mb-1">
+                        ZSOFIA
+                    </h2>
+
+                    <p class="font-label text-xs font-bold tracking-[0.2em] text-primary uppercase mb-4">
+                        Product Owner & Datenbankdesign
+                    </p>
+
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Zsofia arbeitet als Data Analyst bei INDITEX mit Fokus auf kommerzielle Fragestellungen und unterstützt die Geschäftsleitung bei datenbasierten Entscheidungsprozessen. Mehrjährige Erfahrung in der Regionalleitung ergänzt dieses Profil um fundierte Kenntnisse in Planung, Steuerung und Abstimmung zwischen operativen Einheiten und übergeordneten Entscheidungsebenen.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        {# Liam #}
+        <article class="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-transparent">
+            <div class="flex flex-col md:flex-row gap-6">
+                <img
+                    src="{{ asset('images/team/liam.jpg') }}"
+                    alt="Liam"
+                    class="w-32 h-32 rounded-xl object-cover shadow-sm shrink-0"
+                >
+
+                <div>
+                    <h2 class="font-headline text-2xl font-bold text-on-surface mb-1">
+                        LIAM
+                    </h2>
+
+                    <p class="font-label text-xs font-bold tracking-[0.2em] text-primary uppercase mb-4">
+                        Backend-Developer
+                    </p>
+
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Liam ist gelernter Bankkaufmann und Anwendungsentwickler und vereint diese Berufsfelder aktuell in der IT der NRW.BANK. Dort unterstützt er als Anwendungsbetreuer den Alltag und die Geschäftsprozesse der Kollegen, vom Zahlungsverkehr bis zur Produktentwicklung.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        {# Andreas #}
+        <article class="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-transparent">
+            <div class="flex flex-col md:flex-row gap-6">
+                <img
+                    src="{{ asset('images/team/andreas.jpg') }}"
+                    alt="Andreas"
+                    class="w-32 h-32 rounded-xl object-cover shadow-sm shrink-0"
+                >
+
+                <div>
+                    <h2 class="font-headline text-2xl font-bold text-on-surface mb-1">
+                        ANDREAS
+                    </h2>
+
+                    <p class="font-label text-xs font-bold tracking-[0.2em] text-primary uppercase mb-4">
+                        Frontend-Developer
+                    </p>
+
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Andreas arbeitet als Prozessleittechniker bei der Agrana AG und ist für die SPS-Programmierung neuer Anlagen sowie die Optimierung und Weiterentwicklung bestehender Systeme verantwortlich.
+                    </p>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    {# Kontaktformular #}
+    <section class="mt-12">
+        <div class="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0px_20px_40px_rgba(46,52,51,0.06)] border border-transparent">
+            
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                
+                <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary shrink-0">
+                    <span class="material-symbols-outlined text-2xl">mail</span>
+                </div>
+
+                <div class="flex-1">
+                    <p class="font-label text-xs font-bold tracking-[0.2em] text-outline uppercase mb-2">
+                        Kontakt
+                    </p>
+
+                    <p class="text-on-surface font-semibold text-lg mb-1">
+                        <a href="mailto:support.florena@gmail.com" class="text-primary hover:underline">
+                            support.florena@gmail.com
+                        </a>
+                    </p>
+
+                    <p class="text-on-surface-variant text-sm">
+                        Schreib uns bei Fragen, Feedback oder Problemen mit der Anwendung.
+                    </p>
+                </div>
+
+                <a href="mailto:support.florena@gmail.com"
+                class="px-6 py-3 bg-primary text-on-primary rounded-full font-medium text-sm hover:opacity-90 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">send</span>
+                    E-Mail senden
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}
