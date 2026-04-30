@@ -110,26 +110,12 @@ class WishlistPlantsController extends AbstractController
             return $this->redirectToRoute('app_wishlist_plants_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $plant = new Plants()
-            ->setName($wishlistPlant->getName())
-            ->setDescription($wishlistPlant->getDescription() ?? '')
-            ->setBotanicalName($wishlistPlant->getBotanicalName() ?? '')
-            ->setUser($this->getUser())
-            // we have to set default values for the requirements
-            ->setLightRequirement(LightRequirement::shady)
-            ->setTemperatureRequirement(TemperatureRequirement::normal)
-            ->setHumidityRequirement(HumidityRequirement::medium)
-            ->setToxicForHumans(false)
-            ->setToxicForAnimals(false);
-
-        if ($wishlistPlant->getLocation() !== null) {
-            $plant->setLocation($wishlistPlant->getLocation());
-        }
-
-        $entityManager->remove($wishlistPlant);
-        $entityManager->persist($plant);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_plants_edit', ['id' => $plant->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_plants_new', [
+            'plants[name]' => $wishlistPlant->getName(),
+            'plants[botanical_name]' => $wishlistPlant->getBotanicalName(),
+            'plants[description]' => $wishlistPlant->getDescription(),
+            'plants[location]' => $wishlistPlant->getLocation()?->getId(),
+            'plants[wishlist_plant]' => $wishlistPlant->getId(),
+        ], Response::HTTP_SEE_OTHER);
     }
 }

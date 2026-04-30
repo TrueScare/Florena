@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
 use App\Enum\TemperatureRequirement;
-use App\Form\DataTransformer\UserToNumberTransformer;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -43,6 +42,7 @@ class PlantsType extends AbstractType
             ])
             ->add('botanical_name', null, [
                 'label' => 'Botanischer Name',
+                'empty_data' => ''
             ])
             ->add('image', FileType::class, [
                 'label' => 'Bild',
@@ -128,7 +128,12 @@ class PlantsType extends AbstractType
                 'attr' => ['hidden' => true],
                 'data' => $options['user'],
                 'choices' => [$options['user']],
-            ]);
+            ])
+            ->add('wishlist_plant', HiddenType::class, [
+                'mapped' => false,
+                'data' => $options['wishlist_plant'],
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -136,6 +141,7 @@ class PlantsType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Plants::class,
             'user' => null,
+            'wishlist_plant' => null,
         ]);
     }
 }
