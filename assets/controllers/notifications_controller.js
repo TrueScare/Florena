@@ -4,7 +4,14 @@ export default class extends Controller {
     static targets = ["dropdown", "badge"];
 
     connect() {
+        this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this);
+        document.addEventListener("click", this.closeOnOutsideClick);
+
         this.loadCount();
+    }
+
+    disconnect() {
+        document.removeEventListener("click", this.closeOnOutsideClick);
     }
 
     async loadCount() {
@@ -27,7 +34,9 @@ export default class extends Controller {
         }
     }
 
-    async toggle() {
+    async toggle(event) {
+        event.stopPropagation();
+
         this.dropdownTarget.classList.toggle("hidden");
 
         if (this.dropdownTarget.classList.contains("hidden")) {
@@ -47,6 +56,16 @@ export default class extends Controller {
         } catch (error) {
             this.dropdownTarget.innerHTML =
                 '<p class="p-3 text-sm text-error">Fehler beim Laden.</p>';
+        }
+    }
+
+    close() {
+        this.dropdownTarget.classList.add("hidden");
+    }
+
+    closeOnOutsideClick(event) {
+        if (!this.element.contains(event.target)) {
+            this.close();
         }
     }
 }
