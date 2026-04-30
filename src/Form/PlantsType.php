@@ -36,6 +36,7 @@ class PlantsType extends AbstractType
             ])
             ->add('description', null, [
                 'label' => 'Beschreibung',
+                'empty_data' => '',
                 'constraints' => [
                     new Length(max: 255),
                 ]
