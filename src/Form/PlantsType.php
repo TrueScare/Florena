@@ -56,14 +56,17 @@ class PlantsType extends AbstractType
             ->add('light_requirement', EnumType::class, [
                 'class' => LightRequirement::class,
                 'choice_label' => 'value',
+                'label' => 'Lichtbedarf',
             ])
             ->add('temperature_requirement', EnumType::class, [
                 'class' => TemperatureRequirement::class,
                 'choice_label' => 'value',
+                'label' => 'Temperaturbedarf',
             ])
             ->add('humidity_requirement', EnumType::class, [
                 'class' => HumidityRequirement::class,
                 'choice_label' => 'value',
+                'label' => 'Luftfeuchtigkeit',
             ])
             ->add('soil_type', null, [
                 'label' => 'Bodenart',
