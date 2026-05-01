@@ -100,6 +100,20 @@ final class TaskAssignmentsController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'app_task_assignments_show', methods: ['GET'])]
+    public function show(TaskAssignments $taskAssignment): Response
+    {
+        // we have to check if the user is either the receiving or assigning part
+        // both should be able to view the task assignment
+        if ($taskAssignment->getToUser() !== $this->getUser() && $taskAssignment->getFromUser() !== $this->getUser()) {
+            return $this->redirectToRoute('app_task_assignments_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('task_assignments/show.html.twig', [
+            'task_assignment' => $taskAssignment,
+        ]);
+    }
+
     #[Route('/{id}/edit', name: 'app_task_assignments_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, TaskAssignments $taskAssignment, EntityManagerInterface $entityManager, TaskAssignmentsRepository $taskAssignmentsRepository): Response
     {
