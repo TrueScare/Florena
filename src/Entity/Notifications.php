@@ -36,10 +36,12 @@ class Notifications
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     #[Groups(['notification:read'])]
     private ?PropagationActions $propagation_action = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     #[Groups(['notification:read'])]
     private ?CareTask $care_task = null;
 

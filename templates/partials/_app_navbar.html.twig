@@ -13,6 +13,7 @@
             Florena
         </a>
 
+        {# Navbar #}
         <nav
             class="hidden items-center gap-1 rounded-full border border-outline-variant/10 bg-surface-container-low px-2 py-1.5 shadow-sm md:flex">
             {% for item in navItems %}
@@ -32,6 +33,7 @@
             {% endfor %}
         </nav>
 
+        {# Mobile Navbar #}
         <div class="flex items-center gap-4">
 
             <div data-controller="mobile-nav" class="relative md:hidden">
@@ -71,6 +73,7 @@
                 </div>
             </div>
             
+            {# Notifications #}
             <div data-controller="notifications" class="relative">
                 <button
                     type="button"
@@ -93,13 +96,85 @@
                     <p class="p-3 text-sm text-on-surface-variant">Lade...</p>
                 </div>
             </div>
-            <button type="button"
-                    class="rounded-full border border-outline-variant/20 p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
-                    aria-label="Benutzerkonto">
-                <span class="material-symbols-outlined">account_circle</span>
-            </button>
+
+            {# User Dropdown #}
+            {% if app.user %}
+                {% set minimalModeEnabled = app.user.minimalMode %}
+                <div data-controller="user-menu" class="relative">
+                    <button
+                        type="button"
+                        data-user-menu-target="button"
+                        data-action="click->user-menu#toggle"
+                        class="rounded-full border border-outline-variant/20 p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
+                        aria-label="Benutzermenü öffnen"
+                        aria-expanded="false"
+                        >
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </button>
+
+                    {# Userdaten #}
+                    <div
+                        data-user-menu-target="dropdown"
+                        class="hidden absolute right-0 z-50 mt-3 w-80 rounded-xl border border-surface-container-high bg-surface-container-lowest p-2 shadow-[0px_20px_40px_rgba(46,52,51,0.12)]"
+                        >
+                        <div class="border-b border-surface-container-high px-4 py-3">
+                            <p class="text-sm font-semibold text-on-surface">
+                                {{ app.user.displayname ?: app.user.username }}
+                            </p>
+                            <p class="text-xs text-on-surface-variant">
+                                {{ app.user.email }}
+                            </p>
+                        </div>
+
+                        {# Minimalismus-Modus #}
+                        <div class="px-4 py-3">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-sm font-semibold text-on-surface">Minimalismus-Modus</p>
+                                    <p class="mt-1 text-xs leading-5 text-on-surface-variant">
+                                        Reduziert die Anzeige auf die wichtigsten anstehenden Aufgaben.
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked="{{ minimalModeEnabled ? 'true' : 'false' }}"
+                                    data-user-menu-target="switch"
+                                    data-action="click->user-menu#toggleMinimalMode"
+                                    class="{{ minimalModeEnabled ? 'bg-primary' : 'bg-outline-variant' }} relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                    >
+                                    <span
+                                        data-user-menu-thumb
+                                        class="{{ minimalModeEnabled ? 'translate-x-5' : '' }} absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                                    ></span>
+                                    <span class="sr-only">Minimalismus-Modus umschalten</span>
+                                </button>
+                            </div>
+
+                            <p data-user-menu-target="status" class="hidden mt-3 text-xs"></p>
+                        </div>
+
+                        {# Logout #}
+                        <a
+                            href="{{ logout_path() }}"
+                            class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-primary"
+                            >
+                            <span class="material-symbols-outlined text-base">logout</span>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ path('app_login') }}"
+                   class="rounded-full border border-outline-variant/20 p-2.5 text-primary transition-all duration-300 hover:bg-primary-container"
+                   aria-label="Einloggen">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </a>
+            {% endif %}
         </div>
     </div>
+    
     {% block messages %}
         {% if app.session.flashbag.peekAll()|length > 0 %}
             <div class="message-container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-8">

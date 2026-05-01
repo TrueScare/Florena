@@ -3,11 +3,15 @@
 namespace App\Tests\Controller;
 
 use App\Entity\CareTask;
+use App\Entity\Notifications;
 use App\Entity\Plants;
+use App\Entity\PropagationActions;
 use App\Entity\User;
 use App\Enum\CareType;
 use App\Enum\HumidityRequirement;
 use App\Enum\LightRequirement;
+use App\Enum\PropagationMethod;
+use App\Enum\Status;
 use App\Enum\TemperatureRequirement;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -215,5 +219,45 @@ final class PlantsControllerTest extends WebTestCase
         self::assertResponseRedirects('/plants');
         self::assertSame(0, $this->plantRepository->count([]));
         self::assertSame(0, $this->careTaskRepository->count([]));
+    }
+
+    public function testRemoveDeletesLinkedNotifications(): void
+    {
+        $fixture = $this->plant;
+
+        $this->manager->persist($fixture);
+        $this->manager->flush();
+
+        $careTask = $this->careTaskRepository->findOneBy(['plant' => $fixture]);
+        self::assertNotNull($careTask);
+
+        $propagationAction = (new PropagationActions())
+            ->setPlant($fixture)
+            ->setMethod(PropagationMethod::cuttings)
+            ->setStatus(Status::planned)
+            ->setPlannedDate(new \DateTimeImmutable('-1 day'));
+
+        $careTaskNotification = (new Notifications())
+            ->setMessage('Pflegeaufgabe fällig')
+            ->setUser($this->user)
+            ->setCareTask($careTask);
+
+        $propagationActionNotification = (new Notifications())
+            ->setMessage('Vermehrungsmaßnahme fällig')
+            ->setUser($this->user)
+            ->setPropagationAction($propagationAction);
+
+        $this->manager->persist($propagationAction);
+        $this->manager->persist($careTaskNotification);
+        $this->manager->persist($propagationActionNotification);
+        $this->manager->flush();
+
+        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->submitForm('Löschen');
+
+        self::assertResponseRedirects('/plants');
+        self::assertSame(0, $this->plantRepository->count([]));
+        self::assertSame(0, $this->manager->getRepository(Notifications::class)->count([]));
+        self::assertSame(0, $this->manager->getRepository(PropagationActions::class)->count([]));
     }
 }

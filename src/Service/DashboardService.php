@@ -26,11 +26,16 @@ final class DashboardService
     public function getDashboardData(User $user): array
     {
         $tasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::week);
+        $minimalModeTasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::day);
         $plants = $this->plantsRepository->findAllByUser($user);
         $locations = $this->locationsRepository->findAllByUser($user);
 
         usort(
             $tasks,
+            fn($left, $right) => $left->getDueDate() <=> $right->getDueDate()
+        );
+        usort(
+            $minimalModeTasks,
             fn($left, $right) => $left->getDueDate() <=> $right->getDueDate()
         );
 
@@ -46,6 +51,12 @@ final class DashboardService
 
         return [
             'dashboardGreetingName' => $user->getDisplayname() ?: $user->getUsername(),
+            'isMinimalMode' => $user->isMinimalMode(),
+            'minimalCareTasks' => array_map(
+                fn($task) => $this->mapTask($task),
+                $minimalModeTasks
+            ),
+            'minimalCareTaskCount' => count($minimalModeTasks),
             'upcomingTasks' => array_map(
                 fn($task) => $this->mapTask($task),
                 array_slice($tasks, 0, self::MAX_UPCOMING_TASKS)
@@ -71,7 +82,9 @@ final class DashboardService
             'type' => ucfirst($type),
             'plant' => $task->getPlant()?->getName() ?? 'Unbekannte Pflanze',
             'plantId' => $task->getPlant()?->getId(),
+            'location' => $task->getPlant()?->getLocation()?->getName() ?? 'Kein Standort',
             'dueDate' => $task->getDueDate(),
+            'isOverdue' => $task->getDueDate() < new \DateTimeImmutable('today'),
         ];
     }
 

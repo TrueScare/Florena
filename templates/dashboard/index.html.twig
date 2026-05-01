@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if isMinimalMode %}
+        {% include 'partials/_minimal_care_tasks.html.twig' %}
+    {% else %}
     
     <main class="mx-auto max-w-[1440px] px-8 pb-24 pt-32">
         <header class="mb-12">
@@ -144,4 +147,5 @@
             </section>
         </div>
     </main>
+    {% endif %}
 {% endblock %}
