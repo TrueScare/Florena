@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\UserRepository;
 use App\Service\PointService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -17,25 +18,39 @@ class LeaderboardController extends AbstractController
     }
 
     #[Route(name: 'app_leaderboard_index', methods: ['GET'])]
-    public function index(UserRepository $repository)
+    public function index(UserRepository $repository): Response
     {
         $users = $repository->findAll();
         $scores = [];
-        array_map(function ($user) use (&$scores) {
-            $scores[$user->getId()] = [
+
+        foreach ($users as $user) {
+            $scores[] = [
                 'score' => $this->pointService->calculate($user),
-                'user' => $user
+                'user' => $user,
             ];
-        }, $users);
+        }
 
         usort($scores, function ($a, $b) {
             return $b['score'] <=> $a['score'];
         });
 
+        $currentUserScore = null;
+        $currentUserRank = null;
+
+        foreach ($scores as $index => $score) {
+            if ($score['user'] === $this->getUser()) {
+                $currentUserScore = $score['score'];
+                $currentUserRank = $index + 1;
+                break;
+            }
+        }
+
+        $scores = array_slice($scores, 0, 10);
 
         return $this->render('leaderboard/index.html.twig', [
-            'users' => $users,
             'scores' => $scores,
+            'currentUserScore' => $currentUserScore,
+            'currentUserRank' => $currentUserRank,
         ]);
     }
 }
