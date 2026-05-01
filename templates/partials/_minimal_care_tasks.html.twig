@@ -1,0 +1,129 @@
+{% set taskIconMap = {
+    'Gießen': 'water_drop',
+    'Umtopfen': 'potted_plant',
+    'Düngen': 'eco'
+} %}
+
+<main class="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-[1440px] flex-col px-8 pb-24 pt-32">
+    <header class="mb-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+            <h1 class="mb-2 text-4xl font-extrabold tracking-tight text-on-surface">
+                <span class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-2">Guten Morgen, {{ dashboardGreetingName }}</span>
+            </h1>
+            <p class="font-body text-on-surface-variant">
+                Deine wichtigsten Pflegeaufgaben für heute.
+            </p>
+        </div>
+
+        <a
+            href="{{ path('app_care_task_index') }}"
+            class="inline-flex h-10 items-center gap-2 self-start rounded-full bg-primary text-on-primary px-4 text-sm font-semibold shadow-lg shadow-primary/20 transition-transform hover:scale-105"
+        >
+            <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+            Kalender
+        </a>
+    </header>
+
+    <section
+        data-controller="minimal-care-tasks"
+        class="flex flex-1 items-center justify-center py-6"
+    >
+        <div class="w-full max-w-2xl rounded-xl bg-surface-container-lowest p-8 shadow-[0px_20px_40px_rgba(46,52,51,0.06)] transition-all duration-500 md:p-14">
+            <div
+                data-minimal-care-tasks-target="progress"
+                class="{{ minimalCareTasks is empty ? 'hidden' : '' }} mb-10"
+            >
+                <div class="mb-5 flex items-center justify-between gap-4">
+                    <span class="text-sm font-medium tracking-widest text-on-surface-variant uppercase">
+                        Minimalismus-Modus
+                    </span>
+                    <span
+                        data-minimal-care-tasks-target="counter"
+                        class="text-sm font-medium tracking-widest text-on-surface-variant uppercase"
+                    >
+                        Aufgabe 1 von {{ minimalCareTaskCount }}
+                    </span>
+                </div>
+
+                <div class="h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high">
+                    <div
+                        data-minimal-care-tasks-target="bar"
+                        class="h-full rounded-full bg-primary transition-all duration-700 ease-out"
+                        style="width: {{ minimalCareTaskCount > 0 ? (100 / minimalCareTaskCount)|round(2, 'floor') : 100 }}%"
+                    ></div>
+                </div>
+            </div>
+
+            <div data-minimal-care-tasks-target="cards">
+                {% for task in minimalCareTasks %}
+                    {% set taskIcon = taskIconMap[task.type]|default('local_florist') %}
+                    <article
+                        data-minimal-care-tasks-target="card"
+                        class="{{ loop.first ? '' : 'hidden' }} text-center"
+                    >
+                        <div class="mb-9 flex justify-center">
+                            <div class="relative flex h-36 w-36 items-center justify-center rounded-full bg-primary-container/40 text-primary md:h-40 md:w-40">
+                                <div class="absolute inset-0 scale-110 rounded-full bg-primary/5"></div>
+                                <span class="material-symbols-outlined relative text-6xl md:text-7xl">{{ taskIcon }}</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <p class="text-sm font-semibold uppercase tracking-widest text-primary">
+                                {{ task.isOverdue ? 'Überfällig' : 'Heute fällig' }}
+                            </p>
+                            <h2 class="text-4xl font-extrabold tracking-tight text-on-surface md:text-5xl">
+                                {{ task.plant }} {{ task.type|lower }}
+                            </h2>
+                            <p class="text-lg text-on-surface-variant md:text-xl">
+                                {{ task.location }}
+                            </p>
+                            {% if task.dueDate %}
+                                <p class="text-sm font-medium text-on-surface-variant">
+                                    Fällig {{ task.dueDate|date('d.m.Y') }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-14 flex justify-center">
+                            <button
+                                type="button"
+                                data-action="click->minimal-care-tasks#done"
+                                data-care-task-url="{{ path('app_care_task_done', { id: task.id }) }}"
+                                class="w-full rounded-full bg-primary px-8 py-5 text-lg font-bold text-on-primary shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary-dim active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 sm:w-64"
+                            >
+                                Erledigt
+                            </button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <div
+                data-minimal-care-tasks-target="complete"
+                class="{{ minimalCareTasks is empty ? '' : 'hidden' }} text-center"
+            >
+                <div class="mb-9 flex justify-center">
+                    <div class="relative flex h-36 w-36 items-center justify-center rounded-full bg-primary-container/40 text-primary md:h-40 md:w-40">
+                        <div class="absolute inset-0 scale-110 rounded-full bg-primary/5"></div>
+                        <span class="material-symbols-outlined relative text-6xl md:text-7xl">check_circle</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h2 class="text-4xl font-extrabold tracking-tight text-on-surface md:text-5xl">
+                        Alles erledigt
+                    </h2>
+                    <p class="text-lg leading-7 text-on-surface-variant">
+                        Heute stehen keine überfälligen oder fälligen Pflegeaufgaben mehr an.
+                    </p>
+                </div>
+            </div>
+
+            <p
+                data-minimal-care-tasks-target="status"
+                class="hidden mt-8 rounded-lg bg-error-container px-4 py-3 text-sm font-medium text-on-error-container"
+            ></p>
+        </div>
+    </section>
+</main>

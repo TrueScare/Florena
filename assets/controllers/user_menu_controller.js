@@ -52,6 +52,10 @@ export default class extends Controller {
 
             this.setMinimalMode(isEnabled);
             this.initialMinimalMode = isEnabled;
+
+            if (window.location.pathname === "/dashboard") {
+                window.location.reload();
+            }
         } catch (error) {
             this.setMinimalMode(previousState);
             this.showStatus("Minimalismus-Modus konnte nicht aktualisiert werden.", true);
