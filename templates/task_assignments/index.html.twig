@@ -7,42 +7,87 @@
 {% endblock %}
 
 {% block body %}
-    <main class="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-8">
-        <section class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    {% set nowTs = 'now'|date('U') %}
+    {% set activeSentAssignments = sent_task_assignments|filter(task_assignment => task_assignment.endDate|date('U') >= nowTs) %}
+    {% set activeReceivedAssignments = received_task_assignments|filter(task_assignment => task_assignment.endDate|date('U') >= nowTs) %}
+    {% set completedAssignments = sent_task_assignments|filter(task_assignment => task_assignment.endDate|date('U') < nowTs)|merge(received_task_assignments|filter(task_assignment => task_assignment.endDate|date('U') < nowTs)) %}
+
+    <main class="mx-auto max-w-[1440px] px-4 pb-24 pt-28 sm:px-8">
+        <section class="mb-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <h1 class="text-4xl font-extrabold tracking-tight text-primary">Care for Me</h1>
-                <p class="mt-2 max-w-2xl text-sm text-on-surface-variant">
+                <h1 class="mb-2 text-4xl font-extrabold tracking-tight text-primary md:text-5xl">Care for Me</h1>
+                <p class="max-w-2xl text-lg text-secondary">
                     Übergib anstehende Pflegeaufgaben für deine Abwesenheit und behalte Verantwortlichkeiten im Blick.
                 </p>
             </div>
             <a href="{{ path('app_task_assignments_new') }}"
-               class="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-dim">
+               class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-on-primary shadow-md shadow-primary/20 transition-colors hover:bg-primary-dim">
                 Aufgaben übergeben
             </a>
         </section>
 
-        <section class="grid gap-6 lg:grid-cols-2">
-            <div class="rounded-2xl bg-surface-container-lowest p-5 shadow-[0px_12px_30px_rgba(46,52,51,0.05)]">
-                <h2 class="text-xl font-bold text-on-surface">Von mir übergeben</h2>
-                <div class="mt-4 space-y-3">
-                    {% for task_assignment in sent_task_assignments %}
-                        {% include 'task_assignments/_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'sent' } %}
+        <section class="space-y-8">
+            <div class="rounded-[1.75rem] bg-surface-container-lowest p-6 shadow-[0px_18px_45px_rgba(46,52,51,0.04)]">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">Ausgehend</p>
+                        <h2 class="mt-1 text-2xl font-bold text-on-surface">Von mir übergeben</h2>
+                    </div>
+                    <span class="rounded-full bg-surface-container px-3 py-1 text-xs font-semibold text-on-surface-variant">
+                        {{ activeSentAssignments|length }} aktiv
+                    </span>
+                </div>
+
+                <div class="mt-5 space-y-3">
+                    {% for task_assignment in activeSentAssignments %}
+                        {% include 'partials/_task_assignment_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'sent' } %}
                     {% else %}
                         <p class="rounded-xl border border-dashed border-outline-variant/30 p-4 text-sm text-on-surface-variant">
-                            Keine übergebenen Aufgaben.
+                            Du hast aktuell keine Aufgaben übergeben.
                         </p>
                     {% endfor %}
                 </div>
             </div>
 
-            <div class="rounded-2xl bg-surface-container-lowest p-5 shadow-[0px_12px_30px_rgba(46,52,51,0.05)]">
-                <h2 class="text-xl font-bold text-on-surface">Mir übertragen</h2>
-                <div class="mt-4 space-y-3">
-                    {% for task_assignment in received_task_assignments %}
-                        {% include 'task_assignments/_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'received' } %}
+            <div class="rounded-[1.75rem] bg-surface-container-lowest p-6 shadow-[0px_18px_45px_rgba(46,52,51,0.04)]">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">Eingehend</p>
+                        <h2 class="mt-1 text-2xl font-bold text-on-surface">Mir übertragen</h2>
+                    </div>
+                    <span class="rounded-full bg-primary-container px-3 py-1 text-xs font-semibold text-on-primary-container">
+                        {{ activeReceivedAssignments|length }} aktiv
+                    </span>
+                </div>
+
+                <div class="mt-5 space-y-3">
+                    {% for task_assignment in activeReceivedAssignments %}
+                        {% include 'partials/_task_assignment_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'received' } %}
                     {% else %}
                         <p class="rounded-xl border border-dashed border-outline-variant/30 p-4 text-sm text-on-surface-variant">
-                            Keine empfangenen Aufgaben.
+                            Dir wurden aktuell keine Aufgaben übertragen.
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="rounded-[1.75rem] bg-surface-container-lowest p-6 shadow-[0px_18px_45px_rgba(46,52,51,0.04)]">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">Vergangen</p>
+                        <h2 class="mt-1 text-2xl font-bold text-on-surface">Abgeschlossen</h2>
+                    </div>
+                    <span class="rounded-full bg-surface-container px-3 py-1 text-xs font-semibold text-on-surface-variant">
+                        {{ completedAssignments|length }} abgeschlossen
+                    </span>
+                </div>
+
+                <div class="mt-5 space-y-3">
+                    {% for task_assignment in completedAssignments %}
+                        {% include 'partials/_task_assignment_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'completed' } %}
+                    {% else %}
+                        <p class="rounded-xl border border-dashed border-outline-variant/30 p-4 text-sm text-on-surface-variant">
+                            Keine abgeschlossenen Übergaben.
                         </p>
                     {% endfor %}
                 </div>

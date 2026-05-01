@@ -1,0 +1,98 @@
+{% set task = task_assignment.careTask %}
+{% set fromName = task_assignment.fromUser.displayname ?: task_assignment.fromUser.username %}
+{% set toName = task_assignment.toUser.displayname ?: task_assignment.toUser.username %}
+
+{% set nowTs = 'now'|date('U') %}
+{% set isActive = task_assignment.startDate|date('U') <= nowTs and task_assignment.endDate|date('U') >= nowTs %}
+{% set isUpcoming = task_assignment.startDate|date('U') > nowTs %}
+
+{% set taskIconMap = {
+    'gießen': {
+        icon: 'water_drop',
+        iconBackgroundClass: 'bg-secondary-container',
+        iconTextClass: 'text-primary'
+    },
+    'umtopfen': {
+        icon: 'potted_plant',
+        iconBackgroundClass: 'bg-tertiary-container',
+        iconTextClass: 'text-tertiary'
+    },
+    'düngen': {
+        icon: 'eco',
+        iconBackgroundClass: 'bg-primary-fixed',
+        iconTextClass: 'text-on-primary-fixed'
+    }
+} %}
+
+{% set taskPresentation = taskIconMap[task.taskType.value]|default({
+    icon: 'local_florist',
+    iconBackgroundClass: 'bg-surface-container-high',
+    iconTextClass: 'text-on-surface-variant'
+}) %}
+
+{% set statusLabel = isActive ? 'Aktiv' : (isUpcoming ? 'Geplant' : 'Abgeschlossen') %}
+{% set statusClass = isActive
+    ? 'bg-primary-container text-on-primary-container'
+    : (isUpcoming ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container text-on-surface-variant')
+%}
+
+<article class="rounded-xl border border-transparent bg-surface px-5 py-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:border-primary-fixed hover:shadow-[0px_14px_34px_rgba(46,52,51,0.06)]">
+    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div class="flex min-w-0 items-start gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full {{ taskPresentation.iconBackgroundClass }} {{ taskPresentation.iconTextClass }}">
+                <span class="material-symbols-outlined">{{ taskPresentation.icon }}</span>
+            </div>
+
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="font-bold leading-tight text-on-surface">
+                        {{ task.taskType.value|capitalize }}
+                    </h3>
+
+                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ statusClass }}">
+                        {{ statusLabel }}
+                    </span>
+                </div>
+
+                <p class="mt-1 truncate text-sm text-on-surface-variant">
+                    {{ task.plant.name }}
+                </p>
+
+                <p class="mt-2 text-xs font-medium text-on-surface-variant">
+                    {{ task_assignment.startDate|date('d.m.Y H:i') }}
+                    bis
+                    {{ task_assignment.endDate|date('d.m.Y H:i') }}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-3 text-sm">
+            {% if mode == 'sent' %}
+                <a class="font-semibold text-primary hover:text-primary-dim"
+                   href="{{ path('app_task_assignments_edit', {'id': task_assignment.id}) }}">
+                    Bearbeiten
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <dl class="mt-5 grid gap-3 border-t border-outline-variant/15 pt-4 text-sm sm:grid-cols-2">
+        <div class="min-w-0">
+            <dt class="text-xs font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+                Übergeben von
+            </dt>
+            <dd class="mt-1 truncate font-semibold text-on-surface">
+                {{ fromName }}
+            </dd>
+        </div>
+
+        <div class="min-w-0">
+            <dt class="text-xs font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+                Verantwortlich
+            </dt>
+            <dd class="mt-1 truncate font-semibold text-on-surface">
+                {{ toName }}
+            </dd>
+        </div>
+    </dl>
+</article>

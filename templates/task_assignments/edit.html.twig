@@ -15,12 +15,6 @@
             <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-primary">Übergabe bearbeiten</h1>
         </div>
 
-        <section class="rounded-2xl bg-surface-container-lowest p-6 shadow-[0px_12px_30px_rgba(46,52,51,0.05)]">
-            {{ include('task_assignments/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
-        </section>
-
-        <div class="mt-6">
-            {{ include('task_assignments/_delete_form.html.twig') }}
-        </div>
+        {{ include('task_assignments/_form.html.twig', {'button_label': 'Bearbeiten', 'show_delete': true}) }}
     </main>
 {% endblock %}
