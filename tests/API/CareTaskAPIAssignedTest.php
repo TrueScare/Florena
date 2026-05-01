@@ -3,6 +3,7 @@
 namespace App\Tests\API;
 
 use App\Entity\CareTask;
+use App\Entity\CareHistory;
 use App\Entity\Plants;
 use App\Entity\TaskAssignments;
 use App\Entity\User;
@@ -30,6 +31,9 @@ class CareTaskAPIAssignedTest extends WebTestCase
     /** @var EntityRepository<TaskAssignments> */
     private EntityRepository $assignmentRepository;
 
+    /** @var EntityRepository<CareHistory> */
+    private EntityRepository $careHistoryRepository;
+
     private User $owner;
     private User $assignedUser;
     private User $unrelatedUser;
@@ -44,6 +48,7 @@ class CareTaskAPIAssignedTest extends WebTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->plantRepository = $this->manager->getRepository(Plants::class);
         $this->assignmentRepository = $this->manager->getRepository(TaskAssignments::class);
+        $this->careHistoryRepository = $this->manager->getRepository(CareHistory::class);
 
         $userRepo = $this->manager->getRepository(User::class);
 
@@ -92,6 +97,76 @@ class CareTaskAPIAssignedTest extends WebTestCase
         $data = json_decode($this->client->getResponse()->getContent(), true);
         self::assertArrayHasKey('care_history', $data);
         self::assertArrayHasKey('care_task', $data);
+
+        $careHistory = $this->careHistoryRepository->find($data['care_history']['id']);
+        self::assertSame($this->assignedUser->getId(), $careHistory->getUser()->getId());
+
+        $assignment = $this->assignmentRepository->findOneBy(['care_task' => $this->careTask, 'to_user' => $this->assignedUser]);
+        self::assertNull($assignment->getRespondedAt());
+    }
+
+    public function testAssignedTaskDueDateMovesAfterDone(): void
+    {
+        $oldDueDate = new \DateTimeImmutable('today 10:00');
+        $this->careTask->setDueDate($oldDueDate);
+        $this->manager->flush();
+
+        $this->createAssignment($this->owner, $this->assignedUser);
+
+        $this->client->loginUser($this->assignedUser);
+        $this->client->request('GET', $this->path . $this->careTask->getId());
+
+        self::assertResponseIsSuccessful();
+
+        $this->manager->clear();
+        $updatedTask = $this->manager->getRepository(CareTask::class)->find($this->careTask->getId());
+
+        self::assertGreaterThan($oldDueDate, $updatedTask->getDueDate());
+        self::assertSame(
+            (new \DateTimeImmutable('+7 days'))->format('Y-m-d'),
+            $updatedTask->getDueDate()->format('Y-m-d')
+        );
+    }
+
+    public function testAssignedTaskDoneBeforeDueDateMovesFromPreviousDueDate(): void
+    {
+        $oldDueDate = new \DateTimeImmutable('tomorrow 10:00');
+        $this->plant->setWateringIntervalDays(1);
+        $this->careTask->setDueDate($oldDueDate);
+        $this->manager->flush();
+
+        $assignment = (new TaskAssignments())
+            ->setFromUser($this->owner)
+            ->setToUser($this->assignedUser)
+            ->setCareTask($this->careTask)
+            ->setStartDate(new \DateTimeImmutable('today'))
+            ->setEndDate(new \DateTimeImmutable('+2 days 23:59'));
+
+        $this->manager->persist($assignment);
+        $this->manager->flush();
+
+        $this->client->loginUser($this->assignedUser);
+        $this->client->request('GET', $this->path . $this->careTask->getId());
+
+        self::assertResponseIsSuccessful();
+
+        $this->manager->clear();
+        $updatedTask = $this->manager->getRepository(CareTask::class)->find($this->careTask->getId());
+
+        self::assertSame(
+            $oldDueDate->modify('+1 day')->format('Y-m-d'),
+            $updatedTask->getDueDate()->format('Y-m-d')
+        );
+    }
+
+    public function testOwnerCannotMarkActivelyAssignedTaskDone(): void
+    {
+        $this->createAssignment($this->owner, $this->assignedUser);
+
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . $this->careTask->getId());
+
+        self::assertResponseStatusCodeSame(403);
     }
 
     public function testUnrelatedUserCannotMarkTaskDone(): void

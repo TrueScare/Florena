@@ -103,6 +103,20 @@ final class TaskAssignmentsControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
     }
+
+    public function testIndexShowsOnlyAssignmentsInvolvingCurrentUser(): void
+    {
+        $thirdUser = $this->userRepository->findOneBy(['username' => 'TestuserNoPlants']);
+        $visibleAssignment = $this->createAssignment($this->owner, $this->otherUser);
+        $hiddenAssignment = $this->createAssignment($this->otherUser, $thirdUser);
+
+        $this->client->loginUser($this->owner);
+        $crawler = $this->client->request('GET', $this->path);
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString((string) $visibleAssignment->getCareTask()->getPlant()->getName(), $crawler->text());
+        self::assertStringNotContainsString($hiddenAssignment->getToUser()->getUsername(), $crawler->text());
+    }
     public function testNewFormRendersForAuthenticatedUser(): void
     {
         $this->client->loginUser($this->owner);
@@ -130,6 +144,26 @@ final class TaskAssignmentsControllerTest extends WebTestCase
         self::assertSame($this->otherUser->getId(), $assignment->getToUser()->getId());
         self::assertSame($this->owner->getId(), $assignment->getFromUser()->getId());
         self::assertSame($this->careTask->getId(), $assignment->getCareTask()->getId());
+    }
+
+    public function testNewCreatesNotificationForReceiver(): void
+    {
+        $this->client->loginUser($this->owner);
+        $this->client->request('GET', $this->path . '/new');
+
+        $this->client->submitForm('Speichern', [
+            'task_assignments[start_date]' => (new \DateTimeImmutable('+1 day'))->format('Y-m-d H:i'),
+            'task_assignments[end_date]'   => (new \DateTimeImmutable('+7 days'))->format('Y-m-d H:i'),
+            'task_assignments[to_user]'    => $this->otherUser->getId(),
+            'task_assignments[care_tasks]' => [$this->careTask->getId()],
+        ]);
+
+        self::assertResponseRedirects($this->path);
+
+        $notification = $this->notificationRepository->findOneBy(['user' => $this->otherUser]);
+        self::assertNotNull($notification);
+        self::assertSame('Ihnen wurde eine Aufgabe von Ich bin ein Testuser übertragen!', $notification->getMessage());
+        self::assertSame(1, $this->notificationRepository->count(['user' => $this->otherUser]));
     }
     public function testShowAllowedForToUser(): void
     {

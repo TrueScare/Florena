@@ -43,13 +43,20 @@ class TaskAssignmentsType extends AbstractType
                 'choice_label' => function (CareTask $task) {
                     return sprintf('%s %s', $task->getPlant()->getName(), $task->getTaskType()->value);
                 },
+                'choice_attr' => function (CareTask $task) {
+                    return [
+                        'data-care-assignment-filter-target' => 'taskOption',
+                        'data-due-date' => $task->getDueDate()->format('Y-m-d\TH:i'),
+                    ];
+                },
                 'query_builder' => function (CareTaskRepository $er) use ($options) {
                     return $er->createQueryBuilder('c')
                         ->addSelect('p', 'u')
                         ->leftJoin('c.plant', 'p')
                         ->leftJoin('p.user', 'u')
                         ->andWhere('u = :user')
-                        ->setParameter('user', $options['user']);
+                        ->setParameter('user', $options['user'])
+                        ->orderBy('c.due_date', 'ASC');
                 },
                 'multiple' => true,
                 'label' => 'Aufgabe(n)',
@@ -62,13 +69,20 @@ class TaskAssignmentsType extends AbstractType
                 'choice_label' => function (CareTask $task) {
                     return sprintf('%s %s', $task->getPlant()->getName(), $task->getTaskType()->value);
                 },
+                'choice_attr' => function (CareTask $task) {
+                    return [
+                        'data-care-assignment-filter-target' => 'taskOption',
+                        'data-due-date' => $task->getDueDate()->format('Y-m-d\TH:i'),
+                    ];
+                },
                 'query_builder' => function (CareTaskRepository $er) use ($options) {
                     return $er->createQueryBuilder('c')
                         ->addSelect('p', 'u')
                         ->leftJoin('c.plant', 'p')
                         ->leftJoin('p.user', 'u')
                         ->andWhere('u = :user')
-                        ->setParameter('user', $options['user']);
+                        ->setParameter('user', $options['user'])
+                        ->orderBy('c.due_date', 'ASC');
                 },
                 'label' => 'Aufgabe(n)',
                 'required' => true

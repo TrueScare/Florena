@@ -31,10 +31,11 @@
     {% set dueTodayCount = 0 %}
     {% set tasksByDay = {} %}
 
-    {% for care_task in care_tasks %}
+    {% for item in care_task_items %}
+        {% set care_task = item.task %}
         {% set dayKey = care_task.dueDate|date('Y-m-d') %}
         {% set currentTasks = tasksByDay[dayKey]|default([]) %}
-        {% set tasksByDay = tasksByDay|merge({ (dayKey): currentTasks|merge([care_task]) }) %}
+        {% set tasksByDay = tasksByDay|merge({ (dayKey): currentTasks|merge([item]) }) %}
 
         {% if care_task.dueDate|date('U') < nowTs and dayKey != todayKey %}
             {% set overdueCount = overdueCount + 1 %}
@@ -67,7 +68,7 @@
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 xl:min-w-[30rem]">
                     <article class="rounded-3xl bg-surface-container-lowest/90 px-5 py-4 shadow-[0px_12px_30px_rgba(46,52,51,0.06)]">
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">Insgesamt</p>
-                        <p class="mt-2 text-3xl font-extrabold text-on-surface">{{ care_tasks|length }}</p>
+                        <p class="mt-2 text-3xl font-extrabold text-on-surface">{{ care_task_items|length }}</p>
                     </article>
                     <article class="rounded-3xl bg-surface-container-lowest/90 px-5 py-4 shadow-[0px_12px_30px_rgba(46,52,51,0.06)]">
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">Heute</p>
@@ -80,11 +81,48 @@
             </div>
         </section>
 
+        {% if received_task_items is not empty %}
+            <section class="mt-8 rounded-[1.75rem] bg-surface-container-lowest p-5 shadow-[0px_18px_45px_rgba(46,52,51,0.04)]">
+                <div class="mb-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-on-surface">An dich übergebene Aufgaben</h4>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    {% for item in received_task_items %}
+                        {% set care_task = item.task %}
+                        {% set typeLabel =
+                            care_task.taskType.value == 'gießen' ? 'Gießen' :
+                            care_task.taskType.value == 'düngen' ? 'Düngen' :
+                            care_task.taskType.value == 'umtopfen' ? 'Umtopfen' :
+                            care_task.taskType.value
+                        %}
+
+                        {% include 'partials/_care_task_card.html.twig' with {
+                            task: {
+                                id: care_task.id,
+                                type: typeLabel,
+                                plant: care_task.plant.name,
+                                dueDate: care_task.dueDate,
+                                href: path('app_task_assignments_show', {'id': item.assignment.id}),
+                                currentResponsible: item.currentResponsible.displayname ?: item.currentResponsible.username,
+                                originalResponsible: item.originalResponsible.displayname ?: item.originalResponsible.username,
+                                received: true,
+                                transferredFrom: item.assignment.fromUser.displayname ?: item.assignment.fromUser.username
+                            },
+                            showDoneButton: item.canComplete
+                        } %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
         <section class="mt-8">
             {% include 'utils/_calender_filter.html.twig' %}
         </section>
 
-        {% if care_tasks is empty %}
+        {% if care_task_items is empty %}
             <section class="mt-8 rounded-[2rem] bg-surface-container-lowest p-10 text-center shadow-[0px_20px_50px_rgba(46,52,51,0.04)]">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-container text-primary">
                     <span class="material-symbols-outlined text-[30px]">event_available</span>
@@ -99,7 +137,8 @@
             {# Tagesansicht #}
             {% if interval == 'Tag' %}
                 <section class="mt-8 space-y-4">
-                    {% for care_task in care_tasks %}
+                    {% for item in care_task_items %}
+                        {% set care_task = item.task %}
                         {% set typeLabel =
                             care_task.taskType.value == 'gießen' ? 'Gießen' :
                             care_task.taskType.value == 'düngen' ? 'Düngen' :
@@ -113,9 +152,15 @@
                                 type: typeLabel,
                                 plant: care_task.plant.name,
                                 plantId: care_task.plant.id,
-                                dueDate: care_task.dueDate
+                                dueDate: care_task.dueDate,
+                                href: item.assignment ? path('app_task_assignments_show', {'id': item.assignment.id}) : path('app_plants_show', {'id': care_task.plant.id}),
+                                currentResponsible: item.currentResponsible.displayname ?: item.currentResponsible.username,
+                                originalResponsible: item.originalResponsible.displayname ?: item.originalResponsible.username,
+                                received: item.received,
+                                transferredFrom: item.received and item.assignment ? item.assignment.fromUser.displayname ?: item.assignment.fromUser.username : null,
+                                transferredTo: not item.received and item.assignment ? item.assignment.toUser.displayname ?: item.assignment.toUser.username : null
                             },
-                            showDoneButton: true
+                            showDoneButton: item.canComplete
                         } %}
                     {% endfor %}
                 </section>
@@ -142,7 +187,8 @@
                                     </div>
 
                                     <div class="space-y-3 p-4">
-                                        {% for care_task in dayTasks %}
+                                        {% for item in dayTasks %}
+                                            {% set care_task = item.task %}
                                             {% set taskStyle = taskTypeStyles[care_task.taskType.value]|default({
                                                 icon: 'local_florist',
                                                 accent: 'text-on-surface-variant',
@@ -150,7 +196,7 @@
                                             }) %}
                                             {% set isOverdue = care_task.dueDate|date('U') < nowTs and currentDayKey != todayKey %}
 
-                                            <a href="{{ path('app_plants_show', {'id': care_task.plant.id}) }}"
+                                            <a href="{{ item.assignment ? path('app_task_assignments_show', {'id': item.assignment.id}) : path('app_plants_show', {'id': care_task.plant.id}) }}"
                                                class="block rounded-3xl border border-transparent bg-surface px-4 py-4 shadow-[0px_12px_30px_rgba(46,52,51,0.04)] transition-all hover:border-primary-fixed">
                                                 <div class="flex items-center gap-3">
                                                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl {{ taskStyle.surface }} {{ taskStyle.accent }}">
@@ -167,6 +213,9 @@
                                                         <span class="rounded-full bg-error-container px-2.5 py-1 text-on-error-container">Überfällig</span>
                                                     {% endif %}
                                                 </div>
+                                                <p class="mt-2 truncate text-xs text-on-surface-variant">
+                                                    Verantwortlich: {{ item.currentResponsible.displayname ?: item.currentResponsible.username }}
+                                                </p>
                                             </a>
                                         {% else %}
                                             <div class="rounded-3xl border border-dashed border-outline-variant/20 px-4 py-8 text-center text-sm text-on-surface-variant">
@@ -224,16 +273,20 @@
                                 </div>
 
                                 <div class="space-y-2">
-                                    {% for care_task in dayTasks|slice(0, 3) %}
+                                    {% for item in dayTasks|slice(0, 3) %}
+                                        {% set care_task = item.task %}
                                         {% set taskStyle = taskTypeStyles[care_task.taskType.value]|default({
                                             icon: 'local_florist',
                                             accent: 'text-on-surface-variant',
                                             surface: 'bg-surface-container-high'
                                         }) %}
-                                        <a href="{{ path('app_plants_show', {'id': care_task.plant.id}) }}"
+                                        <a href="{{ item.assignment ? path('app_task_assignments_show', {'id': item.assignment.id}) : path('app_plants_show', {'id': care_task.plant.id}) }}"
                                            class="flex items-center gap-2 rounded-2xl bg-surface px-3 py-2 text-sm shadow-[0px_10px_24px_rgba(46,52,51,0.04)] transition-all hover:translate-y-[-1px]">
                                             <span class="material-symbols-outlined text-[18px] {{ taskStyle.accent }}">{{ taskStyle.icon }}</span>
-                                            <span class="min-w-0 truncate font-medium text-on-surface">{{ care_task.plant.name }}</span>
+                                            <span class="min-w-0">
+                                                <span class="block truncate font-medium text-on-surface">{{ care_task.plant.name }}</span>
+                                                <span class="block truncate text-[11px] text-on-surface-variant">{{ item.currentResponsible.displayname ?: item.currentResponsible.username }}</span>
+                                            </span>
                                         </a>
                                     {% endfor %}
 

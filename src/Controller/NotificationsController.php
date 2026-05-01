@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\NotificationsRepository;
 use App\Service\NotificationService;
+use App\Service\TaskAssignmentResolver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,6 +16,7 @@ final class NotificationsController extends AbstractController
     public function __construct(
         private NotificationsRepository $notificationsRepository,
         private NotificationService $notificationService,
+        private TaskAssignmentResolver $taskAssignmentResolver,
     ) {
     }
 
@@ -24,9 +26,24 @@ final class NotificationsController extends AbstractController
         $this->notificationService->createDueNotifications($this->getUser());
 
         $notifications = $this->notificationsRepository->findUnreadActiveByUser($this->getUser());
+        $taskAssignmentsByNotification = [];
+
+        foreach ($notifications as $notification) {
+            $careTask = $notification->getCareTask();
+
+            if ($careTask === null) {
+                continue;
+            }
+
+            $taskAssignment = $this->taskAssignmentResolver->findActiveForTaskAndUser($careTask, $this->getUser());
+            if ($taskAssignment !== null) {
+                $taskAssignmentsByNotification[$notification->getId()] = $taskAssignment;
+            }
+        }
 
         return $this->render('notifications/_list.html.twig', [
             'notifications' => $notifications,
+            'task_assignments_by_notification' => $taskAssignmentsByNotification,
         ]);
     }
 

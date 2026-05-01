@@ -4,10 +4,10 @@ namespace App\Controller\API;
 
 use App\Entity\CareHistory;
 use App\Entity\CareTask;
-use App\Entity\TaskAssignments;
 use App\Enum\CareType;
-use App\Repository\TaskAssignmentsRepository;
 use App\Service\NotificationService;
+use App\Service\TaskAssignmentResolver;
+use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,24 +22,24 @@ class CareTaskAPIController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private NotificationService    $notificationService,
+        private TaskAssignmentResolver $taskAssignmentResolver,
     )
     {
     }
 
     #[Route('/{id}', name: 'app_care_task_done', methods: ['GET'])]
-    public function done(CareTask $careTask, TaskAssignmentsRepository $taskAssignmentsRepository): JsonResponse
+    public function done(CareTask $careTask): JsonResponse
     {
-        // this statement checkt weither or not the user is owner of the task
-        // or the user is anywhere assigned to the task
         $currentUserId = $this->getUser()->getId();
         $isOwner = $careTask->getPlant()->getUser()->getId() === $currentUserId;
-        $isAssigned = false;
-        $count = $taskAssignmentsRepository->countTaskAssignmentsForCareTaskByUser($careTask, $this->getUser());
-        if(!$isOwner){
-            $isAssigned = $count >0;
+        $activeAssignment = $this->taskAssignmentResolver->findActiveForTask($careTask);
+        $isAssigned = $activeAssignment?->getToUser()?->getId() === $currentUserId;
+
+        if ($activeAssignment !== null && !$isAssigned) {
+            return $this->json([], Response::HTTP_FORBIDDEN);
         }
 
-        if (!$isOwner && !$isAssigned) {
+        if ($activeAssignment === null && !$isOwner) {
             return $this->json([], Response::HTTP_FORBIDDEN);
         }
 
@@ -48,20 +48,36 @@ class CareTaskAPIController extends AbstractController
         $careHistory->setPlant($careTask->getPlant());
         $careHistory->setCareType($careTask->getTaskType());
 
-        match ($careTask->getTaskType()) {
-            CareType::water => $careTask->getPlant()->setLastWateredAt($careHistory->getPerformedAt()),
-            CareType::fertilice => $careTask->getPlant()->setLastFertilizedAt($careHistory->getPerformedAt()),
-            CareType::repot => $careTask->getPlant()->setLastRepottedAt($careHistory->getPerformedAt())
+        $plant = $careTask->getPlant();
+        $previousDueDate = $careTask->getDueDate();
+        $performedAt = $careHistory->getPerformedAt();
+        $nextDueDate = null;
+        $intervalDays = match ($careTask->getTaskType()) {
+            CareType::water => $plant->setLastWateredAt($performedAt)->getWateringIntervalDays(),
+            CareType::fertilice => $plant->setLastFertilizedAt($performedAt)->getFertilizingIntervalDays(),
+            CareType::repot => $plant->setLastRepottedAt($performedAt)->getRepottingIntervalDays(),
         };
+
+        if ($intervalDays !== null && $intervalDays > 0) {
+            $nextDueDateBase = $previousDueDate > $performedAt ? $previousDueDate : $performedAt;
+            $nextDueDate = $nextDueDateBase->add(DateInterval::createFromDateString($intervalDays . ' day'));
+        }
 
         $this->notificationService->deactivateNotificationsForCareTask($careTask);
 
         $this->entityManager->persist($careHistory);
         $this->entityManager->flush();
 
+        if ($nextDueDate !== null) {
+            $careTask->setDueDate($nextDueDate);
+            $this->entityManager->persist($careTask);
+            $this->entityManager->flush();
+        }
+
         return $this->json([
             'care_history' => $careHistory,
             'care_task' => $careTask,
         ], context: ['groups' => ['care_task:read', 'care_history:read', 'plant:ref']]);
     }
+
 }

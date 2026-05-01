@@ -39,7 +39,7 @@
                     {% for task in upcomingTasks %}
                         {% include 'partials/_care_task_card.html.twig' with {
                             task: task,
-                            showDoneButton: true
+                            showDoneButton: not task.hideDoneButton|default(false)
                         } %}
                     {% else %}
                         <div class="rounded-xl bg-surface-container-lowest p-5 text-sm text-on-surface-variant shadow-[0px_10px_30px_rgba(46,52,51,0.04)]">

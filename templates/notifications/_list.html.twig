@@ -1,5 +1,34 @@
 {% for n in notifications %}
-    {% if n.careTask %}
+    {% set transferAssignment = task_assignments_by_notification[n.id]|default(null) %}
+
+    {% if transferAssignment %}
+        {% set fromUser = transferAssignment.fromUser.displayname ?: transferAssignment.fromUser.username %}
+        <a href="{{ path('app_task_assignments_index') }}"
+           class="block rounded-xl bg-surface-container-lowest p-4 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:bg-surface-container-low">
+            <div class="flex items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-container text-primary">
+                    <span class="material-symbols-outlined text-[22px]">assignment_ind</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold leading-5 text-on-surface">Ihnen wurde eine Aufgabe von {{ fromUser }} übertragen!</p>
+                    <p class="mt-1 text-xs text-on-surface-variant">Care for Me öffnen</p>
+                </div>
+            </div>
+        </a>
+    {% elseif n.message starts with 'Ihnen wurde eine Aufgabe von ' %}
+        <a href="{{ path('app_task_assignments_index') }}"
+           class="block rounded-xl bg-surface-container-lowest p-4 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:bg-surface-container-low">
+            <div class="flex items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-container text-primary">
+                    <span class="material-symbols-outlined text-[22px]">assignment_ind</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold leading-5 text-on-surface">{{ n.message }}</p>
+                    <p class="mt-1 text-xs text-on-surface-variant">Care for Me öffnen</p>
+                </div>
+            </div>
+        </a>
+    {% elseif n.careTask %}
         {% include 'partials/_care_task_card.html.twig' with {
             task: {
                 id: n.careTask.id,

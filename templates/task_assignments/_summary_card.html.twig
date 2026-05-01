@@ -1,0 +1,48 @@
+{% set task = task_assignment.careTask %}
+{% set ownerName = task.plant.user.displayname ?: task.plant.user.username %}
+{% set fromName = task_assignment.fromUser.displayname ?: task_assignment.fromUser.username %}
+{% set toName = task_assignment.toUser.displayname ?: task_assignment.toUser.username %}
+{% set nowTs = 'now'|date('U') %}
+{% set isActive = task_assignment.startDate|date('U') <= nowTs and task_assignment.endDate|date('U') >= nowTs %}
+
+<article class="rounded-xl border border-outline-variant/20 bg-surface px-4 py-4">
+    <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+            <p class="font-bold text-on-surface">{{ task.plant.name }} · {{ task.taskType.value|capitalize }}</p>
+            <p class="mt-1 text-sm text-on-surface-variant">
+                {{ task_assignment.startDate|date('d.m.Y H:i') }} bis {{ task_assignment.endDate|date('d.m.Y H:i') }}
+            </p>
+        </div>
+        <span class="shrink-0 rounded-full px-3 py-1 text-xs font-semibold {{ isActive ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant' }}">
+            {{ isActive ? 'Aktiv' : 'Geplant/abgelaufen' }}
+        </span>
+    </div>
+
+    <dl class="mt-4 grid gap-2 text-sm text-on-surface-variant">
+        <div class="flex justify-between gap-3">
+            <dt>Ursprünglich</dt>
+            <dd class="font-semibold text-on-surface">{{ ownerName }}</dd>
+        </div>
+        <div class="flex justify-between gap-3">
+            <dt>Übergeben von</dt>
+            <dd class="font-semibold text-on-surface">{{ fromName }}</dd>
+        </div>
+        <div class="flex justify-between gap-3">
+            <dt>Aktuell verantwortlich</dt>
+            <dd class="font-semibold text-on-surface">{{ toName }}</dd>
+        </div>
+    </dl>
+
+    <div class="mt-4 flex gap-3 text-sm">
+        <a class="font-semibold text-primary hover:text-primary-dim"
+           href="{{ path('app_task_assignments_show', {'id': task_assignment.id}) }}">
+            Anzeigen
+        </a>
+        {% if mode == 'sent' %}
+            <a class="font-semibold text-primary hover:text-primary-dim"
+               href="{{ path('app_task_assignments_edit', {'id': task_assignment.id}) }}">
+                Bearbeiten
+            </a>
+        {% endif %}
+    </div>
+</article>

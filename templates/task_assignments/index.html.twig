@@ -1,37 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}TaskAssignments index{% endblock %}
+{% block title %}Care for Me{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'care-for-me' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>TaskAssignments index</h1>
+    <main class="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-8">
+        <section class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight text-primary">Care for Me</h1>
+                <p class="mt-2 max-w-2xl text-sm text-on-surface-variant">
+                    Übergib anstehende Pflegeaufgaben für deine Abwesenheit und behalte Verantwortlichkeiten im Blick.
+                </p>
+            </div>
+            <a href="{{ path('app_task_assignments_new') }}"
+               class="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-dim">
+                Aufgaben übergeben
+            </a>
+        </section>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Von</th>
-                <th>Bis</th>
-                <th>Übertragen am</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for task_assignment in task_assignments %}
-            <tr>
-                <td>{{ task_assignment.startDate ? task_assignment.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ task_assignment.endDate ? task_assignment.endDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ task_assignment.assignedAt ? task_assignment.assignedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_task_assignments_show', {'id': task_assignment.id}) }}">anzeigen</a>
-                    <a href="{{ path('app_task_assignments_edit', {'id': task_assignment.id}) }}">bearbeiten</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">keine Übertragungen gefunden</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <section class="grid gap-6 lg:grid-cols-2">
+            <div class="rounded-2xl bg-surface-container-lowest p-5 shadow-[0px_12px_30px_rgba(46,52,51,0.05)]">
+                <h2 class="text-xl font-bold text-on-surface">Von mir übergeben</h2>
+                <div class="mt-4 space-y-3">
+                    {% for task_assignment in sent_task_assignments %}
+                        {% include 'task_assignments/_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'sent' } %}
+                    {% else %}
+                        <p class="rounded-xl border border-dashed border-outline-variant/30 p-4 text-sm text-on-surface-variant">
+                            Keine übergebenen Aufgaben.
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
 
-    <a href="{{ path('app_task_assignments_new') }}">neu</a>
+            <div class="rounded-2xl bg-surface-container-lowest p-5 shadow-[0px_12px_30px_rgba(46,52,51,0.05)]">
+                <h2 class="text-xl font-bold text-on-surface">Mir übertragen</h2>
+                <div class="mt-4 space-y-3">
+                    {% for task_assignment in received_task_assignments %}
+                        {% include 'task_assignments/_summary_card.html.twig' with { task_assignment: task_assignment, mode: 'received' } %}
+                    {% else %}
+                        <p class="rounded-xl border border-dashed border-outline-variant/30 p-4 text-sm text-on-surface-variant">
+                            Keine empfangenen Aufgaben.
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

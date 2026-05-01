@@ -1,4 +1,50 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Speichern') }}</button>
+{{ form_start(form, { attr: { 'data-controller': 'care-assignment-filter', class: 'space-y-5' } }) }}
+    <div class="grid gap-4 md:grid-cols-2">
+        <div>
+            {{ form_label(form.start_date, null, { label_attr: { class: 'mb-2 block text-sm font-semibold text-on-surface' } }) }}
+            {{ form_widget(form.start_date, { attr: { class: 'w-full rounded-xl border-outline-variant bg-surface-container-lowest' } }) }}
+            {{ form_errors(form.start_date) }}
+        </div>
+        <div>
+            {{ form_label(form.end_date, null, { label_attr: { class: 'mb-2 block text-sm font-semibold text-on-surface' } }) }}
+            {{ form_widget(form.end_date, { attr: { class: 'w-full rounded-xl border-outline-variant bg-surface-container-lowest' } }) }}
+            {{ form_errors(form.end_date) }}
+        </div>
+    </div>
+
+    <div>
+        {{ form_label(form.to_user, null, { label_attr: { class: 'mb-2 block text-sm font-semibold text-on-surface' } }) }}
+        {{ form_widget(form.to_user, { attr: { class: 'w-full rounded-xl border-outline-variant bg-surface-container-lowest' } }) }}
+        {{ form_errors(form.to_user) }}
+    </div>
+
+    {% if form.care_tasks is defined %}
+        <div>
+            <div class="mb-2 flex items-center justify-between gap-3">
+                {{ form_label(form.care_tasks, null, { label_attr: { class: 'block text-sm font-semibold text-on-surface' } }) }}
+                <button type="button"
+                        data-action="care-assignment-filter#selectVisible"
+                        class="rounded-full border border-outline-variant/30 px-4 py-2 text-xs font-semibold text-primary hover:bg-primary-container">
+                    Sichtbare auswählen (<span data-care-assignment-filter-target="visibleCount">0</span>)
+                </button>
+            </div>
+            {{ form_widget(form.care_tasks, { attr: { class: 'min-h-56 w-full rounded-xl border-outline-variant bg-surface-container-lowest' } }) }}
+            <p class="mt-2 text-xs text-on-surface-variant">Die Liste wird anhand des gewählten Zeitraums gefiltert.</p>
+            {{ form_errors(form.care_tasks) }}
+        </div>
+    {% endif %}
+
+    {% if form.care_task is defined %}
+        <div>
+            {{ form_label(form.care_task, null, { label_attr: { class: 'mb-2 block text-sm font-semibold text-on-surface' } }) }}
+            {{ form_widget(form.care_task, { attr: { class: 'w-full rounded-xl border-outline-variant bg-surface-container-lowest' } }) }}
+            {{ form_errors(form.care_task) }}
+        </div>
+    {% endif %}
+
+    {{ form_rest(form) }}
+
+    <button class="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-on-primary hover:bg-primary-dim">
+        {{ button_label|default('Speichern') }}
+    </button>
 {{ form_end(form) }}
