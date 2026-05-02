@@ -121,10 +121,11 @@ final class PlantsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('image')->getData();
+            $removeImage = $form->get('remove_image')->getData();
+            $filesystem = new Filesystem();
 
             if ($uploadedFile) {
-                if ($currentImagePath) {
-                    $filesystem = new Filesystem();
+                if ($plant->getPhotoPath() && $filesystem->exists($currentImagePath)) {
                     $filesystem->remove($currentImagePath);
                 }
                 $destination = $uploadsPath . '/plant_images';
@@ -133,6 +134,12 @@ final class PlantsController extends AbstractController
                 $uploadedFile->move($destination, $newFileName);
 
                 $plant->setPhotoPath($newFileName);
+            } elseif ($removeImage && $plant->getPhotoPath()) {
+                if ($filesystem->exists($currentImagePath)) {
+                    $filesystem->remove($currentImagePath);
+                }
+
+                $plant->setPhotoPath('');
             }
 
             $entityManager->flush();
