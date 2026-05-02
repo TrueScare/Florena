@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -52,6 +53,11 @@ class PlantsType extends AbstractType
                 'constraints' => [
                     new File(maxSize: '20M', extensions: ["png", "jpg", "jpeg"]),
                 ]
+            ])
+            ->add('remove_image', CheckboxType::class, [
+                'label' => 'Aktuelles Bild entfernen',
+                'mapped' => false,
+                'required' => false,
             ])
             ->add('light_requirement', EnumType::class, [
                 'class' => LightRequirement::class,

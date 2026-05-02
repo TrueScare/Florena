@@ -38,6 +38,7 @@ final class LocationsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($location);
             $entityManager->flush();
+            $this->addFlash('success', 'Dein Standort "' . $location->getName() . '" wurde erfolgreich angelegt.');
 
             return $this->redirectToRoute('app_locations_index', [], Response::HTTP_SEE_OTHER);
         }

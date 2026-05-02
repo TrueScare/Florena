@@ -68,10 +68,11 @@
                         }
                     }) }}
 
-                    <div class="relative w-full">
+                    <div data-controller="file-input" class="relative w-full">
                         {{ form_widget(form.image, {
                             attr: {
-                                class: 'sr-only peer'
+                                class: 'sr-only peer',
+                                'data-action': 'change->file-input#update'
                             }
                         }) }}
 
@@ -84,7 +85,43 @@
                             <p class="mb-1 font-semibold text-on-surface">Bild hochladen</p>
                             <p class="text-xs text-on-surface-variant">JPG, PNG oder HEIC (max. 10MB)</p>
                         </label>
+
+                        <p data-file-input-target="filename" class="mt-3 text-sm text-on-surface-variant">
+                            Keine Datei ausgewählt
+                        </p>
                     </div>
+
+                    {% if plant.photoPath %}
+                        <div class="rounded-xl bg-surface-container-low p-4">
+                            <div class="flex items-center gap-3">
+                                <img
+                                    src="{{ asset(plant.displayPhotoPath) }}"
+                                    alt="Aktuelles Pflanzenbild"
+                                    class="h-14 w-14 rounded-lg object-cover"
+                                >
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold text-on-surface">Aktuelles Bild vorhanden</p>
+                                    <p class="text-xs text-on-surface-variant">Ohne neues Upload kannst du es hier entfernen.</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex items-start gap-3">
+                                {{ form_widget(form.remove_image, {
+                                    attr: {
+                                        class: 'mt-0.5 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary'
+                                    }
+                                }) }}
+                                <div>
+                                    {{ form_label(form.remove_image, null, {
+                                        label_attr: {
+                                            class: 'text-sm font-medium text-on-surface'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.remove_image) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
 
                     {{ form_errors(form.image) }}
                 </div>

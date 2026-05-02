@@ -174,18 +174,4 @@
             {% endif %}
         </div>
     </div>
-    
-    {% block messages %}
-        {% if app.session.flashbag.peekAll()|length > 0 %}
-            <div class="message-container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-8">
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="flash-{{ label }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endblock %}
 </header>
