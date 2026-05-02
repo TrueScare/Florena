@@ -20,19 +20,29 @@ final class DashboardService
         private PlantsRepository $plantsRepository,
         private CareTaskRepository $careTaskRepository,
         private LocationsRepository $locationsRepository,
+        private TaskAssignmentResolver $taskAssignmentResolver,
     ) {
     }
 
     public function getDashboardData(User $user): array
     {
         $tasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::week);
+        $assignedTasks = $this->careTaskRepository->findAllAssignedToUserInInterval($user, CalenderTimeInterval::week);
+        $assignedTaskItems = array_values(array_filter(array_map(
+            fn($task) => $this->mapAssignedTask($task, $user),
+            $assignedTasks
+        )));
+        $upcomingTaskItems = array_merge(
+            array_map(fn($task) => $this->mapOwnedTask($task), $tasks),
+            $assignedTaskItems
+        );
         $minimalModeTasks = $this->careTaskRepository->findAllByUserInInterval($user, CalenderTimeInterval::day);
         $plants = $this->plantsRepository->findAllByUser($user);
         $locations = $this->locationsRepository->findAllByUser($user);
 
         usort(
-            $tasks,
-            fn($left, $right) => $left->getDueDate() <=> $right->getDueDate()
+            $upcomingTaskItems,
+            fn($left, $right) => $left['dueDate'] <=> $right['dueDate']
         );
         usort(
             $minimalModeTasks,
@@ -57,10 +67,7 @@ final class DashboardService
                 $minimalModeTasks
             ),
             'minimalCareTaskCount' => count($minimalModeTasks),
-            'upcomingTasks' => array_map(
-                fn($task) => $this->mapTask($task),
-                array_slice($tasks, 0, self::MAX_UPCOMING_TASKS)
-            ),
+            'upcomingTasks' => array_slice($upcomingTaskItems, 0, self::MAX_UPCOMING_TASKS),
             'plants' => array_map(
                 fn($plant) => $this->mapPlant($plant),
                 array_slice($activePlants, 0, self::MAX_PLANTS)
@@ -86,6 +93,35 @@ final class DashboardService
             'dueDate' => $task->getDueDate(),
             'isOverdue' => $task->getDueDate() < new \DateTimeImmutable('today'),
         ];
+    }
+
+    private function mapOwnedTask(object $task): array
+    {
+        $mappedTask = $this->mapTask($task);
+        $assignment = $this->taskAssignmentResolver->findActiveForTask($task);
+
+        if ($assignment !== null) {
+            $toUser = $assignment->getToUser();
+            $mappedTask['transferredTo'] = $toUser->getDisplayname() ?: $toUser->getUsername();
+            $mappedTask['hideDoneButton'] = true;
+        }
+
+        return $mappedTask;
+    }
+
+    private function mapAssignedTask(object $task, User $user): ?array
+    {
+        $assignment = $this->taskAssignmentResolver->findActiveForTaskAndUser($task, $user);
+        if ($assignment === null) {
+            return null;
+        }
+
+        $mappedTask = $this->mapTask($task);
+        $fromUser = $assignment->getFromUser();
+        $mappedTask['href'] = ['route' => 'app_task_assignments_show', 'params' => ['id' => $assignment->getId()]];
+        $mappedTask['transferredFrom'] = $fromUser->getDisplayname() ?: $fromUser->getUsername();
+
+        return $mappedTask;
     }
 
     private function mapPlant(object $plant): array

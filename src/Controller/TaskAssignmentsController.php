@@ -3,14 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\CareTask;
+use App\Entity\Notifications;
 use App\Entity\TaskAssignments;
-use App\EventListener\TaskAssignmentListener;
 use App\Form\TaskAssignmentsType;
 use App\Repository\TaskAssignmentsRepository;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\Migrations\Configuration\EntityManager\ManagerRegistryEntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,15 +18,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("IS_AUTHENTICATED")]
 final class TaskAssignmentsController extends AbstractController
 {
-    public function __construct(private readonly TaskAssignmentListener $taskAssignmentListener)
-    {
-    }
-
     #[Route(name: 'app_task_assignments_index', methods: ['GET'])]
     public function index(TaskAssignmentsRepository $taskAssignmentsRepository): Response
     {
+        $user = $this->getUser();
+        $sentTaskAssignments = $taskAssignmentsRepository->findBy(['from_user' => $user], ['assigned_at' => 'DESC']);
+        $receivedTaskAssignments = $taskAssignmentsRepository->findBy(['to_user' => $user], ['assigned_at' => 'DESC']);
+
         return $this->render('task_assignments/index.html.twig', [
-            'task_assignments' => $taskAssignmentsRepository->findAll(),
+            'sent_task_assignments' => $sentTaskAssignments,
+            'received_task_assignments' => $receivedTaskAssignments,
         ]);
     }
 
@@ -43,8 +41,27 @@ final class TaskAssignmentsController extends AbstractController
         $taskAssignment->setFromUser($this->getUser());
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($taskAssignment->getStartDate() > $taskAssignment->getEndDate()) {
+                $this->addFlash('error', 'Das Startdatum muss vor dem Enddatum liegen.');
+
+                return $this->render('task_assignments/new.html.twig', [
+                    'task_assignment' => $taskAssignment,
+                    'form' => $form,
+                ]);
+            }
 
             $tasks = $form->get('care_tasks')->getData();
+            $tasks = $tasks->filter(fn (CareTask $task) => $this->taskIsWithinAssignmentWindow($task, $taskAssignment));
+
+            if ($tasks->isEmpty()) {
+                $this->addFlash('error', 'Bitte wähle mindestens eine Aufgabe im Übergabezeitraum aus.');
+
+                return $this->render('task_assignments/new.html.twig', [
+                    'task_assignment' => $taskAssignment,
+                    'form' => $form,
+                ]);
+            }
+
             $dbTasks = $taskAssignmentsRepository->findBy(['to_user' => $taskAssignment->getToUser(), 'care_task' => array_map(fn(CareTask $task) => $task->getId(), $tasks->toArray())]);
 
             /** @var CareTask $task */
@@ -63,6 +80,13 @@ final class TaskAssignmentsController extends AbstractController
                     ->setEndDate($taskAssignment->getEndDate())
                     ->setAssignedAt($taskAssignment->getAssignedAt());
                 $entityManager->persist($newTaskAssignment);
+                $entityManager->persist((new Notifications())
+                    ->setCareTask($task)
+                    ->setUser($taskAssignment->getToUser())
+                    ->setMessage(sprintf(
+                        'Ihnen wurde eine Aufgabe von %s übertragen!',
+                        $taskAssignment->getFromUser()->getDisplayname() ?: $taskAssignment->getFromUser()->getUsername()
+                    )));
                 $this->addFlash("success", sprintf("Die Aufgabe '%s %s' wurde an User '%s' vergeben.", $task->getPlant()->getName(), $task->getTaskType()->value, $taskAssignment->getToUser()->getUsername()));
             }
             $entityManager->flush();
@@ -102,6 +126,24 @@ final class TaskAssignmentsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($taskAssignment->getStartDate() > $taskAssignment->getEndDate()) {
+                $this->addFlash('error', 'Das Startdatum muss vor dem Enddatum liegen.');
+
+                return $this->render('task_assignments/edit.html.twig', [
+                    'task_assignment' => $taskAssignment,
+                    'form' => $form,
+                ]);
+            }
+
+            if (!$this->taskIsWithinAssignmentWindow($taskAssignment->getCareTask(), $taskAssignment)) {
+                $this->addFlash('error', 'Die Aufgabe liegt nicht im gewählten Übergabezeitraum.');
+
+                return $this->render('task_assignments/edit.html.twig', [
+                    'task_assignment' => $taskAssignment,
+                    'form' => $form,
+                ]);
+            }
+
             $entityManager->persist($taskAssignment);
             $entityManager->flush();
 
@@ -130,5 +172,11 @@ final class TaskAssignmentsController extends AbstractController
         }
 
         return $this->redirectToRoute('app_task_assignments_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function taskIsWithinAssignmentWindow(CareTask $careTask, TaskAssignments $taskAssignment): bool
+    {
+        return $careTask->getDueDate() >= $taskAssignment->getStartDate()
+            && $careTask->getDueDate() <= $taskAssignment->getEndDate()->modify('+59 seconds');
     }
 }

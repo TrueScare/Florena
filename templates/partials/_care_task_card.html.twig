@@ -21,6 +21,11 @@
     iconBackgroundClass: 'bg-surface-container-high',
     iconTextClass: 'text-on-surface-variant'
 }) %}
+{% if task.href is defined and task.href.route is defined %}
+    {% set taskHref = path(task.href.route, task.href.params|default({})) %}
+{% else %}
+    {% set taskHref = task.href|default(task.plantId is defined ? path('app_plants_show', { id: task.plantId }) : '#') %}
+{% endif %}
 
 <div
     {% if showDoneButton|default(false) %}
@@ -29,7 +34,7 @@
     class="care-task-card group flex items-center justify-between rounded-xl bg-surface-container-lowest p-5 shadow-[0px_10px_30px_rgba(46,52,51,0.04)] transition-all hover:scale-[1.01]"
     >
     <a
-        href="{{ task.plantId is defined ? path('app_plants_show', { id: task.plantId }) : '#' }}"
+        href="{{ taskHref }}"
         class="flex min-w-0 flex-1 items-center gap-4"
     >
         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full {{ taskPresentation.iconBackgroundClass }} {{ taskPresentation.iconTextClass }}">
@@ -39,6 +44,26 @@
         <div class="min-w-0">
             <h3 class="font-bold leading-tight text-on-surface">{{ task.type }}</h3>
             <p class="truncate text-sm text-on-surface-variant">{{ task.plant }}</p>
+            {% if task.currentResponsible is defined %}
+                <p class="mt-1 truncate text-xs text-on-surface-variant">
+                    Verantwortlich: {{ task.currentResponsible }}
+                </p>
+            {% endif %}
+            {% if task.received|default(false) and task.originalResponsible is defined %}
+                <p class="mt-1 truncate text-xs text-on-surface-variant">
+                    Ursprünglich: {{ task.originalResponsible }}
+                </p>
+            {% endif %}
+            {% if task.transferredFrom|default(null) %}
+                <p class="mt-1 truncate text-xs text-on-surface-variant">
+                    Übertragen von: {{ task.transferredFrom }}
+                </p>
+            {% endif %}
+            {% if task.transferredTo|default(null) %}
+                <p class="mt-1 truncate text-xs text-on-surface-variant">
+                    Übergeben an: {{ task.transferredTo }}
+                </p>
+            {% endif %}
         </div>
     </a>
 

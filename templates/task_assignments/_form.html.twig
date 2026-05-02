@@ -1,4 +1,83 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Speichern') }}</button>
-{{ form_end(form) }}
+{% set inputClasses = 'w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10' %}
+{% set labelClasses = 'font-label text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant' %}
+
+{{ form_start(form, { attr: { id: 'task-assignment-form', 'data-controller': 'care-assignment-filter', class: 'space-y-8' } }) }}
+
+<div class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-[0_20px_40px_rgba(46,52,51,0.06)]">
+    <section class="space-y-10 p-8 md:p-12">
+        <div class="flex items-center gap-3">
+            <span class="rounded-lg bg-primary-container p-2 text-on-primary-container">
+                <span class="material-symbols-outlined block">assignment_ind</span>
+            </span>
+            <h2 class="text-2xl font-bold tracking-tight">Übergabeinformationen</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div class="space-y-2">
+                {{ form_label(form.start_date, null, { label_attr: { class: labelClasses } }) }}
+                {{ form_widget(form.start_date, { attr: { class: inputClasses } }) }}
+                {{ form_errors(form.start_date) }}
+            </div>
+
+            <div class="space-y-2">
+                {{ form_label(form.end_date, null, { label_attr: { class: labelClasses } }) }}
+                {{ form_widget(form.end_date, { attr: { class: inputClasses } }) }}
+                {{ form_errors(form.end_date) }}
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+                {{ form_label(form.to_user, null, { label_attr: { class: labelClasses } }) }}
+                {{ form_widget(form.to_user, { attr: { class: inputClasses ~ ' appearance-none' } }) }}
+                {{ form_errors(form.to_user) }}
+            </div>
+
+            {% if form.care_tasks is defined %}
+                <div class="space-y-2 md:col-span-2">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        {{ form_label(form.care_tasks, null, { label_attr: { class: labelClasses } }) }}
+                        <button type="button"
+                                data-action="care-assignment-filter#selectVisible"
+                                class="inline-flex w-full items-center justify-center rounded-full border border-outline-variant/20 px-5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary-container sm:w-auto">
+                            Sichtbare auswählen (<span data-care-assignment-filter-target="visibleCount">0</span>)
+                        </button>
+                    </div>
+                    {{ form_widget(form.care_tasks, { attr: { class: 'min-h-72 w-full rounded-lg border-transparent bg-surface-container-low px-5 py-4 text-on-surface transition-all focus:border-primary focus:ring-4 focus:ring-primary/10' } }) }}
+                    <div class="mt-2 flex items-start gap-2 text-xs leading-relaxed text-on-surface-variant/80">
+                        <span class="material-symbols-outlined mt-[1px] text-sm">info</span>
+                        <span>Die Auswahl wird anhand des gewählten Zeitraums gefiltert.</span>
+                    </div>
+                    {{ form_errors(form.care_tasks) }}
+                </div>
+            {% endif %}
+
+            {% if form.care_task is defined %}
+                <div class="space-y-2 md:col-span-2">
+                    {{ form_label(form.care_task, null, { label_attr: { class: labelClasses } }) }}
+                    {{ form_widget(form.care_task, { attr: { class: inputClasses ~ ' appearance-none' } }) }}
+                    {{ form_errors(form.care_task) }}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+{{ form_widget(form._token) }}
+{{ form_end(form, { render_rest: false }) }}
+
+<div class="mt-10 flex flex-col items-center justify-end gap-4 md:flex-row">
+    {% if show_delete|default(false) %}
+        {{ include('task_assignments/_delete_form.html.twig') }}
+    {% endif %}
+
+    <a href="{{ path('app_task_assignments_index') }}"
+       class="w-full px-10 py-4 text-center font-bold text-on-surface-variant transition-colors hover:text-on-surface md:w-auto">
+        Zurück zur Liste
+    </a>
+
+    <button type="submit"
+            form="task-assignment-form"
+            class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-12 py-4 font-bold text-on-primary shadow-[0_10px_20px_rgba(61,107,0,0.2)] transition-all active:scale-95 md:w-auto">
+        <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">save</span>
+        {{ button_label|default('Speichern') }}
+    </button>
+</div>
