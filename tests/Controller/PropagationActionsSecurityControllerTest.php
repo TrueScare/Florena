@@ -54,28 +54,12 @@ class PropagationActionsSecurityControllerTest extends WebTestCase
         $this->manager->flush();
     }
 
-    public function testShowRedirectsForOtherUser(): void
-    {
-        $this->client->loginUser($this->attacker);
-        $this->client->request('GET', $this->path . $this->propagationAction->getId());
-
-        self::assertResponseRedirects('/propagation_actions');
-    }
-
-    public function testShowAllowedForOwner(): void
-    {
-        $this->client->loginUser($this->owner);
-        $this->client->request('GET', $this->path . $this->propagationAction->getId());
-
-        self::assertResponseIsSuccessful();
-    }
-
     public function testEditGetRedirectsForOtherUser(): void
     {
         $this->client->loginUser($this->attacker);
         $this->client->request('GET', $this->path . $this->propagationAction->getId() . '/edit');
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants');
     }
 
     public function testEditPostRedirectsForOtherUser(): void
@@ -83,7 +67,7 @@ class PropagationActionsSecurityControllerTest extends WebTestCase
         $this->client->loginUser($this->attacker);
         $this->client->request('POST', $this->path . $this->propagationAction->getId() . '/edit');
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants');
 
 
         $this->manager->refresh($this->propagationAction);
@@ -97,7 +81,7 @@ class PropagationActionsSecurityControllerTest extends WebTestCase
             '_token' => 'invalid',
         ]);
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants');
 
         self::assertSame(1, $this->propagationActionsRepository->count([]));
     }
@@ -109,7 +93,7 @@ class PropagationActionsSecurityControllerTest extends WebTestCase
             '_token' => 'completely_wrong_token',
         ]);
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants/' . $this->propagationAction->getPlant()->getId());
         self::assertSame(1, $this->propagationActionsRepository->count([]));
     }
 

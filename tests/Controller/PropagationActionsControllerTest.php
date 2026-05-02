@@ -44,17 +44,6 @@ final class PropagationActionsControllerTest extends WebTestCase
         $this->manager->flush();
     }
 
-    public function testIndex(): void
-    {
-        $this->client->loginUser($this->user);
-
-        $this->client->followRedirects();
-        $crawler = $this->client->request('GET', $this->path);
-
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('PropagationActions index');
-    }
-
     public function testNew(): void
     {
         $this->client->loginUser($this->user);
@@ -75,26 +64,9 @@ final class PropagationActionsControllerTest extends WebTestCase
             'propagation_actions[plant]' => $plant->getId(),
         ]);
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants/' . $plant->getId());
 
         self::assertSame(1, $this->propagationActionRepository->count([]));
-    }
-
-    public function testShow(): void
-    {
-        $this->client->loginUser($this->user);
-
-        $plant = $this->createPlant($this->user);
-        $fixture = $this->createPropagationAction($plant);
-
-        $this->manager->persist($plant);
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
-
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('PropagationAction');
     }
 
     public function testEdit(): void
@@ -141,10 +113,10 @@ final class PropagationActionsControllerTest extends WebTestCase
         $this->manager->persist($fixture);
         $this->manager->flush();
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
         $this->client->submitForm('Löschen');
 
-        self::assertResponseRedirects('/propagation_actions');
+        self::assertResponseRedirects('/plants/' . $plant->getId());
         self::assertSame(0, $this->propagationActionRepository->count([]));
     }
 
