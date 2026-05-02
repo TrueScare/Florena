@@ -67,32 +67,11 @@ final class CareTaskControllerSecurityTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
     }
-    public function testShowRedirectsForOtherUser(): void
-    {
-        $this->client->loginUser($this->attacker);
-        $this->client->request('GET', $this->path . $this->careTask->getId());
-
-        self::assertResponseRedirects('/care_task');
-    }
-
-    public function testShowAllowedForOwner(): void
-    {
-        $this->client->loginUser($this->owner);
-        $this->client->request('GET', $this->path . $this->careTask->getId());
-
-        self::assertResponseIsSuccessful();
-    }
     public function testIndexRedirectsWhenUnauthenticated(): void
     {
         $this->client->followRedirects();
         $this->client->request('GET', $this->path);
         self::assertStringContainsString('/login', $this->client->getRequest()->getUri());
-    }
-
-    public function testShowRedirectsWhenUnauthenticated(): void
-    {
-        $this->client->request('GET', $this->path . $this->careTask->getId());
-        self::assertResponseRedirects('/login');
     }
 
     private function createPlant(User $user): Plants

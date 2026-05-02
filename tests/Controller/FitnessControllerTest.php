@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\Locations;
 use App\Entity\Notifications;
 use App\Entity\Plants;
 use App\Entity\User;
@@ -20,7 +19,6 @@ final class FitnessControllerTest extends WebTestCase
     private User $owner;
     private User $otherUser;
     private Plants $plant;
-    private Locations $location;
 
     protected function setUp(): void
     {
@@ -36,13 +34,7 @@ final class FitnessControllerTest extends WebTestCase
         foreach ($this->em->getRepository(Plants::class)->findAll() as $p) {
             $this->em->remove($p);
         }
-        foreach ($this->em->getRepository(Locations::class)->findAll() as $l) {
-            $this->em->remove($l);
-        }
         $this->em->flush();
-
-        $this->location = $this->createLocation($this->owner);
-        $this->em->persist($this->location);
 
         $this->plant = $this->createPlant($this->owner);
         $this->em->persist($this->plant);
@@ -69,26 +61,6 @@ final class FitnessControllerTest extends WebTestCase
         self::assertResponseRedirects('/plants');
     }
 
-    public function testLocationFitnessRedirectsWhenNotLoggedIn(): void
-    {
-        $this->client->request('GET', '/fitness/location/' . $this->location->getId());
-        self::assertResponseRedirects('/login');
-    }
-
-    public function testLocationFitnessRendersForOwner(): void
-    {
-        $this->client->loginUser($this->owner);
-        $this->client->request('GET', '/fitness/location/' . $this->location->getId());
-        self::assertResponseIsSuccessful();
-    }
-
-    public function testLocationFitnessRedirectsForOtherUser(): void
-    {
-        $this->client->loginUser($this->otherUser);
-        $this->client->request('GET', '/fitness/location/' . $this->location->getId());
-        self::assertResponseRedirects('/locations');
-    }
-
     private function createPlant(User $user): Plants
     {
         $plant = new Plants();
@@ -112,15 +84,4 @@ final class FitnessControllerTest extends WebTestCase
         return $plant;
     }
 
-    private function createLocation(User $user): Locations
-    {
-        $loc = new Locations();
-        $loc->setName('FitnessTestLoc');
-        $loc->setDescription('desc');
-        $loc->setLightCondition(LightRequirement::bright);
-        $loc->setTemperatureLevel(TemperatureRequirement::normal);
-        $loc->setHumidityLevel(HumidityRequirement::medium);
-        $loc->setUser($user);
-        return $loc;
-    }
 }

@@ -15,13 +15,13 @@
 {% block body %}
     <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
         <header class="mb-12">
-            <a href="{{ plant ? path('app_plants_show', { id: plant.id }) : path('app_propagation_actions_index') }}"
+            <a href="{{ plant ? path('app_plants_show', { id: plant.id }) : path('app_plants_index') }}"
                class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
                 <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
                     arrow_back
                 </span>
                 <span class="text-sm uppercase tracking-wider">
-                    {{ plant ? 'Zurück zur Pflanze' : 'Zurück zur Liste' }}
+                    {{ plant ? 'Zurück zur Pflanze' : 'Zurück zu den Pflanzen' }}
                 </span>
             </a>
 

@@ -44,17 +44,6 @@ final class CareTaskController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_care_task_show', methods: ['GET'])]
-    public function show(CareTask $careTask): Response
-    {
-        if ($careTask->getPlant()->getUser() !== $this->getUser()) {
-            return $this->redirectToRoute('app_care_task_index', [], Response::HTTP_SEE_OTHER);
-        }
-        return $this->render('care_task/show.html.twig', [
-            'care_task' => $careTask,
-        ]);
-    }
-
     private function buildTaskItem(CareTask $careTask, bool $received): array
     {
         $assignment = $received
