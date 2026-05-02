@@ -97,11 +97,16 @@
 
         {% block header %}{% endblock %}
 
+        {# Flash Messages #}
+        {% block messages %}
+            {% include 'partials/_flash_messages.html.twig' %}
+        {% endblock %}
+
         <main class="flex-1">
             {% block body %}{% endblock %}
         </main>
 
-        <!-- Footer -->
+        {# Footer #}
         <footer class="w-full py-8">
             <div class="max-w-7xl mx-auto px-8 flex items-center gap-6">
                 <a href="{{ path('app_impressum') }}"
