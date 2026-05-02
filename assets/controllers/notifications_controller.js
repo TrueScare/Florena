@@ -51,12 +51,42 @@ export default class extends Controller {
             }
 
             this.dropdownTarget.innerHTML = await response.text();
-
-            this.badgeTarget.classList.add("hidden");
         } catch (error) {
             this.dropdownTarget.innerHTML =
                 '<p class="p-3 text-sm text-error">Fehler beim Laden.</p>';
+            return;
         }
+
+        try {
+            await this.markVisibleNotificationsAsRead();
+        } finally {
+            await this.loadCount();
+        }
+    }
+
+    async markVisibleNotificationsAsRead() {
+        const notifications = this.dropdownTarget.querySelectorAll("[data-notification-id]");
+
+        if (notifications.length === 0) {
+            return;
+        }
+
+        const requests = Array.from(notifications, (notification) => {
+            const notificationId = notification.dataset.notificationId;
+
+            return fetch(`/api/notification/${notificationId}/read`, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error();
+                }
+            });
+        });
+
+        await Promise.all(requests);
     }
 
     close() {
