@@ -1,11 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New PlantNotes{% endblock %}
+{% block title %}Neue Notiz hinzufügen{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Create new PlantNotes</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ path('app_plants_show', {'id': plant.id}) }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Pflanze</span>
+            </a>
 
-    {{ include('plant_notes/_form.html.twig') }}
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        Neue Notiz <span class="font-bold italic text-primary">hinzufügen</span>
+                    </h1>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Halte Beobachtungen, Pflegehinweise oder wichtige Informationen zu
+                        <span class="font-semibold text-on-surface">{{ plant.name }}</span>
+                        fest.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    <a href="{{ path('app_plants_show', {'id': plant.id  }) }}">zurück zur Pflanze</a>
+        {{ include('plant_notes/_form.html.twig', {
+            form: form,
+            plant: plant,
+            button_label: 'Notiz speichern'
+        }) }}
+    </main>
 {% endblock %}

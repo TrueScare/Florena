@@ -1,13 +1,57 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit PlantNotes{% endblock %}
+{% block title %}Notiz bearbeiten{% endblock %}
+
+{% block header %}
+    {% include 'partials/_app_navbar.html.twig' with { active_page: 'dashboard' } %}
+{% endblock %}
 
 {% block body %}
-    <h1>Edit PlantNotes</h1>
+    <main class="mx-auto max-w-5xl px-6 py-16 pt-32 lg:py-24">
+        <header class="mb-12">
+            <a href="{{ path('app_plants_show', {'id': plant.id}) }}"
+               class="mb-8 inline-flex items-center font-medium text-primary transition-all duration-300 group">
+                <span class="material-symbols-outlined mr-2 text-lg transition-transform group-hover:-translate-x-1">
+                    arrow_back
+                </span>
+                <span class="text-sm uppercase tracking-wider">Zurück zur Pflanze</span>
+            </a>
 
-    {{ include('plant_notes/_form.html.twig', {'button_label': 'Bearbeiten'}) }}
+            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                    <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-on-surface">
+                        Notiz <span class="font-bold italic text-primary">bearbeiten</span>
+                    </h1>
 
-    <a href="{{ path('app_plants_show', {'id': plant.id }) }}">zurück zur Pflanze</a>
+                    <p class="max-w-2xl text-lg leading-relaxed text-on-surface-variant">
+                        Aktualisiere deine Beobachtungen oder Hinweise zu
+                        <span class="font-semibold text-on-surface">{{ plant.name }}</span>.
+                    </p>
+                </div>
+            </div>
+        </header>
 
-    {{ include('plant_notes/_delete_form.html.twig') }}
+        {{ include('plant_notes/_form.html.twig', {
+            form: form,
+            plant: plant,
+            button_label: 'Bearbeiten'
+        }) }}
+
+        <section class="mt-12 border-t border-outline/20 pt-8">
+            <h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                Gefahrenbereich
+            </h2>
+
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <p class="max-w-md text-sm text-on-surface-variant">
+                    Diese Aktion löscht die Notiz dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden.
+                </p>
+
+                {{ include('plant_notes/_delete_form.html.twig', {
+                    plant: plant,
+                    plant_note: plant_note
+                }) }}
+            </div>
+        </section>
+    </main>
 {% endblock %}

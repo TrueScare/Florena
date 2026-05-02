@@ -468,28 +468,71 @@
         </div>
 
         {# Notizen #}
-        <div class="mt-12 grid grid-cols-1 gap-8">
-            <div class="p-8 bg-surface-container rounded-lg">
-                <div class="flex justify-between items-center gap-4 mb-4">
-                    <h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
-                        <span class="material-symbols-outlined">description</span>
-                        Notizen
-                    </h3>
-                </div>
+            <div class="mt-12 grid grid-cols-1 gap-8">
+                <div class="p-8 bg-surface-container rounded-xl">
+                    <div class="flex justify-between items-center gap-4 mb-6">
+                        <h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined">description</span>
+                            Notizen
+                        </h3>
 
-                <div class="text-on-surface-variant text-sm leading-relaxed">
-                    {% for note in plant.plantNotes %}
-                        <div class="py-4 border-t border-surface-container-high">
-                            <p>zuletzt bearbeteit am: {% if note.createdAt == note.updatedAt %}{{ note.createdAt|date('d.m.Y H:s', 'CEST') }}{% else %}{{ note.updatedAt|date('d.m.Y H:s', 'CEST') }}{% endif %}</p>
-                            <p>{{ note.content }}</p>
-                            <a href="{{ path('app_plant_notes_edit', {'id': plant.id, 'note': note.id}) }}">bearbeiten</a>
-                            {{ include('plant_notes/_delete_form.html.twig', {'id': plant.id, 'plant_note': note})  }}
-                        </div>
-                    {% else %}
-                        Noch keine Notizen vorhanden.
-                    {% endfor %}
+                        <a
+                            href="{{ path('app_plant_notes_new', {'id': plant.id}) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-outline text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition"
+                        >
+                            <span class="material-symbols-outlined text-base">add_circle</span>
+                            Neue Notiz
+                        </a>
+                    </div>
+
+                    <div class="space-y-4">
+                        {% for note in plant.plantNotes %}
+                            <div class="rounded-xl bg-surface-container-lowest p-5 border border-surface-container-high shadow-[0px_8px_20px_rgba(46,52,51,0.04)]">
+                                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                    <div class="flex items-start gap-4 min-w-0 flex-1">
+                                        <div class="w-10 h-10 rounded-full flex shrink-0 items-center justify-center bg-primary-container text-on-primary-container">
+                                            <span class="material-symbols-outlined">sticky_note_2</span>
+                                        </div>
+
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-sm text-on-surface-variant mb-3 space-y-1">
+                                                <p>
+                                                    Erstellt am {{ note.createdAt|date('d.m.Y H:i') }}
+                                                </p>
+
+                                                {% if note.createdAt != note.updatedAt %}
+                                                    <p>
+                                                        Zuletzt bearbeitet am {{ note.updatedAt|date('d.m.Y H:i') }}
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+
+                                            <p class="text-on-surface leading-relaxed whitespace-pre-line break-words">
+                                                {{ note.content }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 shrink-0 md:pl-4">
+                                        <a
+                                            href="{{ path('app_plant_notes_edit', {'id': plant.id, 'note': note.id}) }}"
+                                            class="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-on-surface-variant hover:bg-surface-container transition"
+                                        >
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                            Bearbeiten
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="rounded-xl bg-surface-container-lowest p-5 border border-surface-container-high">
+                                <p class="text-sm text-on-surface-variant">
+                                    Noch keine Notizen vorhanden.
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
     </main>
 {% endblock %}
